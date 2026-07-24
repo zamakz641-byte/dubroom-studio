@@ -77,7 +77,20 @@ async function request(url, options) {
     ) {
       throw new Error("Keyboard resize did not expand the timeline panel");
     }
-    assertions.push("Timeline panel resizes with an accessible keyboard separator");
+    await page.waitForTimeout(220);
+    const storedTimelineHeight = Number(
+      await page.evaluate(() =>
+        localStorage.getItem("dubroom.studio.timelineHeight")
+      )
+    );
+    if (Math.abs(storedTimelineHeight - afterResize.height) > 2) {
+      throw new Error(
+        `Timeline height was not persisted (${storedTimelineHeight} vs ${afterResize.height})`
+      );
+    }
+    assertions.push(
+      "Timeline panel resizes by keyboard and persists its height locally"
+    );
 
     const sourceClips = page.getByTestId("edit-clip");
     const beforeCount = await sourceClips.count();

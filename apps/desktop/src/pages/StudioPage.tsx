@@ -37,7 +37,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
-import { Group, Panel, Separator } from "react-resizable-panels";
+import { StudioVerticalDock } from "@/components/studio/StudioVerticalDock";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n";
@@ -881,8 +881,8 @@ export function StudioPage({
         </div>
       </header>
 
-      <Group id="studio-vertical-layout" orientation="vertical" className="min-h-0 flex-1">
-      <Panel id="studio-stage-panel" minSize={260} className="h-full min-h-0 overflow-hidden">
+      <StudioVerticalDock
+      stage={
       <main
         className={`relative grid min-h-0 min-w-0 grid-cols-1 overflow-hidden ${
           sceneOpen && inspectorOpen
@@ -1184,21 +1184,8 @@ export function StudioPage({
           </aside>
         )}
       </main>
-      </Panel>
-      <Separator
-        id="studio-timeline-separator"
-        className="group relative z-40 h-1.5 bg-line outline-none transition-colors hover:bg-accent/70 focus-visible:bg-accent"
-      >
-        <i className="pointer-events-none absolute left-1/2 top-1/2 h-0.5 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-line-strong transition group-hover:bg-accent-ink" />
-      </Separator>
-      <Panel
-        id="studio-timeline-panel"
-        defaultSize={300}
-        minSize={220}
-        maxSize={440}
-        groupResizeBehavior="preserve-pixel-size"
-        className="h-full min-h-0 overflow-hidden"
-      >
+      }
+      timeline={
       <section
         data-testid="studio-timeline"
         className="relative h-full min-w-0 max-w-full overflow-hidden bg-surface"
@@ -1644,8 +1631,8 @@ export function StudioPage({
           </div>
         </div>
       </section>
-      </Panel>
-      </Group>
+      }
+      />
       {activeJobs.length > 0 && (
         <div className="pointer-events-none fixed bottom-4 right-4 z-50 grid gap-2">
           {activeJobs.slice(0, 3).map((job) => (
