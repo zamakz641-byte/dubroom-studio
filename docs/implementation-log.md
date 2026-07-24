@@ -1,0 +1,302 @@
+# Implementation Log
+
+This file tracks what gets added during development so the project stays easy to navigate.
+
+## 2026-05-16
+
+- Saved the accepted first UI concept as `docs/assets/studio-main-mockup-v1.png`.
+- Created the initial monorepo shape:
+  - `apps/desktop` for Electron + React + Vite.
+  - `services/api` for FastAPI.
+  - `models` for local model registry metadata.
+  - `projects` for user project workspaces.
+- Added the first Studio screen implementation with mocked data:
+  - top command bar;
+  - speakers sidebar;
+  - central video preview;
+  - dubbing timeline;
+  - segment inspector;
+  - emotion and sync controls.
+- Added a minimal FastAPI service with `/health` and `/projects`.
+- Verification:
+  - `npm run build` passes.
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+- Compacted the top project bar:
+  - reduced topbar height from a command-heavy header to a small project/status strip;
+  - moved Import, Analyze, Generate Voices, Preview and Export into the Studio action rail;
+  - kept command buttons connected to their existing import/analyze/generate handlers;
+  - recovered vertical space for the video/timeline workspace.
+- Verification:
+  - `npm run build` passes.
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+- Professional UI refactor:
+  - added Tailwind configuration and `components.json` for shadcn-style source components;
+  - added shared UI primitives under `apps/desktop/src/components/ui`;
+  - replaced the monolithic CSS visual layer with tokenized theme variables;
+  - added persisted themes: System, Light Studio, Dark Studio, Graphite Pro;
+  - added first-run onboarding for project creation, language target, machine profile and theme;
+  - added local project persistence via localStorage;
+  - rebuilt the shell around Dashboard, Projects, Studio and Settings;
+  - kept Studio secondary tools: Timeline, Transcript, Speakers and Export;
+  - kept import/probe/prepare handlers connected to the existing FastAPI backend;
+  - fixed Electron launch stability by disabling GPU acceleration and using a local userData path;
+  - forced Vite to keep port 5173 strict so Electron does not attach to the wrong dev server.
+- Verification:
+  - `npm run build` passes.
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+  - frontend responds on `http://127.0.0.1:5173`.
+  - `npx shadcn@latest info --json` was attempted but the CLI timed out after npm cache/network access; source config and local shadcn-style components are present.
+- Restored app-level navigation hierarchy:
+  - main navigation is now `Dashboard`, `Projects`, `Studio`, `Settings`;
+  - `Studio` remains the primary work area;
+  - `Timeline`, `Transcript`, `Speakers` and `Export` are now secondary Studio tools;
+  - non-Studio pages no longer show the speaker management list;
+  - added initial Dashboard, Projects and Settings pages.
+- Verification:
+  - `npm run build` passes.
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+- Added workflow-level view separation:
+  - sidebar navigation now switches between `Studio`, `Transcript`, `Speakers` and `Export`;
+  - `Studio` keeps video preview, timeline and segment inspector;
+  - `Transcript` provides a dedicated editable segment table;
+  - `Speakers` provides character/voice cards with segment counts and fit metrics;
+  - `Export` collects output settings and readiness checks;
+  - non-studio views span the main workspace instead of sharing the inspector column.
+- Verification:
+  - `npm run build` passes.
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+  - Local preview responds on `http://127.0.0.1:4173`.
+- Made the first studio mockup interactive:
+  - speaker selection updates the active speaker;
+  - timeline segments are clickable;
+  - inspector fields update the selected segment;
+  - translated/adapted text can be edited;
+  - emotion chips and sliders are stateful;
+  - lock/unlock changes segment state;
+  - Generate Voices simulates queue progress;
+  - Import Video stores the selected file path in UI state.
+- Verification:
+  - `npm run build` passes after interactivity changes.
+- Added the first real media pipeline step:
+  - root `npm run dev` now starts both FastAPI and the desktop app;
+  - FastAPI exposes `POST /media/probe`;
+  - `/media/probe` uses FFprobe to read local video metadata;
+  - frontend import calls the backend after selecting a video;
+  - video preview displays file name, duration, resolution, FPS and audio stream data;
+  - import state shows probing, ready, backend offline and error statuses.
+- Verification:
+  - FFmpeg/FFprobe detected at `C:\\ffmpeg\\bin`.
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+  - `npm run build` passes.
+  - `/health` returned 200.
+  - `/media/probe` returned valid metadata for a generated QA MP4.
+- Added media preparation:
+  - FastAPI exposes `POST /media/prepare`;
+  - the backend creates a timestamped project folder under `projects/`;
+  - FFmpeg extracts `audio/source_16k_mono.wav`;
+  - the backend generates waveform peaks for the frontend timeline;
+  - `analysis/media_manifest.json` records source media, audio path, waveform and metadata;
+  - the frontend `Analyze` button calls the preparation endpoint;
+  - the preview panel shows preparation state and generated project id;
+  - the timeline switches from mock waveform to prepared waveform data.
+- Verification:
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+  - `npm run build` passes.
+  - `/media/prepare` created audio, manifest and waveform from a generated QA MP4.
+- Added local video preview streaming:
+  - FastAPI exposes `GET /media/stream?path=...`;
+  - video paths are validated and limited to supported video extensions;
+  - the frontend video preview now renders the imported file with a real `<video>` player;
+  - the mock illustrated scene remains as the empty/no-video state.
+- Verification:
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+  - `npm run build` passes.
+  - `/media/stream` returned the generated QA MP4 bytes through the local API.
+- UI cleanup pass after first real usage feedback:
+  - removed the default Electron menu bar;
+  - separated the central preview into a clean video area plus a right-side info/subtitle column;
+  - moved media metadata and adapted subtitle out of the video overlay;
+  - tightened the top bar, timeline height and inspector spacing;
+  - made the speaker list scroll inside the sidebar instead of pushing the layout.
+- Verification:
+  - `npm run build` passes.
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+
+### 2026-05-17
+
+- Implemented the professional desktop UI refactor requested by the product plan:
+  - kept Electron + React as the runtime;
+  - added Tailwind configuration, `components.json`, path alias `@/*`, and source-owned shadcn-style primitives;
+  - replaced the monolithic visual layer with semantic design tokens and calmer desktop surfaces;
+  - added persistent themes: `System`, `Light Studio`, `Dark Studio`, `Graphite Pro`;
+  - added first-launch onboarding for language pair, machine profile, project folder, and first project/import flow;
+  - added local project persistence with recent projects, project states, active project restore, and empty states;
+  - rebuilt the shell around `Dashboard`, `Projects`, `Studio`, `Settings`;
+  - kept `Timeline`, `Transcript`, `Speakers`, `Export` as separated Studio sub-views;
+  - moved heavy actions into the Studio workspace instead of a large global toolbar;
+  - removed decorative AI-cliche visuals and reduced the aggressive cyan-heavy look.
+- Added UI component modules under `apps/desktop/src/components/ui`:
+  - button, card, badge, progress, input, textarea, separator, skeleton, tabs, slider, select, switch, sonner.
+- Reworked Electron launch stability:
+  - disabled GPU acceleration for this desktop shell;
+  - moved Electron `userData` into the app workspace;
+  - made the Vite dev server strict on port `5173`.
+- Verification:
+  - `npm run build` passes.
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+  - dev frontend responds on `http://127.0.0.1:5173`.
+  - `npx shadcn@latest info --json` was attempted, but the CLI timed out during npm/cache access; the local source components and shadcn-compatible config are present and the app builds.
+- Started the backend foundation pass before multilingual/TTS work:
+  - `GET /runtime/status` reports workspace paths, supported video extensions, FFmpeg/FFprobe availability and planned pipeline stages;
+  - `GET /projects` now reads real project records from the `projects/` folder instead of returning a demo project;
+  - `POST /projects` creates a draft project folder with `project.json`;
+  - `GET /projects/{project_id}` returns a stored project record;
+  - `POST /media/prepare` now writes `project.json` next to the media manifest;
+  - the desktop frontend polls `/health` and shows backend readiness in the top bar;
+  - the frontend merges backend project records into the local project list;
+  - Electron now attempts to start the FastAPI sidecar automatically when the desktop app opens.
+- Verification:
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+  - `npm run build` passes.
+  - `node --check apps\\desktop\\electron\\main.cjs` passes.
+  - `/health`, `/projects` and `/runtime/status` return 200 after starting the API.
+- Added system/model capability planning:
+  - detected the current machine as Dell Latitude E7270, Intel Core i5-6300U, 8 GB RAM, Intel HD Graphics 520, no NVIDIA/CUDA;
+  - documented the split between the current CPU fallback machine and the future RTX 4050 laptop target;
+  - replaced `models/registry.json` with concrete engine candidates for media, ASR, diarization, translation, adaptation, TTS and voice cloning research;
+  - added `docs/system-model-plan.md`;
+  - added `/models/registry` to the backend;
+  - extended `/runtime/status` with hardware and NVIDIA availability data;
+  - Settings now reads and displays the backend model registry.
+- Verification:
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+  - `npm run build` passes.
+  - `python -m json.tool models\\registry.json` passes.
+  - `/models/registry` and `/runtime/status` return 200 after restarting the API.
+- Added adaptive onboarding profile selection:
+  - onboarding now receives backend health, runtime hardware status and model registry data;
+  - the first-launch screen shows CPU, memory and acceleration status;
+  - machine profile is auto-selected as `CPU fallback`, `Balanced laptop` or `RTX 4050 quality`;
+  - the app no longer assumes every user has the RTX 4050 target machine;
+  - full dev app launch was verified with API and frontend running together.
+- Verification:
+  - `npm run build` passes.
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+  - `npm run dev` launched frontend on `127.0.0.1:5173` and API runtime on `127.0.0.1:8765`.
+- Started replacing hardcoded Studio data with project-backed analysis state:
+  - added backend models for speakers, segments and project analysis state;
+  - added `GET /projects/{project_id}/analysis/state`;
+  - added `PUT /projects/{project_id}/analysis/state`;
+  - media preparation now creates `analysis/state.json` with generated draft segments instead of relying only on frontend mock data;
+  - the frontend loads speakers/segments from the active prepared project;
+  - transcript and inspector edits are debounced and saved back to the project analysis state;
+  - opening a project with a source path now restores the selected video and probes metadata again.
+- Verification:
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+  - `npm run build` passes.
+  - `GET` and `PUT` on `/projects/{project_id}/analysis/state` return 200 on an existing project.
+- Added persistent project jobs and connected action buttons:
+  - added `JobRecord` and `JobCreateRequest` backend models;
+  - added `GET /projects/{project_id}/jobs`;
+  - added `POST /projects/{project_id}/jobs`;
+  - added `GET /projects/{project_id}/jobs/{job_id}`;
+  - Studio actions now create jobs for `voice_generation`, `preview` and `export`;
+  - ASR/translation job placeholders can update analysis state when used later;
+  - job records are saved under `projects/<id>/jobs/*.json`;
+  - placeholder manifests are written under `audio/`, `analysis/` or `exports/`;
+  - moved the active API port from `8765` to `8766` because stale Windows listeners were serving old code on `8765`.
+- Verification:
+  - `python -m py_compile services\\api\\app\\main.py` passes.
+  - `npm run build` passes.
+  - `node --check apps\\desktop\\electron\\main.cjs` passes.
+  - FastAPI TestClient sees the jobs routes and can create/list jobs.
+  - HTTP on `127.0.0.1:8766` exposes the jobs routes and creates a `voice_generation` job.
+- Desktop launch audit and repair:
+  - root cause: several manual launch commands passed the app path through `cmd/start`, which split the workspace path at the space in `D:\\manhwa studio`;
+  - root cause: Electron `BrowserWindow` was stored only in a local variable and could be garbage-collected after creation;
+  - root cause: production Electron uses `file://`, so the FastAPI CORS policy also needs to accept the `null` origin;
+  - root cause: the Vite production build emitted absolute `/assets/...` URLs, which are invalid when Electron loads `dist/index.html` from `file://`;
+  - added `scripts/start-desktop.cjs` as the single supported desktop launcher;
+  - added root `npm run start:desktop`;
+  - launcher starts/validates API on `127.0.0.1:8766`, then launches Electron with cwd `apps/desktop` and app argument `.` to avoid path-space breakage;
+  - Electron main process now keeps a global `mainWindow` reference and logs lifecycle events to `projects/electron-main.log`;
+  - Vite now uses `base: "./"` so built JS/CSS assets resolve correctly inside Electron;
+  - API CORS now accepts `null` origin for packaged/file-based Electron renderer.
+- Verification:
+  - `node --check scripts\\start-desktop.cjs` passes.
+  - `node --check apps\\desktop\\electron\\main.cjs` passes.
+  - `npm run build` passes.
+  - `apps/desktop/dist/index.html` references `./assets/...` instead of `/assets/...`.
+  - `npm run start:desktop` launches a real Windows window titled `Dub Studio`.
+  - CORS with `Origin: null` returns `access-control-allow-origin: null`.
+- Silent Windows launcher:
+  - added `scripts/start-desktop-silent.vbs` for normal desktop launching without a visible terminal window;
+  - `start-desktop-silent.vbs` launches `electron.exe` directly with `apps/desktop` as the Electron app path;
+  - `scripts/start-desktop.cjs` is now a debug launcher only and no longer starts FastAPI itself;
+  - Electron remains the owner of the hidden FastAPI sidecar process;
+  - Electron now uses a single-instance lock so a second launch focuses the existing window instead of opening a duplicate;
+  - Node launch uses `windowsHide: true`, no `shell: true`, no user-built command strings, and no `ELECTRON_ENABLE_LOGGING`.
+- Backend TTS stabilization:
+  - fixed the FastAPI package import for `TTSService`;
+  - made TTS dependencies lazy so the API can start even when heavy TTS libraries are missing;
+  - added source/target language fields to persisted analysis state;
+  - `media_manifest.json` now records source and target languages during media preparation;
+  - `voice_generation` now selects a TTS engine from the detected performance profile;
+  - voice manifests now record generated and failed segments, selected engine, language and profile;
+  - placeholder transcript text is skipped instead of being synthesized;
+  - `JobRecord.status` now matches voice generation outcome: `completed`, `partial`, `failed` or `skipped`.
+- Verification:
+  - `python -m py_compile services\\api\\app\\main.py services\\api\\app\\tts_service.py` passes.
+  - importing `services.api.app.main` succeeds.
+  - FastAPI TestClient returns 200 for `/health`, `/runtime/profile` and `/models/registry`.
+  - `npm run build` passes.
+- Persistent background jobs:
+  - `POST /projects/{project_id}/jobs` now creates a persisted `queued` job immediately;
+  - FastAPI `BackgroundTasks` executes the selected pipeline step after the response;
+  - job records transition through `queued` -> `running` -> terminal status in `projects/<id>/jobs/*.json`;
+  - failed background jobs are persisted with `status: failed` and an error message;
+  - the desktop frontend polls project jobs every 2.5 seconds for prepared projects;
+  - completed ASR/translation jobs refresh the loaded analysis state after completion instead of immediately after queueing.
+- Verification:
+  - `python -m py_compile services\\api\\app\\main.py services\\api\\app\\tts_service.py` passes.
+  - FastAPI TestClient created a project, queued a `translation` job, and observed it complete at 100%.
+  - `npm run build` passes.
+- Faster Whisper ASR foundation:
+  - added `faster-whisper` and `huggingface-hub` to the backend requirements;
+  - added a global ASR model catalog for Faster Whisper Tiny, Base, Small and Medium;
+  - added `GET /models/asr` for model status in Settings;
+  - added `POST /models/asr/{model_id}/download` to download models in a background task;
+  - `runtime/status` now exposes ASR model status and marks ASR as `partial`;
+  - the ASR project job now uses Faster Whisper Tiny when installed;
+  - if Tiny is missing, ASR is persisted as `skipped` with a clear Settings download message;
+  - Settings now shows ASR model cards and Download buttons for stronger models.
+- Verification:
+  - `python -m py_compile services\\api\\app\\main.py services\\api\\app\\tts_service.py` passes.
+  - `GET /models/asr` returns 4 models and reports Tiny as `not_installed` on the current machine.
+  - ASR smoke job without Tiny returns terminal status `skipped` with the expected download message.
+  - `npm run build` passes.
+- Supertonic 3 TTS research and adapter:
+  - cloned `https://github.com/supertone-inc/supertonic` into `models/research/supertonic`;
+  - documented the Python SDK, ONNX/manual asset path, supported language tags, preset voices and Voice Builder JSON workflow in `docs/supertonic-analysis.md`;
+  - added `supertonic` to backend requirements;
+  - added `engine="supertonic"` support to `services/api/app/tts_service.py` with lazy dependency loading and fallback to Edge TTS;
+  - directed Supertonic assets to `models/supertonic` instead of the default Windows user cache;
+  - made the adapter tolerate both README-style language-aware SDKs and the currently installed PyPI signature without a `lang` parameter;
+  - added `DUB_TTS_ENGINE=supertonic` as a backend test override without making Supertonic the default engine;
+  - added `supertonic_3` to `models/registry.json` as a CPU-friendly multilingual candidate.
+- Supertonic and Faster Whisper local model run:
+  - downloaded Faster Whisper Tiny into `models/asr/faster-whisper/faster-whisper-tiny`;
+  - downloaded Supertonic public ONNX assets into `models/supertonic`;
+  - verified Supertonic preset voice JSON files `M1`-`M5` and `F1`-`F5` are present;
+  - generated a French smoke-test file at `projects/supertonic-smoke-fr.wav`;
+  - launched the Electron desktop app through the silent launcher and confirmed `/health` returns `ok`.
+- Verification:
+  - `python -m py_compile services\\api\\app\\main.py services\\api\\app\\tts_service.py` passes.
+  - `GET /models/asr` reports `faster-whisper-tiny` as `installed`.
+  - `npm run build` passes.
+- Studio UI bugfix pass:
+  - fixed a Studio crash caused by missing `Timeline` prop destructuring for `currentTime`, `duration` and `onSeek`;
+  - fixed `VideoPreview` prop destructuring for video event handlers;
+  - added `AppErrorBoundary` so UI render failures show a recovery screen instead of a blank desktop window;
+  - made the empty Studio state calmer: no fake waveform before analysis, no editable inspector fields without a selected segment, and a direct Import button in the preview area;
+  - reduced the topbar theme switcher to icon-only controls while keeping full theme names in Settings/tooltips.

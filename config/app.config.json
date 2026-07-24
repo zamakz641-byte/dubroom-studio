@@ -1,0 +1,29 @@
+{
+  "api": {
+    "host": "127.0.0.1",
+    "port": 8766
+  },
+  "voicebox": {
+    "host": "127.0.0.1",
+    "port": 17493,
+    "source": "../voicebox-runtime",
+    "data": "data/voicebox",
+    "models": "models/voicebox"
+  },
+  "storage": {
+    "data": "data",
+    "models": "models",
+    "projects": "projects",
+    "exports": "exports",
+    "cache": "data/cache",
+    "temp": "data/temp",
+    "environments": "data/environments"
+  },
+  "desktop": {
+    "minimum_width": 1120,
+    "minimum_height": 700,
+    "default_width": 1480,
+    "default_height": 920,
+    "software_renderer": false
+  }
+}

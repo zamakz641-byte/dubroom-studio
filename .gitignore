@@ -1,0 +1,32 @@
+# JavaScript build and dependency state
+node_modules/
+apps/desktop/dist/
+apps/desktop/.vite/
+
+# Python bytecode and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+data/
+
+# AI models and user-owned media
+models/
+projects/
+exports/
+output/
+
+# Desktop and test runtime state
+.electron-user-data/
+.playwright-cli/
+*.log
+
+# Local credentials
+.env
+.env.*
+!.env.example
+
+# Temporary safety copies created during the P0 migration
+apps/desktop/electron/*.pre-p0.cjs
+scripts/*.pre-p0.cjs
