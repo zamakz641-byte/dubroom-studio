@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 import threading
 import urllib.error
 import urllib.parse
@@ -384,8 +385,11 @@ def run_install(engine_id: str, repair: bool = False, credentials: dict[str, str
     status = "repairing" if repair else "installing"
     _write_state(engine_id, {"status": status, "progress": 5, "message": "Installer started", "log_path": str(log_path), "updated_at": _now()})
     env = os.environ.copy()
+    base_python = Path(sys.executable).resolve()
+    env["PATH"] = f"{base_python.parent}{os.pathsep}{env.get('PATH', '')}"
     env.update({
         "DUB_ENGINE_ID": engine_id,
+        "DUB_BASE_PYTHON": str(base_python),
         "DUB_ENGINE_ENV": str(PATHS.environments / engine_id),
         "DUB_ENGINE_MODELS": str(PATHS.models / engine_id),
         "DUB_ENGINE_CACHE": str(PATHS.cache / engine_id),
@@ -411,7 +415,10 @@ def run_install(engine_id: str, repair: bool = False, credentials: dict[str, str
     command = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script_path)]
     process: subprocess.Popen[str] | None = None
     try:
+        stale_venv = _quarantine_stale_venv(engine_id)
         with log_path.open("a", encoding="utf-8") as log_file:
+            if stale_venv:
+                log_file.write(f"Moved non-portable Python environment to {stale_venv}\n")
             process = subprocess.Popen(command, env=env, cwd=PATHS.workspace, stdout=log_file, stderr=subprocess.STDOUT, text=True)
             with _install_lock:
                 _install_processes[engine_id] = process
@@ -462,9 +469,43 @@ def _checks_pass(engine: dict[str, Any]) -> bool:
     for check in checks:
         root = variables.get(check.get("root"))
         relative = check.get("path")
-        if not root or not relative or not (root / relative).exists():
+        candidate = root / relative if root and relative else None
+        if not candidate or not candidate.exists():
+            return False
+        if candidate.name.lower() == "python.exe" and not _python_runtime_usable(candidate):
             return False
     return True
+
+
+def _python_runtime_usable(python_executable: Path) -> bool:
+    try:
+        completed = subprocess.run(
+            [str(python_executable), "-c", "import sys; print(sys.executable)"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=8,
+            check=False,
+        )
+        return completed.returncode == 0
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
+def _quarantine_stale_venv(engine_id: str) -> Path | None:
+    venv_path = PATHS.environments / engine_id / "venv"
+    python_executable = venv_path / "Scripts" / "python.exe"
+    if not venv_path.exists() or _python_runtime_usable(python_executable):
+        return None
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    backup = venv_path.with_name(f"venv.stale-{stamp}")
+    counter = 1
+    while backup.exists():
+        backup = venv_path.with_name(f"venv.stale-{stamp}-{counter}")
+        counter += 1
+    venv_path.rename(backup)
+    return backup
 
 
 def _system_command_exists(command: str | None) -> bool:
@@ -472,7 +513,7 @@ def _system_command_exists(command: str | None) -> bool:
         return False
     try:
         return subprocess.run([command, "-version"], capture_output=True, timeout=4, check=False).returncode == 0
-    except (FileNotFoundError, subprocess.SubprocessError):
+    except (OSError, subprocess.SubprocessError):
         return False
 
 

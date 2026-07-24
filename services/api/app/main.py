@@ -10,7 +10,7 @@ from array import array
 from datetime import datetime, timezone
 from uuid import uuid4
 from pathlib import Path
-from re import sub
+from re import search, sub
 from typing import Any
 
 try:
@@ -2016,6 +2016,8 @@ def _write_job(project_dir: Path, job: JobRecord) -> None:
 
 
 def _tool_available(name: str) -> bool:
+    if name == "nvidia-smi":
+        return _nvidia_status() is not None
     try:
         subprocess.run(
             [name, "-version"],
@@ -2024,10 +2026,30 @@ def _tool_available(name: str) -> bool:
             text=True,
             encoding="utf-8",
             errors="replace",
+            timeout=8,
         )
         return True
-    except (FileNotFoundError, subprocess.CalledProcessError):
+    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
         return False
+
+
+def _cpu_name() -> str:
+    """Return a human-readable CPU name without keeping machine-specific state."""
+    if platform.system() == "Windows":
+        try:
+            import winreg
+
+            with winreg.OpenKey(
+                winreg.HKEY_LOCAL_MACHINE,
+                r"HARDWARE\DESCRIPTION\System\CentralProcessor\0",
+            ) as key:
+                value, _ = winreg.QueryValueEx(key, "ProcessorNameString")
+                candidate = " ".join(str(value).split())
+                if candidate:
+                    return candidate
+        except (ImportError, OSError):
+            pass
+    return platform.processor() or platform.machine()
 
 
 def _runtime_hardware() -> dict[str, Any]:
@@ -2037,11 +2059,12 @@ def _runtime_hardware() -> dict[str, Any]:
         "os": platform.system(),
         "os_detail": platform.platform(),
         "python": platform.python_version(),
-        "cpu": platform.processor() or platform.machine(),
+        "cpu": _cpu_name(),
         "cpu_threads": os.cpu_count() or 1,
         "ram_gb": round(mem["total_bytes"] / 1_073_741_824, 1) if mem else None,
         "ram_available_gb": round(mem["available_bytes"] / 1_073_741_824, 1) if mem else None,
         "ram_load_percent": mem.get("load_percent") if mem else None,
+        "memory": mem,
         "cuda": cuda,
     }
 
@@ -2065,7 +2088,7 @@ def _nvidia_status() -> dict[str, Any] | None:
         completed = subprocess.run(
             [
                 "nvidia-smi",
-                "--query-gpu=name,memory.total,memory.free,driver_version,cuda_version",
+                "--query-gpu=name,memory.total,memory.free,driver_version",
                 "--format=csv,noheader",
             ],
             check=True,
@@ -2077,7 +2100,26 @@ def _nvidia_status() -> dict[str, Any] | None:
         )
         first_gpu = completed.stdout.strip().splitlines()[0] if completed.stdout.strip() else ""
         parts = [p.strip() for p in first_gpu.split(",")]
-        if len(parts) >= 5:
+        cuda_version = None
+        try:
+            details = subprocess.run(
+                ["nvidia-smi"],
+                check=True,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=8,
+            )
+            match = search(r"CUDA Version:\s*([0-9.]+)", details.stdout)
+            cuda_version = match.group(1) if match else None
+        except (
+            FileNotFoundError,
+            subprocess.CalledProcessError,
+            subprocess.TimeoutExpired,
+        ):
+            pass
+        if len(parts) >= 4:
             # Parse VRAM number from e.g. "6144 MiB"
             def _parse_mib(s: str) -> int | None:
                 try:
@@ -2091,7 +2133,7 @@ def _nvidia_status() -> dict[str, Any] | None:
                 "vram_total_mb": _parse_mib(parts[1]),
                 "vram_free_mb": _parse_mib(parts[2]),
                 "driver_version": parts[3],
-                "cuda_version": parts[4],
+                "cuda_version": cuda_version,
             }
         if first_gpu:
             return {"vendor": "nvidia", "raw": first_gpu}

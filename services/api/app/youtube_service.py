@@ -27,7 +27,21 @@ def _now() -> str:
 
 
 def runtime_ready() -> bool:
-    return PYTHON_EXE.is_file()
+    if not PYTHON_EXE.is_file():
+        return False
+    try:
+        completed = subprocess.run(
+            [str(PYTHON_EXE), "-c", "import yt_dlp"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=8,
+            check=False,
+        )
+        return completed.returncode == 0
+    except (OSError, subprocess.SubprocessError):
+        return False
 
 
 def validate_url(url: str) -> str:

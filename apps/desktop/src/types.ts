@@ -321,15 +321,26 @@ export interface RuntimeStatus {
   tools: { ffmpeg: boolean; ffprobe: boolean; nvidia_smi: boolean };
   hardware: {
     os: string;
+    os_detail?: string;
     python: string;
     cpu: string;
     cpu_threads: number | null;
+    ram_gb?: number | null;
+    ram_available_gb?: number | null;
+    ram_load_percent?: number | null;
     memory: {
       load_percent: number;
       total_bytes: number;
       available_bytes: number;
     } | null;
-    cuda: { name?: string; memory_total?: string } | null;
+    cuda: {
+      vendor?: string;
+      name?: string;
+      vram_total_mb?: number | null;
+      vram_free_mb?: number | null;
+      driver_version?: string;
+      cuda_version?: string | null;
+    } | null;
   };
   pipeline: Record<string, string>;
 }
