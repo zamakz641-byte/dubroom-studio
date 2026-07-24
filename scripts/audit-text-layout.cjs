@@ -185,10 +185,10 @@ async function inspectView(page, label) {
       });
       await page.reload({ waitUntil: "domcontentloaded" });
       await page.waitForSelector('[data-testid="onboarding"]', { timeout: 10000 });
-      for (let stepIndex = 0; stepIndex < 6; stepIndex += 1) {
+      for (let stepIndex = 0; stepIndex < 8; stepIndex += 1) {
         results.push(...await inspectView(page, `${size.name}/onboarding-${stepIndex + 1}`));
         await page.screenshot({ path: path.join(outputDir, `${size.name}-onboarding-${stepIndex + 1}.png`) });
-        if (stepIndex < 5) {
+        if (stepIndex < 7) {
           await page.getByTestId("onboarding-next").click();
           await page.waitForTimeout(180);
         }

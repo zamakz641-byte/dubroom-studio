@@ -15,6 +15,8 @@
   --color-accent: var(--ui-accent);
   --color-accent-soft: var(--ui-accent-soft);
   --color-accent-ink: var(--ui-accent-ink);
+  --color-accent-warm: var(--ui-accent-warm);
+  --color-sync: var(--ui-sync);
   --color-success: var(--ui-success);
   --color-warning: var(--ui-warning);
   --color-danger: var(--ui-danger);
@@ -35,21 +37,23 @@
 :root,
 :root[data-theme="graphite"] {
   color-scheme: dark;
-  --ui-canvas: #0c0e11;
-  --ui-surface: #12151a;
-  --ui-raised: #181c22;
-  --ui-overlay: #20252c;
-  --ui-line: #272d35;
-  --ui-line-strong: #353d47;
-  --ui-foreground: #f3f0ea;
-  --ui-copy: #b9bec6;
-  --ui-muted: #7f8792;
-  --ui-accent: #d99a5e;
-  --ui-accent-soft: #2d2118;
-  --ui-accent-ink: #18100a;
-  --ui-success: #63c995;
-  --ui-warning: #e1b35d;
-  --ui-danger: #e27478;
+  --ui-canvas: #090b10;
+  --ui-surface: #10141c;
+  --ui-raised: #171d28;
+  --ui-overlay: #202838;
+  --ui-line: #293246;
+  --ui-line-strong: #3a465d;
+  --ui-foreground: #f4f6fa;
+  --ui-copy: #c0c7d2;
+  --ui-muted: #8f9bad;
+  --ui-accent: #8b7cff;
+  --ui-accent-soft: #211d48;
+  --ui-accent-ink: #090713;
+  --ui-accent-warm: #ffb86b;
+  --ui-sync: #45d6e8;
+  --ui-success: #47d18c;
+  --ui-warning: #ffb86b;
+  --ui-danger: #ff6b7a;
 }
 
 :root[data-theme="oled"] {
@@ -66,6 +70,8 @@
   --ui-accent: #72d7c6;
   --ui-accent-soft: #102823;
   --ui-accent-ink: #06130f;
+  --ui-accent-warm: #ffb86b;
+  --ui-sync: #72d7c6;
   --ui-success: #68d39c;
   --ui-warning: #ddb45f;
   --ui-danger: #e16e7b;
@@ -85,6 +91,8 @@
   --ui-accent: #c9875c;
   --ui-accent-soft: #322016;
   --ui-accent-ink: #1a0f09;
+  --ui-accent-warm: #f5a85d;
+  --ui-sync: #68cbd3;
   --ui-success: #7ac293;
   --ui-warning: #d9aa5e;
   --ui-danger: #d97572;
@@ -104,6 +112,8 @@
   --ui-accent: #a85e32;
   --ui-accent-soft: #f0ded1;
   --ui-accent-ink: #fffaf6;
+  --ui-accent-warm: #a85e32;
+  --ui-sync: #167b8a;
   --ui-success: #317d58;
   --ui-warning: #93691f;
   --ui-danger: #b34f54;
@@ -143,11 +153,17 @@
   .engine-family { content-visibility: auto; contain-intrinsic-size: 120px; }
   .window-drag { -webkit-app-region: drag; user-select: none; }
   .window-no-drag { -webkit-app-region: no-drag; }
+  .voice-core-canvas { position: absolute; inset: 0; min-height: 280px; overflow: hidden; }
+  .voice-core-canvas::after { content: ""; position: absolute; inset: 12% 8%; pointer-events: none; background: radial-gradient(circle, color-mix(in srgb,var(--ui-accent) 14%,transparent), transparent 62%); filter: blur(28px); }
+  .voice-core-canvas canvas { position: relative; z-index: 1; filter: saturate(1.08) contrast(1.04); }
+  .voice-core-fallback { position: absolute; inset: 22%; border: 1px solid color-mix(in srgb,var(--ui-accent) 55%,transparent); border-radius: 50%; box-shadow: 0 0 70px color-mix(in srgb,var(--ui-accent) 20%,transparent), inset 0 0 42px color-mix(in srgb,var(--ui-accent-warm) 12%,transparent); animation: core-breathe 3.8s ease-in-out infinite; }
+  .nocturne-grid { background-image: linear-gradient(color-mix(in srgb,var(--ui-line) 35%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--ui-line) 35%,transparent) 1px,transparent 1px); background-size: 32px 32px; }
 }
 
 @keyframes signal-bar { 50% { transform: scaleY(.48); opacity: .55; } }
 @keyframes panel-in { from { opacity: 0; transform: translateY(5px); } }
 @keyframes task-pulse { 50% { opacity: .55; transform: scale(.92); } }
+@keyframes core-breathe { 50% { transform: scale(1.025); opacity: .72; } }
 
 :root[data-density="compact"] { --density-pad: .75rem; --density-row: 2.25rem; }
 :root[data-density="comfortable"] { --density-pad: 1rem; --density-row: 2.75rem; }

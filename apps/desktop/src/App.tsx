@@ -1,5 +1,7 @@
 import {
   Component,
+  lazy,
+  Suspense,
   useEffect,
   useRef,
   useState,
@@ -9,14 +11,6 @@ import {
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/AppShell";
 import { ImportHub } from "@/components/ImportHub";
-import { Onboarding } from "@/components/Onboarding";
-import { DashboardPage } from "@/pages/DashboardPage";
-import { EnginesPage } from "@/pages/EnginesPage";
-import { LibraryPage } from "@/pages/LibraryPage";
-import { ProjectsPage } from "@/pages/ProjectsPage";
-import { SettingsPage } from "@/pages/SettingsPage";
-import { StudioPage } from "@/pages/StudioPage";
-import { ToolsPage } from "@/pages/ToolsPage";
 import { api } from "@/lib/api";
 import { useAdaptivePerformance } from "@/lib/performance";
 import { useI18n } from "@/i18n";
@@ -38,6 +32,27 @@ import type {
   VoiceboxProfile,
   VoiceboxStatus,
 } from "@/types";
+
+const Onboarding=lazy(()=>import("@/components/Onboarding").then(module=>({default:module.Onboarding})));
+const DashboardPage=lazy(()=>import("@/pages/DashboardPage").then(module=>({default:module.DashboardPage})));
+const EnginesPage=lazy(()=>import("@/pages/EnginesPage").then(module=>({default:module.EnginesPage})));
+const LibraryPage=lazy(()=>import("@/pages/LibraryPage").then(module=>({default:module.LibraryPage})));
+const ProjectsPage=lazy(()=>import("@/pages/ProjectsPage").then(module=>({default:module.ProjectsPage})));
+const SettingsPage=lazy(()=>import("@/pages/SettingsPage").then(module=>({default:module.SettingsPage})));
+const StudioPage=lazy(()=>import("@/pages/StudioPage").then(module=>({default:module.StudioPage})));
+const ToolsPage=lazy(()=>import("@/pages/ToolsPage").then(module=>({default:module.ToolsPage})));
+
+function WorkspaceLoading() {
+  return (
+    <div className="grid h-full place-items-center bg-canvas text-foreground" aria-busy="true">
+      <div className="text-center">
+        <i className="mx-auto mb-4 block size-8 animate-pulse rounded-full border border-accent/60 bg-accent-soft" />
+        <strong className="text-[11px] uppercase tracking-[.2em]">DubRoom Studio</strong>
+        <small className="mt-2 block text-[10px] text-muted">Chargement de l’espace de travail…</small>
+      </div>
+    </div>
+  );
+}
 
 type BoundaryState = { error: Error | null };
 const ONBOARDING_RESET_VERSION = "tailwind-v2-release";
@@ -402,17 +417,19 @@ export default function App() {
 
   if (!onboardingComplete)
     return (
-      <Onboarding
-        config={config}
-        runtime={runtime}
-        onComplete={(destination) => {
-          setOnboardingComplete(true);
-          if (destination === "engines") setSection("engines");
-          else if (destination === "import")
-            setTimeout(() => void importVideo(), 120);
-          else setSection("dashboard");
-        }}
-      />
+      <Suspense fallback={<div className="grid h-full place-items-center bg-canvas text-foreground" aria-busy="true"><div className="text-center"><i className="mx-auto mb-4 block size-9 animate-pulse rounded-full border border-accent bg-accent-soft"/><strong className="text-xs uppercase tracking-[.2em]">DubRoom Studio</strong></div></div>}>
+        <Onboarding
+          config={config}
+          runtime={runtime}
+          onComplete={(destination) => {
+            setOnboardingComplete(true);
+            if (destination === "engines") setSection("engines");
+            else if (destination === "import")
+              setTimeout(() => void importVideo(), 120);
+            else setSection("dashboard");
+          }}
+        />
+      </Suspense>
     );
 
   let content: ReactNode;
@@ -578,7 +595,9 @@ export default function App() {
         onRefreshActivities={refreshActivities}
         performanceProfile={performanceProfile}
       >
-        {content}
+        <Suspense fallback={<WorkspaceLoading />}>
+          {content}
+        </Suspense>
       </AppShell>
       {importOpen && (
         <ImportHub
