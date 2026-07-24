@@ -37,6 +37,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
+import { Group, Panel, Separator } from "react-resizable-panels";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n";
@@ -168,7 +169,6 @@ export function StudioPage({
   const [fit, setFit] = useState<FitMode>("fit");
   const [sceneOpen, setSceneOpen] = useState(true);
   const [inspectorOpen, setInspectorOpen] = useState(true);
-  const [timelineHeight, setTimelineHeight] = useState(300);
   const [inspectorWidth, setInspectorWidth] = useState(320);
   const [zoom, setZoom] = useState(48);
   const [visibleRange, setVisibleRange] = useState({ start: 0, end: 30 });
@@ -826,9 +826,9 @@ export function StudioPage({
   return (
     <div
       data-testid="studio-workbench"
-      className="grid h-full min-h-0 min-w-0 w-full max-w-full grid-rows-[42px_minmax(0,1fr)_auto] overflow-hidden bg-canvas"
+      className="flex h-full min-h-0 min-w-0 w-full max-w-full flex-col overflow-hidden bg-canvas"
     >
-      <header className="flex min-w-0 items-center border-b border-line bg-surface px-2">
+      <header className="flex h-[42px] shrink-0 min-w-0 items-center border-b border-line bg-surface px-2">
         <button
           className="ui-icon-button mr-1 size-8 shrink-0"
           title={t("studio.storyboard")}
@@ -881,6 +881,8 @@ export function StudioPage({
         </div>
       </header>
 
+      <Group id="studio-vertical-layout" orientation="vertical" className="min-h-0 flex-1">
+      <Panel id="studio-stage-panel" minSize={260} className="h-full min-h-0 overflow-hidden">
       <main
         className={`relative grid min-h-0 min-w-0 grid-cols-1 overflow-hidden ${
           sceneOpen && inspectorOpen
@@ -1182,29 +1184,25 @@ export function StudioPage({
           </aside>
         )}
       </main>
-
+      </Panel>
+      <Separator
+        id="studio-timeline-separator"
+        className="group relative z-40 h-1.5 bg-line outline-none transition-colors hover:bg-accent/70 focus-visible:bg-accent"
+      >
+        <i className="pointer-events-none absolute left-1/2 top-1/2 h-0.5 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-line-strong transition group-hover:bg-accent-ink" />
+      </Separator>
+      <Panel
+        id="studio-timeline-panel"
+        defaultSize={300}
+        minSize={220}
+        maxSize={440}
+        groupResizeBehavior="preserve-pixel-size"
+        className="h-full min-h-0 overflow-hidden"
+      >
       <section
         data-testid="studio-timeline"
-        className="relative min-w-0 max-w-full overflow-hidden border-t border-line bg-surface"
-        style={{ height: timelineHeight }}
+        className="relative h-full min-w-0 max-w-full overflow-hidden bg-surface"
       >
-        <div
-          className="absolute inset-x-0 top-0 z-40 h-1 cursor-row-resize hover:bg-accent/70"
-          onPointerDown={(event) => {
-            const origin = event.clientY,
-              start = timelineHeight;
-            const move = (e: PointerEvent) =>
-              setTimelineHeight(
-                Math.max(220, Math.min(440, start + origin - e.clientY)),
-              );
-            const up = () => {
-              document.removeEventListener("pointermove", move);
-              document.removeEventListener("pointerup", up);
-            };
-            document.addEventListener("pointermove", move);
-            document.addEventListener("pointerup", up, { once: true });
-          }}
-        />
         <div className="flex h-9 min-w-0 items-center gap-1 border-b border-line bg-surface px-2">
           <button
             className="ui-icon-button size-8"
@@ -1646,6 +1644,8 @@ export function StudioPage({
           </div>
         </div>
       </section>
+      </Panel>
+      </Group>
       {activeJobs.length > 0 && (
         <div className="pointer-events-none fixed bottom-4 right-4 z-50 grid gap-2">
           {activeJobs.slice(0, 3).map((job) => (

@@ -58,6 +58,27 @@ async function request(url, options) {
     await page.getByRole("button", { name: "Studio", exact: true }).click();
     await page.getByTestId("studio-workbench").waitFor({ timeout: 20000 });
 
+    const timelineSeparator = page.getByTestId("studio-timeline-separator");
+    const timelinePanel = page.getByTestId("studio-timeline-panel");
+    const orientation = await timelineSeparator.getAttribute("aria-orientation");
+    if (orientation !== "horizontal") {
+      throw new Error(`Timeline separator orientation is ${orientation}`);
+    }
+    const beforeResize = await timelinePanel.boundingBox();
+    await timelineSeparator.focus();
+    await timelineSeparator.press("ArrowUp");
+    await timelineSeparator.press("ArrowUp");
+    await page.waitForTimeout(120);
+    const afterResize = await timelinePanel.boundingBox();
+    if (
+      !beforeResize ||
+      !afterResize ||
+      afterResize.height <= beforeResize.height + 1
+    ) {
+      throw new Error("Keyboard resize did not expand the timeline panel");
+    }
+    assertions.push("Timeline panel resizes with an accessible keyboard separator");
+
     const sourceClips = page.getByTestId("edit-clip");
     const beforeCount = await sourceClips.count();
     const monitorRange = page
