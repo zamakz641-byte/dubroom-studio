@@ -1,0 +1,258 @@
+DUBROOM MULTI-SPEAKER JSON V3 — CASTING INTELLIGENCE R4 FINAL KNOWLEDGE
+
+PURPOSE
+
+Schema V3 remains the transport format for Multi-Speaker projects. R4 FINAL changes identity/casting policy without changing immutable transcript evidence. The attached project manifest is conversation data, not permanent Knowledge.
+
+CORE PRINCIPLE: IDENTITY IS NOT RENDERING
+
+`character_id` answers WHO is speaking in the story.
+`voice_key` is the character's stable broad role class.
+`render_voice_key` answers WHICH DubRoom voice class renders that speech.
+`voice_archetype` describes the desired stable timbre/personality for a dedicated voice.
+
+Example: an unnamed guard can be CHAR_017 with `voice_key:supporting` but `render_voice_key:narrator`. The unit still belongs to CHAR_017. This preserves continuity while avoiding a dedicated voice for a two-line character.
+
+TWO-PASS ANALYSIS
+
+Pass 1 = identity only. Read the whole story, build one story bible, merge recurring names/titles/roles/relationships and conversation turns, and resolve stable CHAR IDs. Do not decide voices from isolated acoustic clusters.
+
+Pass 2 = casting. Count each resolved character's actual speech and scenes, classify importance, decide whether the character deserves a dedicated voice, then choose one archetype from stable traits.
+
+IDENTITY EVIDENCE ORDER
+
+1. Explicit name, title, relationship, direct address and answer/reply structure.
+2. Scene continuity and conversational turn-taking.
+3. Stable semantic category or role: employee, candidate, guard, subordinate, spectator, guild member, etc.
+4. Acoustic cluster, pitch and sex/age hints.
+
+Acoustics are last because one person can occupy several clusters when shouting, whispering or speaking through SFX. A cluster can also contain noise or multiple voices. Never create a new person only because a cluster changed.
+
+UNKNOWN POLICY
+
+UNKNOWN is a last resort. If a stable unnamed category can reasonably be recognized, create/reuse a CHAR identity with a descriptive name/category. Keep UNKNOWN only for genuinely indeterminate or incomplete material where neither identity nor stable category can be supported.
+
+REGISTRY BASE FIELDS
+
+Every recurring CHAR keeps:
+`character_id`, `character_name`, `character_role`, `voice_key`, `sex`, `age_group`, `confidence`.
+
+IDs: CHAR_001...CHAR_9999 plus NARRATOR, SYSTEM, UNKNOWN.
+voice_key: narrator | mc | female_lead | antagonist | supporting | system | creature | unknown.
+sex: male | female | uncertain.
+age_group: child | teen | young_adult | adult | elderly | unknown.
+confidence: 0..1.
+
+R4 FINAL CASTING FIELDS
+
+Each recurring CHAR also has:
+- `importance`: primary | major | supporting | minor | crowd
+- `dialogue_count`: all real non-narration speech attributed to that character
+- `meaningful_dialogue_count`: semantic speech excluding tiny cries/filler/gasps/ASR debris
+- `scene_count`: distinct narrative scenes in which the character speaks
+- `temperament`: stable trait array, max 6 concise values
+- `presence`: low | medium | high
+- `emotionality`: restrained | balanced | expressive
+- `dedicated_voice`: boolean
+- `voice_archetype`: stable uppercase archetype, or empty when narrator fallback/review
+- `render_voice_key`: actual rendering class
+- `casting_reason`: role | dialogue_volume | recurrence | narrative_necessity | narrator_fallback | ambiguous
+- `casting_status`: locked | needs_review in completed R4 files
+- `casting_confidence`: 0..1
+- `identity_locked`: boolean
+- `voice_locked`: boolean
+
+`auto` is reserved for intermediate/internal state and must not remain in a completed R4 file.
+
+IMPORTANCE POLICY
+
+PRIMARY
+MC, central heroine, central antagonist or equivalent story-driving figure. Dedicated voice required.
+
+MAJOR
+Mentor, rival, main ally, major antagonist or other character with strong narrative weight. Dedicated voice required.
+
+SUPPORTING
+Recurring but not central. Dedicated only when at least one rule holds:
+- meaningful_dialogue_count >= 8; OR
+- meaningful_dialogue_count >= 5 AND scene_count >= 2; OR
+- clear narrative_necessity makes voice distinction important.
+Otherwise it keeps its CHAR identity but renders with NARRATOR.
+
+MINOR
+One-scene or low-impact named/unnamed role. No dedicated voice. `render_voice_key:narrator`, empty archetype.
+
+CROWD
+Spectator/follower/fighter/crowd category whose individuality is not narratively important. No dedicated voice. Keep a stable CHAR/category only when useful for continuity; render with NARRATOR.
+
+COUNTING SPEECH
+
+`dialogue_count` includes dialogue, reaction and clear inner monologue belonging to the character.
+`meaningful_dialogue_count` counts content-bearing semantic speech. Do NOT count a one/two-word shout, isolated name, gasp, filler, pure confirmation, or broken ASR fragment as meaningful unless it carries a real narrative proposition.
+
+LOCKING POLICY
+
+Resolved final casting:
+`casting_status: locked`, `voice_locked: true`.
+Minor/crowd narrator fallback is also a locked rendering decision.
+
+Ambiguous dedicated character:
+`casting_status: needs_review`, `voice_locked:false`, `casting_reason:ambiguous`, no voice_archetype. Do not randomly select a voice.
+
+`identity_locked` can be true even if voice casting needs review: identity and voice uncertainty are separate.
+
+VOICE ARCHETYPE CATALOG
+
+M_PROTAG_SOFT
+Young/young-adult male protagonist. Gentle, warm, calm, softer presence. Not elderly or theatrically deep.
+
+M_PROTAG_NEUTRAL
+Young/young-adult male protagonist. Natural, versatile, balanced, clear. Default when no strong soft/powerful trait dominates.
+
+M_PROTAG_POWERFUL
+Young-adult/adult male protagonist. Firm, confident, commanding, imposing. Powerful without sounding elderly.
+
+M_ANTAG_YOUNG_ARROGANT
+Teen/young-adult male antagonist/rival. Arrogant, mocking, energetic or contemptuous, medium/young presence.
+
+M_ANTAG_MATURE_DOMINANT
+Adult male antagonist/leader. Firm, threatening, authoritative, dominant.
+
+M_ANTAG_OLD_MENACING
+Elderly male antagonist/master. Old/deep/rough or menacing authority. Use only when age is actually elderly.
+
+F_LEAD_WARM
+Young female lead. Warm, calm, tender or approachable. Default female-lead choice when no colder/stronger signature dominates.
+
+F_LEAD_EXPRESSIVE
+Young female lead. Energetic, reactive, bright and visibly expressive.
+
+F_LEAD_COLD
+Young-adult/adult female lead/rival. Cold, calm, serious, controlled.
+
+F_YOUNG_BRATTY
+Child/teen/young female character whose stable personality is bratty, insolent, mocking or highly reactive. Do not use merely because one line is angry.
+
+F_MATURE_DOMINANT
+Adult female leader/antagonist/mentor. Mature, assured, authoritative, elegant/firm presence.
+
+M_SUPPORT_YOUNG / F_SUPPORT_YOUNG
+Generic younger supporting voice when a recurring supporting character crosses the dedicated threshold.
+
+M_SUPPORT_MATURE / F_SUPPORT_MATURE
+Generic adult/elder supporting voice when a recurring supporting character crosses the dedicated threshold.
+
+ARCHETYPE DECISION TREE
+
+Male + protagonist:
+- gentle/warm/soft/restrained -> M_PROTAG_SOFT
+- firm/commanding/dominant/powerful -> M_PROTAG_POWERFUL
+- otherwise -> M_PROTAG_NEUTRAL
+
+Male + antagonist:
+- elderly -> M_ANTAG_OLD_MENACING
+- teen/young_adult + arrogant/mock/rival/contemptuous -> M_ANTAG_YOUNG_ARROGANT
+- otherwise -> M_ANTAG_MATURE_DOMINANT
+
+Female lead/important female:
+- young + bratty/insolent/mock -> F_YOUNG_BRATTY
+- cold/controlled/serious -> F_LEAD_COLD
+- energetic/reactive/bright -> F_LEAD_EXPRESSIVE
+- adult + authoritative/dominant -> F_MATURE_DOMINANT
+- otherwise -> F_LEAD_WARM
+
+Supporting dedicated:
+- male teen/young_adult -> M_SUPPORT_YOUNG
+- male adult/elderly -> M_SUPPORT_MATURE
+- female teen/young_adult -> F_SUPPORT_YOUNG
+- female adult/elderly -> F_SUPPORT_MATURE
+
+If unknown sex/age would materially change the result, use needs_review rather than guessing.
+
+CURRENT OMNIVOICE LIBRARY FALLBACK
+
+DubRoom's current generated OmniVoice library may not contain a perfect voice for every ideal R4 archetype. The runtime resolves the best safe compatible profile using exact archetype metadata first, then sex, age, role and semantic traits. It must never cross a known male/female constraint just to obtain a higher role score.
+
+Current useful fallback tendencies:
+- M01 Young Male Neutral -> M_PROTAG_NEUTRAL / soft fallback
+- M02 Young Male Deep -> M_PROTAG_POWERFUL / young antagonist fallback
+- M03/M04 -> M_SUPPORT_YOUNG
+- M05 Adult Male Authority -> M_ANTAG_MATURE_DOMINANT
+- M06/M08 -> M_SUPPORT_MATURE
+- M07 Elder Male Deep -> M_ANTAG_OLD_MENACING fallback
+- F01 Young Female Neutral -> F_LEAD_WARM fallback
+- F02 -> F_LEAD_EXPRESSIVE
+- F03 -> F_LEAD_COLD
+- F04 -> F_SUPPORT_YOUNG and possible bratty fallback only by traits
+- F05 -> F_MATURE_DOMINANT
+- F06/F07/F08 -> F_SUPPORT_MATURE / cold mature fallback
+
+The GPT must output archetypes, NEVER M01/F01 IDs. DubRoom resolves archetype -> actual profile. Better custom voices can replace these fallbacks later without changing story manifests.
+
+EMOTION IS NOT CASTING
+
+Emotion/intensity/vocal_events describe the current line. They never change character_id, sex, age, voice_key or voice_archetype. A young antagonist remains on M_ANTAG_YOUNG_ARROGANT when angry, sad, afraid or whispering.
+
+VOICE UNITS
+
+Every segment has one or more ordered voice_units. Split only on real speaker/type change. Keep ASR-fragmented material together inside the same parent segment when speaker/type continue. Never move facts across immutable parent IDs.
+
+A CHAR unit uses the registry's `voice_key`, `render_voice_key` and `voice_archetype` exactly.
+
+Minor example:
+{
+  "character_id": "CHAR_021",
+  "character_name": "Awakening employee",
+  "character_role": "employee",
+  "voice_key": "supporting",
+  "importance": "minor",
+  "dedicated_voice": false,
+  "voice_archetype": "",
+  "render_voice_key": "narrator",
+  "casting_reason": "narrator_fallback",
+  "casting_status": "locked",
+  "voice_locked": true
+}
+
+Its dialogue voice_unit still uses `character_id:CHAR_021`; it does NOT become NARRATOR. Only the rendering voice is narrator.
+
+Dedicated example:
+{
+  "character_id": "CHAR_006",
+  "character_name": "Ye Qing",
+  "character_role": "antagonist",
+  "voice_key": "antagonist",
+  "importance": "major",
+  "dedicated_voice": true,
+  "voice_archetype": "M_ANTAG_YOUNG_ARROGANT",
+  "render_voice_key": "antagonist",
+  "casting_reason": "role",
+  "casting_status": "locked",
+  "voice_locked": true
+}
+
+NARRATOR / MC / SYSTEM
+
+NARRATOR is external third-person narration, not a catch-all identity. It can render minor CHAR dialogue without changing the CHAR identity.
+MC is only proven dialogue/reaction/private thought.
+SYSTEM is only audible interface/supernatural system/formal announcement.
+
+SECTIONS
+
+`speaker_sections[].detected_speakers` is an identity review window, not a separate registry. It must reuse top-level CHAR IDs and report actual identities present in that section, with clusters/evidence IDs as supporting evidence.
+
+IMMUTABLE EVIDENCE
+
+Never change id, source_hash, source Chinese text, start/end, duration_seconds, recommended_words, preceding_gap_seconds, bridge_slot, context_id, section_id, temporary_cluster or root fingerprint/revision metadata.
+
+BRIDGES / SFX
+
+A narrator bridge requires `bridge_slot.available=true` AND `bridge_slot.sfx_safe=true`, supported nearby facts, timing compliance and no repetition. There is no bridge quota.
+
+OMNIVOICE EVENTS
+
+Use only allowed events from the manifest contract, only for supported audible reactions. Punctuation alone is insufficient. Put events in `vocal_events`, never inside translated text.
+
+FINAL OUTPUT
+
+Create `<project_id>-completed-v3.json` as complete UTF-8 JSON. Set status to translated, preserve all immutable evidence, run programmatic validation, fix failures, then provide the file.

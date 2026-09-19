@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
 import os
@@ -17,7 +17,6 @@ def main() -> None:
     parser.add_argument("--f0-method", default="rmvpe")
     parser.add_argument("--index-rate", type=float, default=0.75)
     parser.add_argument("--protect", type=float, default=0.33)
-    parser.add_argument("--filter-radius", type=int, default=3)
     parser.add_argument("--resample-sr", type=int, default=0)
     parser.add_argument("--rms-mix-rate", type=float, default=0.25)
     args = parser.parse_args()
@@ -26,7 +25,7 @@ def main() -> None:
     model = Path(args.model).resolve()
     source = Path(args.input).resolve()
     output = Path(args.output).resolve()
-    if not (runtime / "infer" / "modules" / "vc" / "modules.py").is_file():
+    if not (runtime / "infer" / "vc" / "modules.py").is_file():
         raise RuntimeError("RVC source runtime is incomplete")
     if not model.is_file() or not source.is_file():
         raise RuntimeError("RVC model or source audio is missing")
@@ -37,7 +36,7 @@ def main() -> None:
     os.chdir(runtime)
 
     from configs.config import Config
-    from infer.modules.vc.modules import VC
+    from infer.vc.modules import VC
 
     config = Config()
     converter = VC(config)
@@ -46,12 +45,9 @@ def main() -> None:
         0,
         str(source),
         args.pitch,
-        None,
         args.f0_method,
         str(Path(args.index).resolve()) if args.index else "",
-        "",
         args.index_rate,
-        args.filter_radius,
         args.resample_sr,
         args.rms_mix_rate,
         args.protect,

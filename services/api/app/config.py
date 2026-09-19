@@ -70,14 +70,6 @@ def load_paths() -> AppPaths:
 PATHS = load_paths()
 API_HOST = os.getenv("DUBSTUDIO_API_HOST", str((FILE_CONFIG.get("api") or {}).get("host", "127.0.0.1")))
 API_PORT = int(os.getenv("DUBSTUDIO_API_PORT", str((FILE_CONFIG.get("api") or {}).get("port", 8766))))
-VOICEBOX_CONFIG = FILE_CONFIG.get("voicebox") or {}
-VOICEBOX_HOST = os.getenv("DUBSTUDIO_VOICEBOX_HOST", str(VOICEBOX_CONFIG.get("host", "127.0.0.1")))
-VOICEBOX_PORT = int(os.getenv("DUBSTUDIO_VOICEBOX_PORT", str(VOICEBOX_CONFIG.get("port", 17493))))
-VOICEBOX_SOURCE = _path_from_env("DUBSTUDIO_VOICEBOX_SOURCE", (WORKSPACE_ROOT / str(VOICEBOX_CONFIG.get("source", "../voicebox-runtime"))).resolve())
-VOICEBOX_DATA = _path_from_env("DUBSTUDIO_VOICEBOX_DATA", (WORKSPACE_ROOT / str(VOICEBOX_CONFIG.get("data", "data/voicebox"))).resolve())
-VOICEBOX_MODELS = _path_from_env("DUBSTUDIO_VOICEBOX_MODELS", (WORKSPACE_ROOT / str(VOICEBOX_CONFIG.get("models", "models/voicebox"))).resolve())
-VOICEBOX_DATA.mkdir(parents=True, exist_ok=True)
-VOICEBOX_MODELS.mkdir(parents=True, exist_ok=True)
 
 
 def load_runtime_config() -> dict[str, Any]:
@@ -90,7 +82,7 @@ def load_runtime_config() -> dict[str, Any]:
             stored = {}
     return {
         "api": {"host": API_HOST, "port": API_PORT, "base_url": f"http://{API_HOST}:{API_PORT}"},
-        "voicebox": {"host": VOICEBOX_HOST, "port": VOICEBOX_PORT, "base_url": f"http://{VOICEBOX_HOST}:{VOICEBOX_PORT}", "source": str(VOICEBOX_SOURCE), "data": str(VOICEBOX_DATA), "models": str(VOICEBOX_MODELS)},
+        "tts": {"runtime": "dubroom-native-tts", "data": str(PATHS.data / "tts"), "models": str(PATHS.models)},
         "paths": PATHS.public(),
         "preferences": stored,
     }

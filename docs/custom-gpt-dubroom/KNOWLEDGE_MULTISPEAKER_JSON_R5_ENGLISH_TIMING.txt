@@ -1,0 +1,72 @@
+DUBROOM MULTI-SPEAKER V3 / DIRECTOR R5 ENGLISH TIMING KNOWLEDGE
+
+Purpose: stable contract for Chinese Multi-Speaker projects using subtitle + ASR fusion and strict English timing.
+
+The transport remains schema_version 3. R5 changes target-language and timing policy, not immutable transcript evidence.
+
+TARGET LANGUAGE
+
+Only process manifests with `target_language: en` and `prompt_revision: english-timing-strict-20260811-r5`. Every voice-unit and enabled bridge translation must be spoken English. Never follow French from prior chat context or examples.
+
+SOURCE EVIDENCE
+
+`segments[].text` is immutable ASR and the canonical parent string for `source_excerpt`.
+
+Optional `segments[].subtitle_evidence` is immutable aligned subtitle evidence. Speaker/timing comes from diarization/audio. Clean aligned subtitles may correct ASR names, terminology and wording. Facts require ASR, subtitle or immutable context support. Identity uses continuity, turn-taking and direct address. ERes2NetV2 gender is supporting evidence only; audio age is not trusted.
+
+Cases:
+A. ASR + subtitle agree -> strong evidence.
+B. ASR corrupted + subtitle clean/high alignment -> use subtitle meaning, keep ASR unchanged.
+C. Partial overlap -> use only aligned meaning.
+D. One subtitle spans speakers -> keep diarization boundaries.
+E. Material conflict -> use context/confidence and preserve common supported meaning.
+F. UI/creator/decorative text -> ignore.
+
+IMMUTABLE EVIDENCE
+
+Never change id, source_hash, text, subtitle_evidence, start, end, duration_seconds, recommended_words, preceding_gap_seconds, bridge_slot, context_id, section_id, temporary_cluster or any supplied evidence field.
+
+IDENTITIES
+
+NARRATOR is the external third-person recap voice. The protagonist is a stable CHAR_### + mc only for proven dialogue/reaction/private thought. SYSTEM is audible system speech only. Recurring characters keep stable IDs.
+
+Registry fields: character_id, character_name, character_role, voice_key, sex, age_group, confidence.
+
+voice_key: narrator, mc, female_lead, antagonist, supporting, system, creature, unknown.
+sex: male, female, uncertain.
+age_group: child, teen, young_adult, adult, elderly, unknown.
+
+VOICE UNITS
+
+Every segment needs one or more ordered voice_units. `source_excerpt` is an exact contiguous excerpt from parent `text`, never subtitle evidence. Subtitle evidence may correct the meaning used in translation.
+
+speech_type: narration, dialogue, inner_monologue, system, reaction.
+
+STRICT TIMING FORMULA
+
+For each parent segment:
+
+`spoken_words = sum(words in voice_units[].translation)`
+
+Normal pass condition:
+
+`recommended_words.minimum <= spoken_words <= recommended_words.maximum`
+
+Preferred target:
+
+`abs(spoken_words - recommended_words.ideal) / recommended_words.ideal <= 0.10`
+
+Allocate this single parent budget across all units; never multiply it by unit count. Estimate occupancy near 2.5 English words/second and aim for 88–100% of usable duration after 0.12-second lead-in and 0.18-second tail.
+
+Below-minimum is allowed only for a genuine reaction/interjection under 1.2 seconds when expansion would sound unnatural. Report every exception in the final timing summary.
+
+To shorten: remove redundancy and compress syntax without losing facts.
+To lengthen: use explicit supported subjects, verbs, relations, connectors, causes and consequences. Never add lore, filler, repetition or commentary.
+
+BRIDGES
+
+Enable only when bridge_slot.available and bridge_slot.sfx_safe are true and all word/time limits are respected.
+
+OUTPUT
+
+Create `<project_id>-completed-v3.json` in UTF-8 with Data Analysis. Preserve all immutable content. Programmatically validate English-only output, per-segment word budgets, identities, units, bridges and evidence before returning the file.

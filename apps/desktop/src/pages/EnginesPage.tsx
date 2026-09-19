@@ -1,20 +1,16 @@
-import {
+﻿import {
   Box,
   Check,
   ChevronDown,
   Download,
   ExternalLink,
-  Gauge,
   HardDrive,
-  Languages,
   LoaderCircle,
   MemoryStick,
-  Play,
   RefreshCw,
   Search,
   ShieldCheck,
   Sparkles,
-  Waves,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
@@ -22,20 +18,14 @@ import { useI18n } from "@/i18n";
 import { api } from "@/lib/api";
 import { publicAssetUrl } from "@/lib/assets";
 import type {
+  EngineInstallation,
   EngineRecord,
   InstallPreview,
   ModelDownloadCheck,
-  VoiceboxModel,
-  VoiceboxStatus,
 } from "@/types";
 
 type Props = {
   engines: EngineRecord[];
-  voiceboxStatus: VoiceboxStatus | null;
-  voiceboxModels: VoiceboxModel[];
-  onInstallVoicebox: () => Promise<void>;
-  onStartVoicebox: () => Promise<void>;
-  onDownloadVoicebox: (name: string) => Promise<void>;
   onPreview: (id: string) => Promise<InstallPreview>;
   onInstall: (
     id: string,
@@ -45,10 +35,12 @@ type Props = {
   onRefresh: () => void;
 };
 
+const activeInstallStatuses = new Set(["queued", "installing", "repairing"]);
+
 const categoryOrder = [
   "asr",
   "translation",
-  "tts",
+  "voice",
   "rvc",
   "media",
   "utility",
@@ -57,17 +49,12 @@ const categoryOrder = [
 
 export function EnginesPage({
   engines,
-  voiceboxStatus,
-  voiceboxModels,
-  onInstallVoicebox,
-  onStartVoicebox,
-  onDownloadVoicebox,
   onPreview,
   onInstall,
   onRefresh,
 }: Props) {
   const { t } = useI18n();
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState("installed");
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [installing, setInstalling] = useState<string | null>(null);
@@ -77,19 +64,18 @@ export function EnginesPage({
   );
 
   const categories = useMemo(
-    () =>
-      categoryOrder.filter((item) =>
-        item === "tts"
-          ? voiceboxModels.length > 0
-          : engines.some((engine) => engine.category === item),
-      ),
-    [engines, voiceboxModels.length],
+    () => categoryOrder.filter((item) =>
+      engines.some((engine) => engine.category === item)),
+    [engines],
   );
   const families = useMemo(() => {
     const filtered = engines.filter(
       (engine) =>
-        category !== "tts" &&
-        (category === "all" || engine.category === category) &&
+        (category === "all" ||
+          (category === "installed" &&
+            (engine.verification.installed ||
+              isActiveInstall(engine.installation.status))) ||
+          engine.category === category) &&
         `${engine.display_name} ${engine.description} ${engine.model?.family || ""}`
           .toLowerCase()
           .includes(query.toLowerCase()),
@@ -106,18 +92,6 @@ export function EnginesPage({
       ),
     }));
   }, [engines, category, query]);
-  const visibleVoiceboxModels = useMemo(
-    () =>
-      voiceboxModels.filter((model) =>
-        `${model.display_name} ${model.engine || ""} ${model.hf_repo_id || ""}`
-          .toLowerCase()
-          .includes(query.toLowerCase()),
-      ),
-    [query, voiceboxModels],
-  );
-  const showVoicebox =
-    (category === "all" || category === "tts") &&
-    visibleVoiceboxModels.length > 0;
 
   const install = async (engine: EngineRecord) => {
     setInstalling(engine.id);
@@ -129,7 +103,13 @@ export function EnginesPage({
       ]);
       setPreview(nextPreview);
       setSourceCheck(check);
-      await onInstall(engine.id, engine.installation.status === "failed", {});
+      await onInstall(
+        engine.id,
+        engine.installation.status === "failed" ||
+          engine.installation.status === "needs_repair" ||
+          engine.verification.installed,
+        {},
+      );
     } finally {
       setInstalling(null);
     }
@@ -151,6 +131,16 @@ export function EnginesPage({
       <div className="flex min-h-0 flex-1 flex-col p-6 pt-4 xl:p-8 xl:pt-5">
         <div className="flex items-center gap-2">
           <div data-testid="engine-tabs" className="flex flex-1 gap-1 overflow-x-auto rounded-lg border border-line bg-surface p-1">
+            <button
+              className={`ui-button border-0 ${category === "installed" ? "bg-raised text-foreground" : "bg-transparent text-muted"}`}
+              onClick={() => setCategory("installed")}
+            >
+              <Check />
+              {t("engines.installed")}
+              <span className="rounded bg-canvas px-1.5 font-mono text-[10px]">
+                {engines.filter((engine) => engine.verification.installed).length}
+              </span>
+            </button>
             <button
               className={`ui-button border-0 ${category === "all" ? "bg-raised text-foreground" : "bg-transparent text-muted"}`}
               onClick={() => setCategory("all")}
@@ -179,17 +169,6 @@ export function EnginesPage({
         </div>
 
         <div className="mt-4 min-h-0 flex-1 overflow-auto pr-1">
-          {showVoicebox && (
-            <VoiceModelDeck
-              models={visibleVoiceboxModels}
-              status={voiceboxStatus}
-              onInstallRuntime={onInstallVoicebox}
-              onStartRuntime={onStartVoicebox}
-              onDownload={onDownloadVoicebox}
-            />
-          )}
-
-          {category !== "tts" && (
             <div className="grid auto-rows-min grid-cols-1 gap-3 xl:grid-cols-2">
               {families.map((family) => {
                 const primary =
@@ -198,6 +177,9 @@ export function EnginesPage({
                 const ready = family.variants.filter(
                   (item) => item.verification.usable,
                 ).length;
+                const installedVariants = family.variants.filter(
+                  (item) => item.verification.installed,
+                );
                 const open = expanded === family.id;
                 return (
                   <article
@@ -245,6 +227,28 @@ export function EnginesPage({
                           </i>
                           <i className="not-italic">{primary.license}</i>
                         </span>
+                        {installedVariants.length > 0 && (
+                          <span className="mt-2 flex flex-wrap gap-1">
+                            {installedVariants.map((variant) => (
+                              <i
+                                key={variant.id}
+                                className={`ui-chip max-w-full truncate not-italic ${
+                                  variant.verification.usable
+                                    ? "border-success/30 text-success"
+                                    : "border-warning/30 text-warning"
+                                }`}
+                                title={variant.display_name}
+                              >
+                                {variant.verification.usable ? (
+                                  <Check className="size-3" />
+                                ) : (
+                                  <RefreshCw className="size-3" />
+                                )}
+                                {variant.model?.variant || variant.display_name}
+                              </i>
+                            ))}
+                          </span>
+                        )}
                       </span>
                       <ChevronDown
                         className={`size-4 text-muted transition-transform ${open ? "rotate-180" : ""}`}
@@ -274,32 +278,39 @@ export function EnginesPage({
                                     <FormatBadge
                                       value={engine.model.quantization}
                                     />
-                                  )}
-                                </span>
+                                  )}                                </span>
+                                {isActiveInstall(engine.installation.status) && (
+                                  <InstallProgress installation={engine.installation} />
+                                )}
+                                {engine.installation.status === "failed" && (
+                                  <p className="mt-2 line-clamp-2 text-[10px] text-danger">
+                                    {engine.installation.message}
+                                  </p>
+                                )}
                               </div>
                               <Meta
-                                icon={HardDrive}
-                                value={`${engine.requirements.disk_space_gb} GB`}
+                                icon={HardDrive}                                value={`${engine.requirements.disk_space_gb} GB`}
                               />
                               <Meta
                                 icon={MemoryStick}
                                 value={`${engine.requirements.recommended_vram_gb || 0} GB`}
                               />
                               <span
-                                className={`ui-chip col-span-2 justify-self-start ${engine.verification.usable ? "border-success/30 text-success" : engine.installation.status === "installing" ? "border-warning/30 text-warning" : ""}`}
+                                className={`ui-chip col-span-2 justify-self-start ${engine.verification.usable ? "border-success/30 text-success" : isActiveInstall(engine.installation.status) ? "border-warning/30 text-warning" : ""}`}
                               >
                                 {engine.verification.usable ? (
                                   <Check />
-                                ) : engine.installation.status ===
-                                  "installing" ? (
+                                ) : isActiveInstall(engine.installation.status) ? (
                                   <LoaderCircle className="animate-spin" />
                                 ) : (
                                   <Box />
                                 )}
                                 {engine.verification.usable
                                   ? t("common.ready")
-                                  : engine.installation.status === "installing"
-                                    ? t("common.installing")
+                                  : isActiveInstall(engine.installation.status)
+                                    ? installLabel(engine.installation.status, t("common.installing"))
+                                    : engine.verification.installed
+                                      ? t("engines.needsRepair")
                                     : engine.installation.status === "failed"
                                       ? t("projects.status.failed")
                                       : t("common.notInstalled")}
@@ -309,7 +320,7 @@ export function EnginesPage({
                                 disabled={
                                   !engine.installable ||
                                   installing === engine.id ||
-                                  engine.installation.status === "installing"
+                                  isActiveInstall(engine.installation.status)
                                 }
                                 onClick={() => void install(engine)}
                               >
@@ -317,11 +328,15 @@ export function EnginesPage({
                                   <LoaderCircle className="animate-spin" />
                                 ) : engine.verification.usable ? (
                                   <ShieldCheck />
+                                ) : engine.verification.installed ? (
+                                  <RefreshCw />
                                 ) : (
                                   <Download />
                                 )}
                                 {engine.verification.usable
                                   ? t("engines.repair")
+                                  : engine.verification.installed
+                                    ? t("engines.repair")
                                   : t("engines.install")}
                               </button>
                             </div>
@@ -329,7 +344,7 @@ export function EnginesPage({
                         </div>
                         <div className="mt-3 flex items-center justify-between text-[10px] text-muted">
                           <span>
-                            {primary.brand?.owner} ·{" "}
+                            {primary.brand?.owner} -{" "}
                             {primary.brand?.license || primary.license}
                           </span>
                           {primary.brand?.official_url && (
@@ -353,14 +368,13 @@ export function EnginesPage({
                 );
               })}
             </div>
-          )}
         </div>
 
         {preview && (
           <div className="mt-3 flex items-center gap-3 rounded-lg border border-line bg-raised px-4 py-3 text-[11px]">
             <ShieldCheck className="size-4 text-success" />
             <strong>{preview.display_name}</strong>
-            <span className="text-copy">{preview.steps.join(" · ")}</span>
+            <span className="text-copy">{preview.steps.join(" - ")}</span>
             {sourceCheck?.reachable && (
               <span className="ui-chip border-success/30 text-success">
                 <Check />
@@ -371,7 +385,7 @@ export function EnginesPage({
               {preview.disk_space_gb} GB
             </span>
             <button className="ui-icon-button" onClick={() => setPreview(null)}>
-              ×
+              x
             </button>
           </div>
         )}
@@ -380,175 +394,54 @@ export function EnginesPage({
   );
 }
 
-function VoiceModelDeck({
-  models,
-  status,
-  onInstallRuntime,
-  onStartRuntime,
-  onDownload,
-}: {
-  models: VoiceboxModel[];
-  status: VoiceboxStatus | null;
-  onInstallRuntime: () => Promise<void>;
-  onStartRuntime: () => Promise<void>;
-  onDownload: (name: string) => Promise<void>;
-}) {
-  const { t } = useI18n();
-  const [busy, setBusy] = useState<string | null>(null);
-  const runtimeReady = Boolean(status?.runtime_ready);
-  const online = Boolean(status?.online);
-  const readyModels = models.filter((model) => model.downloaded).length;
 
-  const run = async (id: string, action: () => Promise<void>) => {
-    setBusy(id);
-    try {
-      await action();
-    } finally {
-      setBusy(null);
-    }
-  };
-
-  return (
-    <section className="mb-4 overflow-hidden rounded-xl border border-line bg-surface shadow-[0_18px_60px_rgba(0,0,0,.12)]">
-      <div className="grid gap-4 border-b border-line bg-[radial-gradient(circle_at_12%_0%,color-mix(in_srgb,var(--accent)_13%,transparent),transparent_45%)] px-5 py-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-        <div className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-xl border border-accent/30 bg-accent/10 text-accent">
-            <Waves className="size-5" />
-          </span>
-          <div>
-            <span className="text-[10px] font-semibold uppercase tracking-[.18em] text-accent">
-              {t("voicebox.deck")}
-            </span>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
-              <h2 className="text-[17px] font-semibold">
-                {t("voicebox.title")}
-              </h2>
-              <span
-                className={`ui-chip ${online ? "border-success/30 text-success" : "border-line text-muted"}`}
-              >
-                <i
-                  className={`size-1.5 rounded-full ${online ? "bg-success" : "bg-muted"}`}
-                />
-                {online ? t("voicebox.connected") : t("voicebox.stopped")}
-              </span>
-            </div>
-            <p className="mt-1 max-w-2xl text-[11px] text-copy">
-              {t("voicebox.steps")}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3 rounded-lg border border-line bg-canvas/50 px-3 py-2">
-          <Gauge className="size-4 text-accent" />
-          <span className="text-[10px] text-muted">
-            {t("voicebox.modelsReady", {
-              ready: readyModels,
-              total: models.length,
-            })}
-          </span>
-          {!runtimeReady ? (
-            <button
-              className="ui-button ui-button-primary"
-              disabled={busy !== null}
-              onClick={() => void run("runtime", onInstallRuntime)}
-            >
-              {busy === "runtime" ? (
-                <LoaderCircle className="animate-spin" />
-              ) : (
-                <Download />
-              )}
-              {t("voicebox.installRuntime")}
-            </button>
-          ) : !online ? (
-            <button
-              className="ui-button ui-button-primary"
-              disabled={busy !== null}
-              onClick={() => void run("runtime", onStartRuntime)}
-            >
-              {busy === "runtime" ? (
-                <LoaderCircle className="animate-spin" />
-              ) : (
-                <Play />
-              )}
-              {t("voicebox.start")}
-            </button>
-          ) : null}
-        </div>
-      </div>
-      <div className="grid gap-px bg-line sm:grid-cols-2 xl:grid-cols-5">
-        {models.map((model) => (
-          <article
-            key={model.model_name}
-            className="group flex min-h-48 flex-col bg-surface p-4 transition-colors hover:bg-raised"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <Brand
-                asset={model.brand?.asset}
-                label={model.brand?.name || model.display_name}
-              />
-              <span className="rounded border border-line px-1.5 py-0.5 text-[11px] uppercase tracking-wider text-muted">
-                {model.tier || "local"}
-              </span>
-            </div>
-            <strong className="mt-3 line-clamp-2 text-[12px] leading-5">
-              {model.display_name}
-            </strong>
-            <span className="mt-1 truncate text-[11px] text-muted">
-              {model.brand?.owner || model.hf_repo_id}
-            </span>
-            <div className="mt-3 grid grid-cols-2 gap-2 text-[10px] text-copy">
-              <span className="flex items-center gap-1">
-                <HardDrive className="size-3 text-muted" />
-                {formatSize(model.size_mb)}
-              </span>
-              <span className="flex items-center gap-1">
-                <MemoryStick className="size-3 text-muted" />
-                {model.recommended_vram_gb || 0} GB
-              </span>
-              <span className="col-span-2 flex items-center gap-1">
-                <Languages className="size-3 text-muted" />
-                {(model.languages?.length || 0) === 1
-                  ? t("voicebox.languageCountOne")
-                  : t("voicebox.languageCount", {
-                      count: model.languages?.length || 0,
-                    })}
-              </span>
-            </div>
-            <div className="mt-auto pt-4">
-              {model.downloaded ? (
-                <span className="ui-chip w-full justify-center border-success/30 text-success">
-                  <Check />
-                  {t("common.ready")}
-                </span>
-              ) : (
-                <button
-                  className="ui-button w-full justify-center"
-                  disabled={!online || busy !== null || model.downloading}
-                  onClick={() =>
-                    void run(model.model_name, () =>
-                      onDownload(model.model_name),
-                    )
-                  }
-                >
-                  {busy === model.model_name || model.downloading ? (
-                    <LoaderCircle className="animate-spin" />
-                  ) : (
-                    <Download />
-                  )}
-                  {!runtimeReady
-                    ? t("voicebox.runtimeFirst")
-                    : !online
-                      ? t("voicebox.startFirst")
-                      : t("voicebox.installModel")}
-                </button>
-              )}
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
+function isActiveInstall(status: string) {
+  return activeInstallStatuses.has(status);
 }
 
+function installLabel(status: string, fallback: string) {
+  if (status === "queued") return "En file";
+  if (status === "repairing") return "Reparation";
+  return fallback;
+}
+
+function formatBytes(value?: number | null) {
+  if (!value || value <= 0) return "?";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let size = value;
+  let unit = 0;
+  while (size >= 1024 && unit < units.length - 1) {
+    size /= 1024;
+    unit += 1;
+  }
+  return unit === 0 ? `${Math.round(size)} B` : `${size.toFixed(size >= 10 ? 1 : 2)} ${units[unit]}`;
+}
+
+function formatEta(seconds?: number | null) {
+  if (!seconds || seconds < 0) return "?";
+  const rounded = Math.round(seconds);
+  const minutes = Math.floor(rounded / 60);
+  const rest = rounded % 60;
+  if (minutes >= 60) return `${Math.floor(minutes / 60)}h ${String(minutes % 60).padStart(2, "0")}m`;
+  return minutes ? `${minutes}m ${String(rest).padStart(2, "0")}s` : `${rest}s`;
+}
+
+function InstallProgress({ installation }: { installation: EngineInstallation }) {
+  const progress = Math.max(0, Math.min(100, installation.progress || 0));
+  const details = installation.total_bytes
+    ? `${formatBytes(installation.downloaded_bytes)} / ${formatBytes(installation.total_bytes)} - ${formatBytes(installation.speed_bps)}/s - ETA ${formatEta(installation.eta_seconds)}`
+    : installation.message;
+  return (
+    <div className="mt-2 min-w-0">
+      <div className="h-1.5 overflow-hidden rounded-full bg-raised">
+        <div className="h-full rounded-full bg-accent transition-[width] duration-300" style={{ width: `${progress}%` }} />
+      </div>
+      <p className="mt-1 truncate text-[10px] text-copy" title={installation.message}>
+        {Math.round(progress)}% - {details}
+      </p>
+    </div>
+  );
+}
 function Brand({ asset, label }: { asset?: string; label: string }) {
   const [fallback, setFallback] = useState(false);
   const source = publicAssetUrl(asset);
@@ -598,8 +491,13 @@ function Meta({
 }
 
 function formatSize(sizeMb?: number | null) {
-  if (!sizeMb) return "—";
+  if (!sizeMb) return "-";
   return sizeMb >= 1000
     ? `${(sizeMb / 1000).toFixed(sizeMb >= 10000 ? 0 : 1)} GB`
     : `${sizeMb} MB`;
 }
+
+
+
+
+

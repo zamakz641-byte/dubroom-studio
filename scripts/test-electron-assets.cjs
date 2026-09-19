@@ -65,7 +65,7 @@ async function readLoadedLogos(page) {
     await page.waitForTimeout(300);
     const engineLogos = await readLoadedLogos(page);
     await page
-      .getByRole("button", { name: "Synthèse vocale", exact: true })
+      .getByRole("button", { name: "Voix", exact: true })
       .click();
     await page.waitForTimeout(300);
     const voiceLogos = await readLoadedLogos(page);

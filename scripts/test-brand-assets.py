@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "apps" / "desktop" / "public"
 BRAND_CATALOG = ROOT / "models" / "brand-catalog.json"
-VOICEBOX_CATALOG = ROOT / "models" / "voicebox-catalog.json"
+TTS_CATALOG = ROOT / "models" / "tts-catalog.json"
 
 
 def main() -> None:
@@ -41,17 +41,20 @@ def main() -> None:
     engine_to_brand = {
         "qwen": "qwen",
         "qwen_custom_voice": "qwen",
+        "qwen_voice_design": "qwen",
         "chatterbox": "chatterbox",
         "chatterbox_turbo": "chatterbox",
+        "chatterbox_nano": "chatterbox",
+        "supertonic": "dubroom",
         "tada": "tada",
         "kokoro": "kokoro",
         "luxtts": "luxtts",
     }
-    voicebox = json.loads(VOICEBOX_CATALOG.read_text(encoding="utf-8"))
-    voice_models = voicebox.get("models", [])
+    tts = json.loads(TTS_CATALOG.read_text(encoding="utf-8"))
+    voice_models = tts.get("models", [])
     for model in voice_models:
         engine = model.get("engine")
-        assert engine in engine_to_brand, f"No brand mapping for Voicebox engine {engine}"
+        assert engine in engine_to_brand, f"No brand mapping for TTS engine {engine}"
         assert engine_to_brand[engine] in brands
 
     print(

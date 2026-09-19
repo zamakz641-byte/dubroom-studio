@@ -1,0 +1,105 @@
+DUBROOM NARRATOR STORY V1 - JSON KNOWLEDGE
+
+PURPOSE
+
+This contract is separate from DubRoom Multi-Speaker V3. It produces a single English narrator script for one complete source story while preserving video timing, scene endings, silence and sound design.
+
+ROOT CONTRACT
+
+Required values:
+
+`kind`: `dubroom_narrator_story_manifest`
+`schema_version`: 1
+`dubbing_mode`: `narrator_story`
+`target_language`: `en`
+`prompt_revision`: `narrator-story-scene-lock-20260811-v1`
+`status`: `prepared` on input, `scripted` on valid output
+
+The input also contains immutable `project_id`, `media`, `source_tracks`, `evidence`, `scenes` and `narration_slots`, plus editable empty `story_bible`, `narration_blocks`, `subtitle_cues` and `validation`.
+
+EVIDENCE LANES
+
+Each immutable evidence item has an `evidence_id`, time range, source kind, text, language and confidence metadata.
+
+Source kinds:
+- `asr_zh`: Chinese ASR aligned to audible speech;
+- `subtitle_zh`: aligned Chinese subtitle text;
+- `subtitle_en`: aligned English subtitle text.
+
+An English subtitle item also identifies its origin, such as `uploader_provided`, `youtube_caption`, or `youtube_auto_translated`. Uploader-provided English is stronger meaning evidence. Auto-translated English is only a clue. Chinese subtitle terminology normally outranks English spelling when they conflict. Scene timing never comes from subtitle display timing.
+
+SCENES AND SLOTS
+
+`scenes[]` defines immutable story/visual boundaries. A scene is a hard narration boundary even when a sentence would sound unfinished across it.
+
+`narration_slots[]` contains:
+- `slot_id`, `scene_id`;
+- `start`, `end`, `duration_seconds`;
+- `safe_start`, `safe_end`, `usable_duration_seconds`;
+- `ideal_words`, `max_words`;
+- `sfx_policy`: protected, clear or duckable;
+- `recommended_ducking_profile`;
+- `allowed_evidence_ids`;
+- optional shot, transition and importance metadata.
+
+`safe_start` includes the narration lead margin. `safe_end` includes the tail margin before the scene, shot or SFX boundary. The downstream TTS must fit entirely between them. The GPT must not expand these windows.
+
+Word budget preparation uses a natural narrator target around 2.35 words/second with reserve for breathing and synthesis variance. `max_words` is absolute. Real TTS duration is verified downstream; an overlong block is sent back for rewriting, never sped up beyond the approved voice profile and never allowed to spill.
+
+SFX POLICY
+
+`protected`: silence from narrator. Used for key impacts, screams, reveals, musical climaxes and uncertain loud events.
+
+`clear`: narration may run with no ducking.
+
+`duckable`: narration may run if useful. Downstream sidechain mixing lowers the original bed only during narration. `narration_standard` is normally 4-7 dB reduction; `narration_strong` may reach about 9 dB for aggressive but non-protected effects. These are mixing instructions, not permission to cross slot limits.
+
+OUTPUT OBJECTS
+
+`story_bible` stores concise evidence-based character names, relationships, terminology, chronology and uncertainties. It supports consistency; it is not spoken.
+
+`narration_blocks[]` item:
+
+{
+  "block_id": "NAR_0001",
+  "scene_id": "SCN_0001",
+  "slot_id": "SLOT_0001",
+  "planned_start": 12.35,
+  "hard_end": 16.80,
+  "text": "Ye Fan realized the ambush had been prepared long before his arrival.",
+  "word_count": 11,
+  "delivery": "tense",
+  "delivery_intensity": 58,
+  "evidence_ids": ["EVD_0042", "EVD_0043"],
+  "ducking_profile": "narration_standard"
+}
+
+`subtitle_cues[]` item:
+
+{
+  "cue_id": "SUB_0001",
+  "block_id": "NAR_0001",
+  "start": 12.35,
+  "end": 16.80,
+  "lines": ["Ye Fan realized the ambush had been", "prepared long before his arrival."]
+}
+
+The concatenated cue lines must reproduce the block text exactly except for line wrapping. Cue timing cannot exceed its narration block.
+
+STORY POLICY
+
+Read the whole story before drafting. Retell it as one continuous account. Character dialogue becomes concise indirect narration when it carries plot information. Preserve motivations, causal links, reversals and outcomes. Compress greetings, repeated threats and redundant exchanges. Leave space for image, action, emotion and sound. Never use episode or recap framing unless it is itself part of the story.
+
+HARD FAILURE CONDITIONS
+
+- non-English narration;
+- narration beyond a scene, slot or protected-SFX boundary;
+- a word count above max_words;
+- unsupported facts;
+- changed evidence or source timing;
+- narration placed in a protected slot;
+- subtitle wording that differs from the narrator text;
+- source video retiming;
+- multi-speaker dialogue output.
+
+The output is valid only when `validation.passed` is true and all hard checks are listed with zero failures.

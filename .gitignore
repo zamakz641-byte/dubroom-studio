@@ -12,7 +12,8 @@ __pycache__/
 data/
 
 # AI models and user-owned media
-models/
+models/*
+!models/*.json
 projects/
 exports/
 output/
@@ -20,7 +21,10 @@ output/
 # Desktop and test runtime state
 .electron-user-data/
 .playwright-cli/
+.codex/
 *.log
+*.bak
+*.backup-*
 
 # Local credentials
 .env
@@ -30,3 +34,14 @@ output/
 # Temporary safety copies created during the P0 migration
 apps/desktop/electron/*.pre-p0.cjs
 scripts/*.pre-p0.cjs
+
+# Additional model/checkpoint formats
+*.gguf
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.tflite
+*.h5
+*.pb

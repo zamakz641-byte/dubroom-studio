@@ -1,0 +1,42 @@
+CODEX - SUBTITLE EVIDENCE CONTRACT R4
+
+Do not redesign the exchange schema.
+
+Goal:
+Add OPTIONAL immutable subtitle evidence to Chinese Multi-Speaker V3 segments.
+
+Keep:
+- schema_version = 3
+- segments[].text as ASR/source text
+- existing IDs/timing rules
+
+When subtitles exist, add:
+"subtitle_evidence": [
+  {
+    "text": "...",
+    "start": 12.34,
+    "end": 15.21,
+    "source": "soft_subtitle",
+    "overlap_ratio": 0.91,
+    "match_confidence": 0.94
+  }
+]
+
+Rules:
+- field may be absent/empty;
+- never replace ASR text;
+- align by temporal overlap first;
+- preserve multiple candidates when needed;
+- never pre-assign subtitle text to a character;
+- extract soft SRT/ASS/VTT directly when available;
+- hardcoded subtitle OCR/VLM is later work;
+- GPT treats subtitle_evidence as read-only;
+- import validator preserves/accepts it unchanged;
+- include subtitle evidence/revision in fingerprint when present.
+
+Token-saving order:
+1. inspect transcript_exchange_service + manifest types/validators only;
+2. add optional field;
+3. test old manifest without subtitles;
+4. test new manifest with subtitle evidence;
+5. do not implement OCR yet.

@@ -144,6 +144,45 @@ async function firstProjectId() {
       );
     assertions.push("20-output Shorts plan rendered");
 
+    await exportInspector
+      .getByRole("button", { name: "Recadrer et agrandir", exact: true })
+      .click();
+    const reframeSurface = page.getByTestId("visual-reframe-surface");
+    await reframeSurface.waitFor({ timeout: 5000 });
+    const initialTransform = await page
+      .locator('[data-testid="program-monitor"] video')
+      .last()
+      .evaluate((node) => getComputedStyle(node).transform);
+    if (initialTransform === "none")
+      throw new Error("Subtitle crop is not reflected in the video monitor");
+    const reframeZoom = page.getByTestId("reframe-zoom");
+    await reframeZoom.fill("1.25");
+    await page.waitForTimeout(350);
+    const adjustedTransform = await page
+      .locator('[data-testid="program-monitor"] video')
+      .last()
+      .evaluate((node) => getComputedStyle(node).transform);
+    if (adjustedTransform === "none" || adjustedTransform === initialTransform)
+      throw new Error("Visual zoom control does not update the video monitor");
+    assertions.push("Live subtitle crop and visual reframe preview");
+
+    await exportInspector
+      .getByRole("button", { name: "Qualité rapide", exact: true })
+      .click();
+    const upscaleStatus = page.getByTestId("upscale-status");
+    await upscaleStatus.waitFor({ timeout: 5000 });
+    const upscaleText = await upscaleStatus.textContent();
+    if (!upscaleText?.includes("→"))
+      throw new Error("Upscale source and target resolution are not visible");
+    assertions.push("Visible upscale source and target resolution");
+
+    const reframeTarget = path.join(
+      outputDir,
+      "export-reframe-preview.png",
+    );
+    await page.screenshot({ path: reframeTarget });
+    screenshots.push(reframeTarget);
+
     for (const size of sizes) {
       await app.evaluate(({ BrowserWindow }, dimensions) => {
         BrowserWindow.getAllWindows()[0].setContentSize(

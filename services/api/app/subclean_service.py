@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import subprocess
 import threading
 from datetime import datetime, timezone
@@ -9,6 +10,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from . import resource_scheduler
 from .config import PATHS
 
 
@@ -71,22 +73,29 @@ def run(job_id: str) -> None:
     command = [str(PYTHON_EXE), str(CLI_PATH), "-i", state["source_path"], "-o", str(output), "--inpaint-mode", state["mode"]]
     for area in state.get("areas", []):
         command.extend(["-c", *[str(value) for value in area]])
-    _patch(job_id, status="running", progress=8, message="Detecting embedded subtitle regions")
-    flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-    process = subprocess.Popen(command, cwd=SOURCE_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace", creationflags=flags)
-    with _lock:
-        _processes[job_id] = process
     lines: list[str] = []
     try:
-        assert process.stdout is not None
-        for raw in process.stdout:
-            line = raw.strip()
-            lines = (lines + [line])[-30:]
-            match = re.search(r"(\d{1,3}(?:\.\d+)?)%", line)
-            if match:
-                progress = min(96, max(10, int(float(match.group(1)))))
-                _patch(job_id, progress=progress, message="Reconstructing frames without subtitles")
-        code = process.wait()
+        device = "cuda" if shutil.which("nvidia-smi") else "cpu"
+        with resource_scheduler.model_slot(
+            "SubClean image reconstruction",
+            device=device,
+            on_wait=lambda message: _patch(job_id, status="running", progress=5, message=message),
+            is_cancelled=lambda: get(job_id)["status"] == "cancelled",
+        ):
+            _patch(job_id, status="running", progress=8, message=f"Detecting embedded subtitle regions on {device.upper()}")
+            flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+            process = subprocess.Popen(command, cwd=SOURCE_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace", creationflags=flags)
+            with _lock:
+                _processes[job_id] = process
+            assert process.stdout is not None
+            for raw in process.stdout:
+                line = raw.strip()
+                lines = (lines + [line])[-30:]
+                match = re.search(r"(\d{1,3}(?:\.\d+)?)%", line)
+                if match:
+                    progress = min(96, max(10, int(float(match.group(1)))))
+                    _patch(job_id, progress=progress, message=f"Reconstructing frames without subtitles on {device.upper()}")
+            code = process.wait()
         current = get(job_id)
         if current["status"] == "cancelled":
             return

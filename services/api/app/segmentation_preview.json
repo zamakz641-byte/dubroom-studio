@@ -1,0 +1,1440 @@
+{
+  "kind": "dubroom_segmentation_preview",
+  "project_id": "exiled-for-having-no-magic-yet-he-builds-guns-that-make-every-mage-tremble-20260730-140435",
+  "note": "Preview only. Rerun ASR in DubRoom after installing the patch to create the real project segments.",
+  "settings": {
+    "preferred_seconds": 4.8,
+    "maximum_seconds": 7.0,
+    "minimum_complete_seconds": 2.0,
+    "minimum_fragment_seconds": 2.7,
+    "maximum_merge_gap_seconds": 0.5,
+    "wav_fade_in_ms": 8,
+    "wav_fade_out_ms": 28
+  },
+  "segments": [
+    {
+      "id": "asr-0001",
+      "member_ids": [
+        "asr-001"
+      ],
+      "start": "00:00:00.000",
+      "end": "00:00:04.480",
+      "duration_seconds": 4.48,
+      "recommended_words": {
+        "minimum": 9,
+        "ideal": 11,
+        "maximum": 14
+      },
+      "speaker": "Speaker 1",
+      "text": "Today is my coming -of -age ceremony, but no one blesses me, not even his majesty.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0002",
+      "member_ids": [
+        "asr-002"
+      ],
+      "start": "00:00:04.760",
+      "end": "00:00:08.100",
+      "duration_seconds": 3.34,
+      "recommended_words": {
+        "minimum": 6,
+        "ideal": 8,
+        "maximum": 10
+      },
+      "speaker": "Speaker 1",
+      "text": "My father, the invited nobles are all here to watch me become a joke.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0003",
+      "member_ids": [
+        "asr-003"
+      ],
+      "start": "00:00:08.300",
+      "end": "00:00:13.240",
+      "duration_seconds": 4.94,
+      "recommended_words": {
+        "minimum": 9,
+        "ideal": 12,
+        "maximum": 15
+      },
+      "speaker": "Speaker 1",
+      "text": "Look, they whisper, the third prince is finally coming -of -age, and he still hasn't awakened his magic.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0004",
+      "member_ids": [
+        "asr-004",
+        "asr-005"
+      ],
+      "start": "00:00:13.520",
+      "end": "00:00:18.580",
+      "duration_seconds": 5.06,
+      "recommended_words": {
+        "minimum": 10,
+        "ideal": 13,
+        "maximum": 15
+      },
+      "speaker": "Speaker 1",
+      "text": "It's a disgrace to the entire royal family. My so -called genius brother comes over to rub salt in the wound.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0005",
+      "member_ids": [
+        "asr-006"
+      ],
+      "start": "00:00:18.780",
+      "end": "00:00:20.900",
+      "duration_seconds": 2.12,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 6
+      },
+      "speaker": "Speaker 1",
+      "text": "Did you hear that? My useless little brother.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0006",
+      "member_ids": [
+        "asr-007"
+      ],
+      "start": "00:00:21.060",
+      "end": "00:00:24.820",
+      "duration_seconds": 3.76,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "What right do you have to stand here? If I were you, I'd have already ended my life in shame.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0007",
+      "member_ids": [
+        "asr-008",
+        "asr-009"
+      ],
+      "start": "00:00:24.960",
+      "end": "00:00:30.080",
+      "duration_seconds": 5.12,
+      "recommended_words": {
+        "minimum": 10,
+        "ideal": 13,
+        "maximum": 16
+      },
+      "speaker": "Speaker 1",
+      "text": "I calmly ask him, are you finished? How dare you look at me like that? Furious, my brother hurls a fireball at me.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0008",
+      "member_ids": [
+        "asr-010"
+      ],
+      "start": "00:00:30.520",
+      "end": "00:00:34.040",
+      "duration_seconds": 3.52,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "Stop, my father's commanding voice rings out, and the fireball fades away.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0009",
+      "member_ids": [
+        "asr-011"
+      ],
+      "start": "00:00:34.220",
+      "end": "00:00:36.540",
+      "duration_seconds": 2.32,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 6,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "My father asks me, do I understand my crime?",
+      "translation": ""
+    },
+    {
+      "id": "asr-0010",
+      "member_ids": [
+        "asr-012"
+      ],
+      "start": "00:00:36.680",
+      "end": "00:00:38.900",
+      "duration_seconds": 2.22,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 6,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "A prince born without a shred of magical talent.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0011",
+      "member_ids": [
+        "asr-013",
+        "asr-014"
+      ],
+      "start": "00:00:39.140",
+      "end": "00:00:43.180",
+      "duration_seconds": 4.04,
+      "recommended_words": {
+        "minimum": 8,
+        "ideal": 10,
+        "maximum": 12
+      },
+      "speaker": "Speaker 1",
+      "text": "The empire does not feed the useless. Today, I strip you of your royal authority.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0012",
+      "member_ids": [
+        "asr-015",
+        "asr-016"
+      ],
+      "start": "00:00:43.500",
+      "end": "00:00:49.460",
+      "duration_seconds": 5.96,
+      "recommended_words": {
+        "minimum": 11,
+        "ideal": 15,
+        "maximum": 18
+      },
+      "speaker": "Speaker 1",
+      "text": "I name you Duke of Sin Ridge. You leave for your fief tomorrow. Finally getting out of the capital, my brother gloats from the side.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0013",
+      "member_ids": [
+        "asr-017"
+      ],
+      "start": "00:00:49.680",
+      "end": "00:00:52.200",
+      "duration_seconds": 2.52,
+      "recommended_words": {
+        "minimum": 5,
+        "ideal": 6,
+        "maximum": 8
+      },
+      "speaker": "Speaker 1",
+      "text": "The crowd gasps, because that land is a curse of wasteland.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0014",
+      "member_ids": [
+        "asr-018",
+        "asr-019"
+      ],
+      "start": "00:00:52.340",
+      "end": "00:00:56.880",
+      "duration_seconds": 4.54,
+      "recommended_words": {
+        "minimum": 9,
+        "ideal": 11,
+        "maximum": 14
+      },
+      "speaker": "Speaker 1",
+      "text": "No one who goes there lives past three days. As you command, I accept the punishment without a flicker of emotion.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0015",
+      "member_ids": [
+        "asr-020"
+      ],
+      "start": "00:00:56.880",
+      "end": "00:01:00.880",
+      "duration_seconds": 4.0,
+      "recommended_words": {
+        "minimum": 8,
+        "ideal": 10,
+        "maximum": 12
+      },
+      "speaker": "Speaker 1",
+      "text": "Walking out of this rotten, self -serving palace, I am not as empty -handed as they think.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0016",
+      "member_ids": [
+        "asr-021"
+      ],
+      "start": "00:01:01.040",
+      "end": "00:01:05.120",
+      "duration_seconds": 4.08,
+      "recommended_words": {
+        "minimum": 8,
+        "ideal": 10,
+        "maximum": 12
+      },
+      "speaker": "Speaker 1",
+      "text": "Once I reach that cursed land, I will be free, and I will end this outdated age of magic.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0017",
+      "member_ids": [
+        "asr-022"
+      ],
+      "start": "00:01:05.540",
+      "end": "00:01:08.260",
+      "duration_seconds": 2.72,
+      "recommended_words": {
+        "minimum": 5,
+        "ideal": 7,
+        "maximum": 8
+      },
+      "speaker": "Speaker 1",
+      "text": "Useless trash. Stop right there. My brother storms over, seething.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0018",
+      "member_ids": [
+        "asr-023"
+      ],
+      "start": "00:01:08.400",
+      "end": "00:01:10.460",
+      "duration_seconds": 2.06,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 6
+      },
+      "speaker": "Speaker 1",
+      "text": "Running that fast. Are you rushing to your next life?",
+      "translation": ""
+    },
+    {
+      "id": "asr-0019",
+      "member_ids": [
+        "asr-024",
+        "asr-025"
+      ],
+      "start": "00:01:10.640",
+      "end": "00:01:14.280",
+      "duration_seconds": 3.64,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "Fair enough. Sin Ridge is hell itself. Is that all your mouth is good for, your highness?",
+      "translation": ""
+    },
+    {
+      "id": "asr-0020",
+      "member_ids": [
+        "asr-026",
+        "asr-027"
+      ],
+      "start": "00:01:14.520",
+      "end": "00:01:19.240",
+      "duration_seconds": 4.72,
+      "recommended_words": {
+        "minimum": 9,
+        "ideal": 12,
+        "maximum": 14
+      },
+      "speaker": "Speaker 1",
+      "text": "I turn back, calm and unbowed. How dare you speak to me like that? You're worth less than a dog now.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0021",
+      "member_ids": [
+        "asr-028",
+        "asr-029"
+      ],
+      "start": "00:01:19.600",
+      "end": "00:01:23.380",
+      "duration_seconds": 3.78,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 12
+      },
+      "speaker": "Speaker 1",
+      "text": "Heh heh. Go there and wait quietly for death. I walk toward him, calm and composed.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0022",
+      "member_ids": [
+        "asr-030",
+        "asr-031"
+      ],
+      "start": "00:01:23.720",
+      "end": "00:01:27.880",
+      "duration_seconds": 4.16,
+      "recommended_words": {
+        "minimum": 8,
+        "ideal": 10,
+        "maximum": 13
+      },
+      "speaker": "Speaker 1",
+      "text": "Just the foolish arrogance of the weak. A death land. That's only what you believe it to be.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0023",
+      "member_ids": [
+        "asr-032",
+        "asr-033"
+      ],
+      "start": "00:01:28.100",
+      "end": "00:01:33.180",
+      "duration_seconds": 5.08,
+      "recommended_words": {
+        "minimum": 10,
+        "ideal": 13,
+        "maximum": 15
+      },
+      "speaker": "Speaker 1",
+      "text": "Soon you'll all know what true power really is. Stop putting on airs. A useless wretch with no magic at all.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0024",
+      "member_ids": [
+        "asr-034",
+        "asr-035"
+      ],
+      "start": "00:01:33.340",
+      "end": "00:01:37.220",
+      "duration_seconds": 3.88,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 10,
+        "maximum": 12
+      },
+      "speaker": "Speaker 1",
+      "text": "What waves could you possibly make? Hm. I smile with quiet contempt and turn away.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0025",
+      "member_ids": [
+        "asr-036",
+        "asr-037"
+      ],
+      "start": "00:01:37.520",
+      "end": "00:01:41.380",
+      "duration_seconds": 3.86,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 10,
+        "maximum": 12
+      },
+      "speaker": "Speaker 1",
+      "text": "Pass a message to that emperor for me. Everything I've lost I will take back with my own hands.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0026",
+      "member_ids": [
+        "asr-038"
+      ],
+      "start": "00:01:41.580",
+      "end": "00:01:44.980",
+      "duration_seconds": 3.4,
+      "recommended_words": {
+        "minimum": 6,
+        "ideal": 8,
+        "maximum": 10
+      },
+      "speaker": "Speaker 1",
+      "text": "He can sit on that throne and wait. At the final gate armed soldiers are waiting for me.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0027",
+      "member_ids": [
+        "asr-039",
+        "asr-040"
+      ],
+      "start": "00:01:45.180",
+      "end": "00:01:50.160",
+      "duration_seconds": 4.98,
+      "recommended_words": {
+        "minimum": 9,
+        "ideal": 12,
+        "maximum": 15
+      },
+      "speaker": "Speaker 1",
+      "text": "I hadn't expected that. Prince Damien. Please come with us. Polite words, paired with rough hands.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0028",
+      "member_ids": [
+        "asr-041",
+        "asr-042"
+      ],
+      "start": "00:01:50.380",
+      "end": "00:01:54.360",
+      "duration_seconds": 3.98,
+      "recommended_words": {
+        "minimum": 8,
+        "ideal": 10,
+        "maximum": 12
+      },
+      "speaker": "Speaker 1",
+      "text": "The soldiers surround me, swords drawn. His majesty has ordered that you depart at once.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0029",
+      "member_ids": [
+        "asr-043",
+        "asr-044"
+      ],
+      "start": "00:01:54.580",
+      "end": "00:01:58.100",
+      "duration_seconds": 3.52,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "Get those rusty blades out of my face. Or I can't promise what happens next.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0030",
+      "member_ids": [
+        "asr-045"
+      ],
+      "start": "00:01:58.280",
+      "end": "00:02:00.280",
+      "duration_seconds": 2.0,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 6
+      },
+      "speaker": "Speaker 1",
+      "text": "I said. I need to see my mother first.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0031",
+      "member_ids": [
+        "asr-046"
+      ],
+      "start": "00:02:00.500",
+      "end": "00:02:02.640",
+      "duration_seconds": 2.14,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "The pressure radiating off me makes them back down.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0032",
+      "member_ids": [
+        "asr-047"
+      ],
+      "start": "00:02:02.760",
+      "end": "00:02:04.960",
+      "duration_seconds": 2.2,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "You have ten minutes. The moment it's up you leave.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0033",
+      "member_ids": [
+        "asr-048"
+      ],
+      "start": "00:02:05.040",
+      "end": "00:02:08.140",
+      "duration_seconds": 3.1,
+      "recommended_words": {
+        "minimum": 6,
+        "ideal": 8,
+        "maximum": 9
+      },
+      "speaker": "Speaker 1",
+      "text": "No excuses. Fine. I turn and open the door to my mother's chambers.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0034",
+      "member_ids": [
+        "asr-049",
+        "asr-050"
+      ],
+      "start": "00:02:08.400",
+      "end": "00:02:14.280",
+      "duration_seconds": 5.88,
+      "recommended_words": {
+        "minimum": 11,
+        "ideal": 15,
+        "maximum": 18
+      },
+      "speaker": "Speaker 1",
+      "text": "She's sitting in her chair weeping. Mother. I've come to see you. The moment she sees me she grabs my wrist, choking back tears.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0035",
+      "member_ids": [
+        "asr-051",
+        "asr-052"
+      ],
+      "start": "00:02:14.620",
+      "end": "00:02:20.000",
+      "duration_seconds": 5.38,
+      "recommended_words": {
+        "minimum": 10,
+        "ideal": 13,
+        "maximum": 16
+      },
+      "speaker": "Speaker 1",
+      "text": "Little Damien. Tell me the truth. Sin Ridge. Tell me it isn't true. The decree stripping my title has already been issued.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0036",
+      "member_ids": [
+        "asr-053"
+      ],
+      "start": "00:02:20.180",
+      "end": "00:02:22.920",
+      "duration_seconds": 2.74,
+      "recommended_words": {
+        "minimum": 5,
+        "ideal": 7,
+        "maximum": 8
+      },
+      "speaker": "Speaker 1",
+      "text": "It's true. I say, keeping my voice steady to comfort her.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0037",
+      "member_ids": [
+        "asr-054"
+      ],
+      "start": "00:02:23.120",
+      "end": "00:02:25.160",
+      "duration_seconds": 2.04,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 6
+      },
+      "speaker": "Speaker 1",
+      "text": "Even so, the answer drains all the strength from her.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0038",
+      "member_ids": [
+        "asr-055"
+      ],
+      "start": "00:02:25.340",
+      "end": "00:02:27.440",
+      "duration_seconds": 2.1,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 6
+      },
+      "speaker": "Speaker 1",
+      "text": "She sinks onto the rug. You'll die out there.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0039",
+      "member_ids": [
+        "asr-056"
+      ],
+      "start": "00:02:27.700",
+      "end": "00:02:30.600",
+      "duration_seconds": 2.9,
+      "recommended_words": {
+        "minimum": 6,
+        "ideal": 7,
+        "maximum": 9
+      },
+      "speaker": "Speaker 1",
+      "text": "Go find your grandfather quickly. He's a grand marquee of the empire.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0040",
+      "member_ids": [
+        "asr-057"
+      ],
+      "start": "00:02:30.800",
+      "end": "00:02:33.080",
+      "duration_seconds": 2.28,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 6,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "He can surely convince his majesty to reverse the order.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0041",
+      "member_ids": [
+        "asr-058"
+      ],
+      "start": "00:02:33.260",
+      "end": "00:02:36.460",
+      "duration_seconds": 3.2,
+      "recommended_words": {
+        "minimum": 6,
+        "ideal": 8,
+        "maximum": 10
+      },
+      "speaker": "Speaker 1",
+      "text": "Don't be foolish, mother. Grandfather disowned me as his grandson long ago.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0042",
+      "member_ids": [
+        "asr-059"
+      ],
+      "start": "00:02:36.640",
+      "end": "00:02:39.960",
+      "duration_seconds": 3.32,
+      "recommended_words": {
+        "minimum": 6,
+        "ideal": 8,
+        "maximum": 10
+      },
+      "speaker": "Speaker 1",
+      "text": "I'm a useless man without magic. To the family I'm nothing but their greatest shame.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0043",
+      "member_ids": [
+        "asr-060"
+      ],
+      "start": "00:02:40.120",
+      "end": "00:02:42.480",
+      "duration_seconds": 2.36,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 6,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "It's my fault. I couldn't give you a noble gift for magic.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0044",
+      "member_ids": [
+        "asr-061"
+      ],
+      "start": "00:02:42.660",
+      "end": "00:02:46.240",
+      "duration_seconds": 3.58,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "Mother, don't blame yourself. Magic isn't the only thing this world has to offer.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0045",
+      "member_ids": [
+        "asr-062"
+      ],
+      "start": "00:02:46.240",
+      "end": "00:02:48.880",
+      "duration_seconds": 2.64,
+      "recommended_words": {
+        "minimum": 5,
+        "ideal": 7,
+        "maximum": 8
+      },
+      "speaker": "Speaker 1",
+      "text": "Suddenly, she remembers something and pulls out a heavy pouch from me.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0046",
+      "member_ids": [
+        "asr-063",
+        "asr-064"
+      ],
+      "start": "00:02:49.160",
+      "end": "00:02:52.680",
+      "duration_seconds": 3.52,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "Take it. Keep it close. Hide it well. What is this? Three thousand gold coins.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0047",
+      "member_ids": [
+        "asr-065"
+      ],
+      "start": "00:02:52.840",
+      "end": "00:02:54.940",
+      "duration_seconds": 2.1,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 6
+      },
+      "speaker": "Speaker 1",
+      "text": "Every last one. This is all the savings I have.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0048",
+      "member_ids": [
+        "asr-066",
+        "asr-067"
+      ],
+      "start": "00:02:55.020",
+      "end": "00:02:58.240",
+      "duration_seconds": 3.22,
+      "recommended_words": {
+        "minimum": 6,
+        "ideal": 8,
+        "maximum": 10
+      },
+      "speaker": "Speaker 1",
+      "text": "Use it to build connections once you're there. No matter what happens, stay alive.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0049",
+      "member_ids": [
+        "asr-068",
+        "asr-069"
+      ],
+      "start": "00:02:58.340",
+      "end": "00:03:02.080",
+      "duration_seconds": 3.74,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "Promise me. It's her final wish. I have no choice but to accept it. Your Highness.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0050",
+      "member_ids": [
+        "asr-070",
+        "asr-071"
+      ],
+      "start": "00:03:02.260",
+      "end": "00:03:05.720",
+      "duration_seconds": 3.46,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "Time's up. The soldiers outside urge me on. The carriage is waiting to take you away.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0051",
+      "member_ids": [
+        "asr-072"
+      ],
+      "start": "00:03:05.920",
+      "end": "00:03:08.220",
+      "duration_seconds": 2.3,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 6,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "Take care of yourself, mother. I will come back alive.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0052",
+      "member_ids": [
+        "asr-073"
+      ],
+      "start": "00:03:08.480",
+      "end": "00:03:13.420",
+      "duration_seconds": 4.94,
+      "recommended_words": {
+        "minimum": 9,
+        "ideal": 12,
+        "maximum": 15
+      },
+      "speaker": "Speaker 1",
+      "text": "Everything I've lost, I will take back tenfold, a hundredfold, a thousandfold, with my own hands.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0053",
+      "member_ids": [
+        "asr-074"
+      ],
+      "start": "00:03:13.420",
+      "end": "00:03:16.180",
+      "duration_seconds": 2.76,
+      "recommended_words": {
+        "minimum": 5,
+        "ideal": 7,
+        "maximum": 8
+      },
+      "speaker": "Speaker 1",
+      "text": "She prays quietly. May the gods watch over my child.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0054",
+      "member_ids": [
+        "asr-075"
+      ],
+      "start": "00:03:16.380",
+      "end": "00:03:21.320",
+      "duration_seconds": 4.94,
+      "recommended_words": {
+        "minimum": 9,
+        "ideal": 12,
+        "maximum": 15
+      },
+      "speaker": "Speaker 1",
+      "text": "On the train to the land of death, I set my mother's pouch of gold aside and open the case I smuggled with me.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0055",
+      "member_ids": [
+        "asr-076"
+      ],
+      "start": "00:03:21.780",
+      "end": "00:03:23.840",
+      "duration_seconds": 2.06,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 6
+      },
+      "speaker": "Speaker 1",
+      "text": "Inside lies everything I'll need to rise.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0056",
+      "member_ids": [
+        "asr-077"
+      ],
+      "start": "00:03:24.220",
+      "end": "00:03:26.580",
+      "duration_seconds": 2.36,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 6,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "All you high and mighty mages, get ready to tremble.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0057",
+      "member_ids": [
+        "asr-078",
+        "asr-079"
+      ],
+      "start": "00:03:26.760",
+      "end": "00:03:31.140",
+      "duration_seconds": 4.38,
+      "recommended_words": {
+        "minimum": 8,
+        "ideal": 11,
+        "maximum": 13
+      },
+      "speaker": "Speaker 1",
+      "text": "I assemble the parts piece by piece. Thanks to that greedy blacksmith mage, I'll be back for more.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0058",
+      "member_ids": [
+        "asr-080"
+      ],
+      "start": "00:03:31.280",
+      "end": "00:03:33.300",
+      "duration_seconds": 2.02,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 6
+      },
+      "speaker": "Speaker 1",
+      "text": "Low -tier shaping spells really do come in handy.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0059",
+      "member_ids": [
+        "asr-081",
+        "asr-082"
+      ],
+      "start": "00:03:33.480",
+      "end": "00:03:38.860",
+      "duration_seconds": 5.38,
+      "recommended_words": {
+        "minimum": 10,
+        "ideal": 13,
+        "maximum": 16
+      },
+      "speaker": "Speaker 1",
+      "text": "Saves me the trouble of building a press by hand. As I assemble the gun, the train conductor outside starts warning the passengers.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0060",
+      "member_ids": [
+        "asr-083"
+      ],
+      "start": "00:03:39.240",
+      "end": "00:03:41.980",
+      "duration_seconds": 2.74,
+      "recommended_words": {
+        "minimum": 5,
+        "ideal": 7,
+        "maximum": 8
+      },
+      "speaker": "Speaker 1",
+      "text": "Everyone, stay alert. We're about to enter the wildlands.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0061",
+      "member_ids": [
+        "asr-084"
+      ],
+      "start": "00:03:42.160",
+      "end": "00:03:44.340",
+      "duration_seconds": 2.18,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "Watch out, or a wild beast might drag you off.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0062",
+      "member_ids": [
+        "asr-085"
+      ],
+      "start": "00:03:44.480",
+      "end": "00:03:47.640",
+      "duration_seconds": 3.16,
+      "recommended_words": {
+        "minimum": 6,
+        "ideal": 8,
+        "maximum": 10
+      },
+      "speaker": "Speaker 1",
+      "text": "I turn the gun over in my hands, weighing it, checking every part.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0063",
+      "member_ids": [
+        "asr-086",
+        "asr-087"
+      ],
+      "start": "00:03:47.800",
+      "end": "00:03:51.140",
+      "duration_seconds": 3.34,
+      "recommended_words": {
+        "minimum": 6,
+        "ideal": 8,
+        "maximum": 10
+      },
+      "speaker": "Speaker 1",
+      "text": "The weight and balance are exactly right. The smokeless powder mix is perfect.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0064",
+      "member_ids": [
+        "asr-088"
+      ],
+      "start": "00:03:51.340",
+      "end": "00:03:56.340",
+      "duration_seconds": 5.0,
+      "recommended_words": {
+        "minimum": 10,
+        "ideal": 12,
+        "maximum": 15
+      },
+      "speaker": "Speaker 1",
+      "text": "The mercury fulminant primer has a few impurities, but for punching through a mage's shield, it'll do more than fine.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0065",
+      "member_ids": [
+        "asr-089",
+        "asr-090"
+      ],
+      "start": "00:03:56.500",
+      "end": "00:04:00.980",
+      "duration_seconds": 4.48,
+      "recommended_words": {
+        "minimum": 9,
+        "ideal": 11,
+        "maximum": 14
+      },
+      "speaker": "Speaker 1",
+      "text": "We've arrived, your highness, the knight tells me. Ahead lies Sin Ridge, the land the gods forsook.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0066",
+      "member_ids": [
+        "asr-091"
+      ],
+      "start": "00:04:01.200",
+      "end": "00:04:03.600",
+      "duration_seconds": 2.4,
+      "recommended_words": {
+        "minimum": 5,
+        "ideal": 6,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "A wasteland where not even low -tier beasts can survive.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0067",
+      "member_ids": [
+        "asr-092"
+      ],
+      "start": "00:04:03.800",
+      "end": "00:04:05.940",
+      "duration_seconds": 2.14,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "You're going to spend the rest of your life here, he says.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0068",
+      "member_ids": [
+        "asr-093"
+      ],
+      "start": "00:04:06.240",
+      "end": "00:04:09.140",
+      "duration_seconds": 2.9,
+      "recommended_words": {
+        "minimum": 6,
+        "ideal": 7,
+        "maximum": 9
+      },
+      "speaker": "Speaker 1",
+      "text": "Eyes full of pity. I study the volcanic ash beneath my feet.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0069",
+      "member_ids": [
+        "asr-094"
+      ],
+      "start": "00:04:09.140",
+      "end": "00:04:11.180",
+      "duration_seconds": 2.04,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 5,
+        "maximum": 6
+      },
+      "speaker": "Speaker 1",
+      "text": "You people are pitifully blind, I say.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0070",
+      "member_ids": [
+        "asr-095",
+        "asr-096"
+      ],
+      "start": "00:04:11.360",
+      "end": "00:04:15.460",
+      "duration_seconds": 4.1,
+      "recommended_words": {
+        "minimum": 8,
+        "ideal": 10,
+        "maximum": 13
+      },
+      "speaker": "Speaker 1",
+      "text": "Then I pull out a knife and start digging into the ground. Your highness, what are you doing? Don't waste your energy.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0071",
+      "member_ids": [
+        "asr-097"
+      ],
+      "start": "00:04:15.660",
+      "end": "00:04:19.940",
+      "duration_seconds": 4.28,
+      "recommended_words": {
+        "minimum": 8,
+        "ideal": 11,
+        "maximum": 13
+      },
+      "speaker": "Speaker 1",
+      "text": "You won't dig up so much as a low -grade mana crystal here, the knights say, baffled by my actions.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0072",
+      "member_ids": [
+        "asr-098"
+      ],
+      "start": "00:04:20.180",
+      "end": "00:04:23.840",
+      "duration_seconds": 3.66,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "Found it. High -purity anthracite coal, I say, cradling the black chunk in my hands.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0073",
+      "member_ids": [
+        "asr-099"
+      ],
+      "start": "00:04:24.020",
+      "end": "00:04:27.500",
+      "duration_seconds": 3.48,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "What kind of junk rock is that? This is the lifeblood that will power an entire world.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0074",
+      "member_ids": [
+        "asr-100"
+      ],
+      "start": "00:04:27.620",
+      "end": "00:04:29.940",
+      "duration_seconds": 2.32,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 6,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "Ten thousand times stronger than your flashy useless crystals.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0075",
+      "member_ids": [
+        "asr-101",
+        "asr-102"
+      ],
+      "start": "00:04:30.140",
+      "end": "00:04:34.340",
+      "duration_seconds": 4.2,
+      "recommended_words": {
+        "minimum": 8,
+        "ideal": 11,
+        "maximum": 13
+      },
+      "speaker": "Speaker 1",
+      "text": "Just then I spot a black liquid on the ground. The smell of crude oil. Nature's most perfect gift.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0076",
+      "member_ids": [
+        "asr-103",
+        "asr-104"
+      ],
+      "start": "00:04:34.480",
+      "end": "00:04:38.220",
+      "duration_seconds": 3.74,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "Ugh, that reeks like demon's blood. Your highness, we need to reach the city before dark.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0077",
+      "member_ids": [
+        "asr-105",
+        "asr-106"
+      ],
+      "start": "00:04:38.420",
+      "end": "00:04:41.900",
+      "duration_seconds": 3.48,
+      "recommended_words": {
+        "minimum": 7,
+        "ideal": 9,
+        "maximum": 11
+      },
+      "speaker": "Speaker 1",
+      "text": "The wilds at night are no joke. I strike a match and toss it into the oil.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0078",
+      "member_ids": [
+        "asr-107"
+      ],
+      "start": "00:04:42.260",
+      "end": "00:04:44.600",
+      "duration_seconds": 2.34,
+      "recommended_words": {
+        "minimum": 4,
+        "ideal": 6,
+        "maximum": 7
+      },
+      "speaker": "Speaker 1",
+      "text": "Flames roar to life instantly. That's impossible.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0079",
+      "member_ids": [
+        "asr-108",
+        "asr-109"
+      ],
+      "start": "00:04:44.840",
+      "end": "00:04:48.260",
+      "duration_seconds": 3.42,
+      "recommended_words": {
+        "minimum": 6,
+        "ideal": 9,
+        "maximum": 10
+      },
+      "speaker": "Speaker 1",
+      "text": "There's no trace of fire magic at all. The old age of magic is coming to an end.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0080",
+      "member_ids": [
+        "asr-110"
+      ],
+      "start": "00:04:48.400",
+      "end": "00:04:51.000",
+      "duration_seconds": 2.6,
+      "recommended_words": {
+        "minimum": 5,
+        "ideal": 7,
+        "maximum": 8
+      },
+      "speaker": "Speaker 1",
+      "text": "From this day forward, steel and fire will rule this wasteland.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0081",
+      "member_ids": [
+        "asr-111"
+      ],
+      "start": "00:04:51.180",
+      "end": "00:04:55.280",
+      "duration_seconds": 4.1,
+      "recommended_words": {
+        "minimum": 8,
+        "ideal": 10,
+        "maximum": 13
+      },
+      "speaker": "Speaker 1",
+      "text": "Let's go see my new domain. The knight captain stares at me, his expression unreadable.",
+      "translation": ""
+    },
+    {
+      "id": "asr-0082",
+      "member_ids": [
+        "asr-112"
+      ],
+      "start": "00:04:55.460",
+      "end": "00:04:59.980",
+      "duration_seconds": 4.52,
+      "recommended_words": {
+        "minimum": 9,
+        "ideal": 11,
+        "maximum": 14
+      },
+      "speaker": "Speaker 1",
+      "text": "The next day we enter the city. The sights along the road are grim and some of the crowd glares at us with a",
+      "translation": ""
+    }
+  ]
+}

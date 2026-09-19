@@ -18,6 +18,8 @@ import { notify } from "@/notifications";
 import type {
   AnalysisState,
   ActivityRecord,
+  AudioPreservationState,
+  DiarizationState,
   AppConfig,
   AppSection,
   EngineRecord,
@@ -25,12 +27,15 @@ import type {
   InstallPreview,
   JobRecord,
   MediaProbe,
+  NarrativeProfile,
   ProjectRecord,
+  ProjectContentType,
+  ProjectDubbingMode,
   RuntimeStatus,
   StudioStep,
-  VoiceboxModel,
-  VoiceboxProfile,
-  VoiceboxStatus,
+  TtsModel,
+  TtsProfile,
+  TtsStatus,
 } from "@/types";
 
 const Onboarding=lazy(()=>import("@/components/Onboarding").then(module=>({default:module.Onboarding})));
@@ -120,15 +125,19 @@ export default function App() {
     null,
   );
   const [analysis, setAnalysis] = useState<AnalysisState | null>(null);
+  const [audioPreservation, setAudioPreservation] =
+    useState<AudioPreservationState | null>(null);
+  const [diarization, setDiarization] =
+    useState<DiarizationState | null>(null);
   const [jobs, setJobs] = useState<JobRecord[]>([]);
   const [activities, setActivities] = useState<ActivityRecord[]>([]);
   const [engines, setEngines] = useState<EngineRecord[]>([]);
   const [runtime, setRuntime] = useState<RuntimeStatus | null>(null);
-  const [voiceboxStatus, setVoiceboxStatus] = useState<VoiceboxStatus | null>(
+  const [ttsStatus, setTtsStatus] = useState<TtsStatus | null>(
     null,
   );
-  const [voiceboxModels, setVoiceboxModels] = useState<VoiceboxModel[]>([]);
-  const [voiceboxProfiles, setVoiceboxProfiles] = useState<VoiceboxProfile[]>(
+  const [ttsModels, setTtsModels] = useState<TtsModel[]>([]);
+  const [ttsProfiles, setTtsProfiles] = useState<TtsProfile[]>(
     [],
   );
   const [config, setConfig] = useState<AppConfig | null>(null);
@@ -136,6 +145,10 @@ export default function App() {
   const [streamUrl, setStreamUrl] = useState("");
   const [importOpen, setImportOpen] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveInFlight = useRef<Promise<void> | null>(null);
+  const saveSequence = useRef(0);
+  const analysisRef = useRef<AnalysisState | null>(null);
+  const appliedStateJobs = useRef<Set<string>>(new Set());
   const engineStates = useRef<Record<string, string>>({});
   const jobStates = useRef<Record<string, string>>({});
   const activityStates = useRef<Record<string, string>>({});
@@ -186,35 +199,50 @@ export default function App() {
     }
     setActivities(feed.activities);
   };
-  const refreshVoicebox = async () => {
+  const refreshTts = async () => {
     const [status, models] = await Promise.all([
-      api.voiceboxStatus(),
-      api.voiceboxModels(),
+      api.ttsStatus(),
+      api.ttsModels(),
     ]);
-    setVoiceboxStatus(status);
-    setVoiceboxModels(models);
-    setVoiceboxProfiles(status.online ? await api.voiceboxProfiles() : []);
+    setTtsStatus(status);
+    setTtsModels(models);
+    setTtsProfiles(await api.ttsProfiles());
   };
   const refreshJobs = async () => {
     if (!activeProject) {
       setJobs([]);
+      setAudioPreservation(null);
+      setDiarization(null);
       return;
     }
-    const next = await api.jobs(activeProject.id);
+    const [next, preservation, speakerDetection] = await Promise.all([
+      api.jobs(activeProject.id),
+      api.audioPreservation(activeProject.id),
+      api.diarization(activeProject.id),
+    ]);
     for (const job of next) {
-      const previous = jobStates.current[job.id];
       if (
-        previous &&
-        previous !== job.status &&
-        ["completed", "partial", "failed"].includes(job.status)
+        ["asr", "translation", "diarization", "voice_generation"].includes(
+          job.type,
+        ) &&
+        ["completed", "partial", "failed"].includes(job.status) &&
+        !appliedStateJobs.current.has(job.id)
       ) {
-        if (job.type === "translation" && job.status === "completed")
-          setAnalysis(await api.analysis(activeProject.id));
+        const latest = await api.analysis(activeProject.id);
+        analysisRef.current = latest;
+        setAnalysis(latest);
+        appliedStateJobs.current.add(job.id);
       }
       jobStates.current[job.id] = job.status;
     }
     setJobs(next);
+    setAudioPreservation(preservation);
+    setDiarization(speakerDetection);
   };
+
+  useEffect(() => {
+    analysisRef.current = analysis;
+  }, [analysis]);
 
   useEffect(() => {
     let alive = true;
@@ -228,8 +256,8 @@ export default function App() {
           machine,
           projectList,
           engineList,
-          vbStatus,
-          vbModels,
+          ttsStatusResult,
+          ttsModelList,
           activityFeed,
         ] = await Promise.all([
           api.health(),
@@ -237,8 +265,8 @@ export default function App() {
           api.runtime(),
           api.projects(),
           api.engines(),
-          api.voiceboxStatus(),
-          api.voiceboxModels(),
+          api.ttsStatus(),
+          api.ttsModels(),
           api.activities(100),
         ]);
         if (!alive) return;
@@ -250,8 +278,8 @@ export default function App() {
         engineStates.current = Object.fromEntries(
           engineList.map((engine) => [engine.id, engine.installation.status]),
         );
-        setVoiceboxStatus(vbStatus);
-        setVoiceboxModels(vbModels);
+        setTtsStatus(ttsStatusResult);
+        setTtsModels(ttsModelList);
         setActivities(activityFeed.activities);
         activityStates.current = Object.fromEntries(
           activityFeed.activities.map((activity) => [
@@ -259,7 +287,7 @@ export default function App() {
             activity.status,
           ]),
         );
-        if (vbStatus.online) setVoiceboxProfiles(await api.voiceboxProfiles());
+        setTtsProfiles(await api.ttsProfiles());
         const lastId = localStorage.getItem("dubroom.activeProjectId");
         const last = projectList.find((p) => p.id === lastId);
         if (last) await openProject(last, false);
@@ -306,26 +334,39 @@ export default function App() {
     if (section !== "engines") return;
     const timer = setInterval(() => {
       refreshEngines().catch(() => null);
-      refreshVoicebox().catch(() => null);
+      refreshTts().catch(() => null);
     }, 2200);
     return () => clearInterval(timer);
   }, [section]);
 
   const openProject = async (project: ProjectRecord, navigate = true) => {
+    if (saveTimer.current) {
+      clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+    }
+    saveSequence.current += 1;
+    appliedStateJobs.current.clear();
     setActiveProject(project);
     localStorage.setItem("dubroom.activeProjectId", project.id);
     if (navigate) setSection("studio");
     setStudioStep("media");
     try {
-      const [state, projectJobs] = await Promise.all([
+      const [state, projectJobs, preservation, speakerDetection] = await Promise.all([
         api.analysis(project.id),
         api.jobs(project.id),
+        api.audioPreservation(project.id),
+        api.diarization(project.id),
       ]);
+      analysisRef.current = state;
       setAnalysis(state);
       setJobs(projectJobs);
+      setAudioPreservation(preservation);
+      setDiarization(speakerDetection);
     } catch {
       setAnalysis(null);
       setJobs([]);
+      setAudioPreservation(null);
+      setDiarization(null);
     }
     if (project.source_path) {
       try {
@@ -341,13 +382,52 @@ export default function App() {
     }
   };
 
-  const prepareVideoPath = async (path: string, name?: string) => {
+  const prepareVideoPath = async (
+    path: string,
+    name?: string,
+    sourceOverride?: string | null,
+    targetOverride?: string,
+    outputAspectOverride?: string,
+    contentType: ProjectContentType = "other",
+    dubbingMode: ProjectDubbingMode = "single",
+  ) => {
     toast.loading("Inspection de la vidéo…", { id: "media" });
     const metadata = await api.probe(path);
     const projectName =
       name?.trim() || metadata.file_name.replace(/\.[^.]+$/, "");
+    let sourceLanguage: string | null = null;
+    let targetLanguage: string | null =
+      localStorage.getItem("dubroom.locale") || "fr";
+    try {
+      const workflow = JSON.parse(
+        localStorage.getItem("dubroom.workflow") || "{}",
+      ) as { sourceLanguage?: string; targetLanguage?: string };
+      sourceLanguage =
+        workflow.sourceLanguage && workflow.sourceLanguage !== "auto"
+          ? workflow.sourceLanguage
+          : null;
+      targetLanguage =
+        workflow.targetLanguage ||
+        localStorage.getItem("dubroom.locale") ||
+        "fr";
+    } catch {
+      // Locale remains a safe target-language default.
+    }
+    if (sourceOverride !== undefined) sourceLanguage = sourceOverride;
+    if (targetOverride) targetLanguage = targetOverride;
+    if (!targetLanguage) {
+      throw new Error("Choisissez la langue cible du doublage");
+    }
     toast.loading("Préparation de la piste audio…", { id: "media" });
-    const prepared = await api.prepare(path, projectName);
+    const prepared = await api.prepare(
+      path,
+      projectName,
+      sourceLanguage,
+      targetLanguage,
+      outputAspectOverride || "source",
+      contentType,
+      dubbingMode,
+    );
     const list = await refreshProjects();
     const project = list.find((p) => p.id === prepared.project_id);
     if (!project) throw new Error("Le projet préparé n’a pas été retrouvé");
@@ -357,11 +437,25 @@ export default function App() {
     setImportOpen(false);
     toast.success("Session créée", { id: "media" });
   };
-  const importLocalVideo = async () => {
+  const importLocalVideo = async (
+    sourceLanguage: string | null,
+    targetLanguage: string,
+    outputAspect: string,
+    contentType: ProjectContentType,
+    dubbingMode: ProjectDubbingMode,
+  ) => {
     const path = await window.dubStudio?.openVideo();
     if (!path) return;
     try {
-      await prepareVideoPath(path);
+      await prepareVideoPath(
+        path,
+        undefined,
+        sourceLanguage,
+        targetLanguage,
+        outputAspect,
+        contentType,
+        dubbingMode,
+      );
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error), {
         id: "media",
@@ -379,26 +473,90 @@ export default function App() {
       return;
     }
     try {
+      if (
+        analysisRef.current &&
+        ["translation", "voice_generation", "export"].includes(type)
+      ) {
+        if (saveTimer.current) {
+          clearTimeout(saveTimer.current);
+          saveTimer.current = null;
+        }
+        if (saveInFlight.current) {
+          await saveInFlight.current;
+        }
+        const pendingAnalysis = analysisRef.current;
+        if (!pendingAnalysis) return;
+        const saved = await api.saveAnalysis(
+          activeProject.id,
+          pendingAnalysis,
+        );
+        analysisRef.current = saved;
+        setAnalysis(saved);
+      }
       const job = await api.createJob(activeProject.id, type, options);
       setJobs((current) => [job, ...current]);
       notify("Opération lancée", type.replaceAll("_", " "), "info");
       toast.success("L’opération continue en arrière-plan");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error));
+      const message = error instanceof Error ? error.message : String(error);
+      if (message.includes("analysis_conflict")) {
+        const latest = await api.analysis(activeProject.id);
+        analysisRef.current = latest;
+        setAnalysis(latest);
+        toast.warning(
+          "Le script a été actualisé. Vérifiez la voix sélectionnée puis relancez l’opération.",
+        );
+        return;
+      }
+      toast.error(message);
     }
   };
 
   const updateAnalysis = (next: AnalysisState) => {
+    analysisRef.current = next;
     setAnalysis(next);
     if (!activeProject) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(
-      () =>
-        api
-          .saveAnalysis(activeProject.id, next)
-          .catch((error) => toast.error(error.message)),
-      450,
-    );
+    const sequence = ++saveSequence.current;
+    saveTimer.current = setTimeout(() => {
+      saveTimer.current = null;
+      const request = (async () => {
+        try {
+          const saved = await api.saveAnalysis(activeProject.id, next);
+          if (sequence !== saveSequence.current) {
+            const local = analysisRef.current;
+            if (local) {
+              const rebased = {
+                ...local,
+                revision: saved.revision,
+                updated_at: saved.updated_at,
+              };
+              analysisRef.current = rebased;
+              setAnalysis(rebased);
+            }
+            return;
+          }
+          analysisRef.current = saved;
+          setAnalysis(saved);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          if (message.includes("analysis_conflict")) {
+            const latest = await api.analysis(activeProject.id);
+            analysisRef.current = latest;
+            setAnalysis(latest);
+            toast.warning(
+              "Une version plus récente du script a été chargée automatiquement.",
+            );
+            return;
+          }
+          toast.error(message);
+        }
+      })();
+      saveInFlight.current = request;
+      void request.finally(() => {
+        if (saveInFlight.current === request) saveInFlight.current = null;
+      });
+    }, 450);
   };
 
   const installPreview = (id: string): Promise<InstallPreview> =>
@@ -503,36 +661,52 @@ export default function App() {
         probe={probe}
         streamUrl={streamUrl}
         engines={engines}
+        voiceProfiles={ttsProfiles}
         jobs={jobs}
-        voiceboxStatus={voiceboxStatus}
-        voiceboxModels={voiceboxModels}
-        voiceboxProfiles={voiceboxProfiles}
-        onRefreshVoicebox={refreshVoicebox}
+        audioPreservation={audioPreservation}
+        diarization={diarization}
         onImport={importVideo}
         onAnalyze={() => createJob("asr")}
-        onTranslate={() => createJob("translation")}
+        onSeparateAudio={(options = {}) =>
+          createJob("audio_separation", options)
+        }
+        onDiarize={(force = false) => createJob("diarization", { force })}
+        onTranslate={(
+          mode,
+          narrativeProfile: NarrativeProfile,
+          narrativeInstructions,
+        ) =>
+          createJob("translation", {
+            mode,
+            narrative_profile: narrativeProfile,
+            narrative_instructions: narrativeInstructions,
+          })
+        }
         onGenerate={() => createJob("voice_generation")}
         onExport={(options) => createJob("export", options)}
         onOpenTools={() => setSection("tools")}
         onSaveAnalysis={updateAnalysis}
+        onAnalysisImported={(state) => {
+          if (saveTimer.current) {
+            clearTimeout(saveTimer.current);
+            saveTimer.current = null;
+          }
+          saveSequence.current += 1;
+          analysisRef.current = state;
+          setAnalysis(state);
+          toast.success(
+            "Script traduit importé. Vous pouvez maintenant générer les voix.",
+          );
+        }}
       />
     );
   else if (section === "library")
     content = (
       <LibraryPage
-        status={voiceboxStatus}
-        profiles={voiceboxProfiles}
-        models={voiceboxModels}
-        onRefresh={refreshVoicebox}
-        onStart={async () => {
-          await api.startVoicebox();
-          await refreshVoicebox();
-          notify(
-            "Voicebox démarré",
-            "La bibliothèque vocale est prête.",
-            "success",
-          );
-        }}
+        status={ttsStatus}
+        profiles={ttsProfiles}
+        models={ttsModels}
+        onRefresh={refreshTts}
         onOpenTools={() => setSection("tools")}
       />
     );
@@ -540,41 +714,10 @@ export default function App() {
     content = (
       <EnginesPage
         engines={engines}
-        voiceboxStatus={voiceboxStatus}
-        voiceboxModels={voiceboxModels}
-        onInstallVoicebox={async () => {
-          const runtimeEngine = engines.find(
-            (engine) => engine.id === "voicebox-runtime",
-          );
-          await installEngine(
-            "voicebox-runtime",
-            runtimeEngine?.installation.status === "failed",
-            {},
-          );
-        }}
-        onStartVoicebox={async () => {
-          await api.startVoicebox();
-          await refreshVoicebox();
-          notify(
-            "Voicebox démarré",
-            "Le runtime vocal local est connecté.",
-            "success",
-          );
-        }}
-        onDownloadVoicebox={async (modelName) => {
-          await api.downloadVoiceboxModel(modelName);
-          await refreshVoicebox();
-          notify(
-            "Téléchargement TTS lancé",
-            voiceboxModels.find((model) => model.model_name === modelName)
-              ?.display_name || modelName,
-            "info",
-          );
-        }}
         onPreview={installPreview}
         onInstall={installEngine}
         onRefresh={() =>
-          Promise.all([refreshEngines(), refreshVoicebox()]).catch((error) =>
+          Promise.all([refreshEngines(), refreshTts()]).catch((error) =>
             toast.error(error.message),
           )
         }

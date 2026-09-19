@@ -1,12 +1,14 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu, shell } = require("electron");
-const { spawn } = require("node:child_process");
+const { spawn, spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 
-const isDev = Boolean(process.env.VITE_DEV_SERVER_URL);
-const userDataPath = path.join(__dirname, "../../.electron-user-data");
 const workspaceRoot = path.resolve(__dirname, "../../..");
+const isDev = Boolean(process.env.VITE_DEV_SERVER_URL);
+const userDataPath =
+  process.env.DUBROOM_ELECTRON_USER_DATA ||
+  path.join(workspaceRoot, "data", "electron-user-data");
 const fileConfig = JSON.parse(
   fs.readFileSync(
     path.join(workspaceRoot, "config", "app.config.json"),
@@ -21,7 +23,12 @@ const forceSoftwareRenderer =
   desktopConfig.software_renderer === true;
 let apiProcess = null;
 let mainWindow = null;
+let rendererFallbackUsed = false;
+let restartRequested = false;
 const logPath = path.join(workspaceRoot, "projects", "electron-main.log");
+
+fs.mkdirSync(userDataPath, { recursive: true });
+app.setPath("userData", userDataPath);
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 
 function log(message) {
@@ -44,7 +51,6 @@ if (forceSoftwareRenderer) {
 } else {
   app.commandLine.appendSwitch("enable-gpu-rasterization");
 }
-app.setPath("userData", userDataPath);
 
 function createWindow() {
   log(
@@ -92,9 +98,22 @@ function createWindow() {
       log(
         `did-fail-load ${errorCode} ${errorDescription} ${validatedURL}`
       );
+      if (isDev && !rendererFallbackUsed && errorCode !== -3) {
+        rendererFallbackUsed = true;
+        log("development server unavailable; loading the production renderer");
+        void mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
+      }
     }
   );
-  mainWindow.webContents.on("did-finish-load", () => log("did-finish-load"));
+  mainWindow.webContents.on("did-finish-load", () => {
+    log("did-finish-load");
+    void mainWindow.webContents
+      .executeJavaScript(
+        "JSON.stringify({innerWidth,outerWidth,devicePixelRatio,clientWidth:document.documentElement.clientWidth})",
+      )
+      .then((dimensions) => log(`renderer dimensions ${dimensions}`))
+      .catch((error) => log(`renderer dimensions unavailable: ${error.message}`));
+  });
 
   if (isDev) {
     mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
@@ -158,6 +177,19 @@ if (!gotSingleInstanceLock) {
       return result.canceled ? null : result.filePaths[0];
     });
 
+    ipcMain.handle("dialog:openTranscript", async () => {
+      const result = await dialog.showOpenDialog({
+        properties: ["openFile"],
+        filters: [
+          {
+            name: "DubRoom translated scripts",
+            extensions: ["json", "md", "txt", "srt", "vtt"],
+          },
+        ],
+      });
+      return result.canceled ? null : result.filePaths[0];
+    });
+
     ipcMain.handle("dialog:openRvcModel", async () => {
       const result = await dialog.showOpenDialog({
         properties: ["openFile"],
@@ -178,6 +210,28 @@ if (!gotSingleInstanceLock) {
       apiBaseUrl: `http://${apiHost}:${apiPort}`,
       workspaceRoot,
     }));
+
+    ipcMain.handle("app:restart", () => {
+      if (restartRequested) return true;
+      restartRequested = true;
+      log("clean restart requested");
+      setTimeout(() => {
+        if (apiProcess?.pid && process.platform === "win32") {
+          spawnSync(
+            "taskkill",
+            ["/PID", String(apiProcess.pid), "/T", "/F"],
+            { windowsHide: true, stdio: "ignore" },
+          );
+          apiProcess = null;
+        } else if (apiProcess && !apiProcess.killed) {
+          apiProcess.kill();
+          apiProcess = null;
+        }
+        app.relaunch();
+        app.exit(0);
+      }, 180);
+      return true;
+    });
 
     ipcMain.handle("window:setTitleBarTheme", (event, palette) => {
       const targetWindow = BrowserWindow.fromWebContents(event.sender);
@@ -314,10 +368,56 @@ function resolvePythonExecutable() {
   return "python";
 }
 
+function resolveFfmpegBinDir() {
+  const candidates = [];
+  if (process.env.DUBROOM_FFMPEG_BIN) {
+    candidates.push(process.env.DUBROOM_FFMPEG_BIN);
+  }
+  if (process.env.LOCALAPPDATA) {
+    const wingetRoot = path.join(
+      process.env.LOCALAPPDATA,
+      "Microsoft",
+      "WinGet",
+      "Packages"
+    );
+    try {
+      for (const entry of fs.readdirSync(wingetRoot, { withFileTypes: true })) {
+        if (!entry.isDirectory() || !entry.name.startsWith("Gyan.FFmpeg_")) {
+          continue;
+        }
+        const packageRoot = path.join(wingetRoot, entry.name);
+        for (const version of fs.readdirSync(packageRoot, {
+          withFileTypes: true,
+        })) {
+          if (version.isDirectory()) {
+            candidates.push(path.join(packageRoot, version.name, "bin"));
+          }
+        }
+      }
+    } catch {
+      // FFmpeg may simply not be installed with WinGet.
+    }
+  }
+  return candidates.find(
+    (candidate) =>
+      fs.existsSync(path.join(candidate, "ffmpeg.exe")) &&
+      fs.existsSync(path.join(candidate, "ffprobe.exe"))
+  );
+}
+
 function runtimeEnvironment() {
+  const pathKey =
+    Object.keys(process.env).find((key) => key.toLowerCase() === "path") ||
+    "PATH";
+  const ffmpegBinDir = resolveFfmpegBinDir();
+  const mergedPath = [ffmpegBinDir, process.env[pathKey]]
+    .filter(Boolean)
+    .join(path.delimiter);
   return {
     ...process.env,
+    [pathKey]: mergedPath,
     DUBROOM_WORKSPACE_ROOT: workspaceRoot,
+    HF_HUB_DISABLE_XET: "1",
     HF_HOME:
       process.env.HF_HOME ||
       path.join(workspaceRoot, "data", "cache", "huggingface"),

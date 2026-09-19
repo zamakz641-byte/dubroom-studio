@@ -1,0 +1,30 @@
+DUBROOM NARRATOR STORY V1 - EVIDENCE CONTRACT
+
+This mode is independent from Multi-Speaker V3.
+
+INPUT
+- Complete source story, not an arbitrary episodic fragment.
+- Chinese ASR with timestamps.
+- Chinese subtitle track with provenance.
+- English subtitle track with provenance.
+- Video-derived hard scene boundaries.
+- Narration slots with safety margins and word budgets.
+- Protected and duckable SFX intervals.
+
+AUTHORITY
+- Audio/ASR: audibility and spoken-event timing.
+- Chinese subtitles: names, terminology and clean source wording.
+- Uploader English subtitles: strong meaning aid, not automatic final prose.
+- Auto-translated English: low-confidence clue only.
+- Video analysis: absolute scene and narration boundaries.
+
+OUTPUT
+- One English narrator.
+- One coherent full-story script.
+- Dialogue converted mainly to indirect narration.
+- Every block tied to one scene and one approved slot.
+- Narrator subtitles reproduce the spoken narration.
+- No block may cross its hard end.
+
+NON-NEGOTIABLE
+If a sentence does not fit, rewrite or remove lower-priority detail. Never extend the scene, freeze the image, retime the source or let narration continue after the visual beat has ended.

@@ -1,20 +1,84 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
+
+function Set-DubProgress {
+  param([int]$Progress, [string]$Message, [string]$Phase = "install")
+  if (-not $env:DUB_ENGINE_STATE) { return }
+  $status = if ($env:DUB_ENGINE_REPAIR -eq "1") { "repairing" } else { "installing" }
+  $payload = @{status=$status;progress=$Progress;message=$Message;phase=$Phase;log_path=$env:DUB_ENGINE_LOG;updated_at=(Get-Date).ToUniversalTime().ToString("o")} | ConvertTo-Json
+  for ($attempt = 0; $attempt -lt 3; $attempt++) {
+    try { Set-Content -LiteralPath $env:DUB_ENGINE_STATE -Value $payload -Encoding UTF8; return }
+    catch { Start-Sleep -Milliseconds (50 * ($attempt + 1)) }
+  }
+}
 
 $engineRoot = [System.IO.Path]::GetFullPath($env:DUB_ENGINE_ENV)
 $modelRoot = [System.IO.Path]::GetFullPath($env:DUB_ENGINE_MODELS)
-if (-not $env:DUB_MODEL_REPO) { throw "Le dépôt du modèle de traduction n'est pas configuré." }
-New-Item -ItemType Directory -Path $engineRoot -Force | Out-Null
-New-Item -ItemType Directory -Path $modelRoot -Force | Out-Null
+$workspaceRoot = Split-Path (Split-Path (Split-Path $engineRoot -Parent) -Parent) -Parent
+$sharedCudaLib = Join-Path $workspaceRoot "data\environments\rvc-runtime\venv\Lib\site-packages\torch\lib"
+if (Test-Path -LiteralPath $sharedCudaLib) {
+  $env:PATH = "$sharedCudaLib;$($env:PATH)"
+}
+if (-not $env:DUB_MODEL_REPO) { throw "Le depot du modele de traduction n'est pas configure." }
+New-Item -ItemType Directory -Path $engineRoot,$modelRoot -Force | Out-Null
 
+$runtimeLock = $null
+$runtimeLockPath = Join-Path $engineRoot ".install.lock"
+Set-DubProgress 5 "Reservation du runtime de traduction partage" "runtime"
+while ($null -eq $runtimeLock) {
+  try {
+    $runtimeLock = [System.IO.File]::Open(
+      $runtimeLockPath,
+      [System.IO.FileMode]::OpenOrCreate,
+      [System.IO.FileAccess]::ReadWrite,
+      [System.IO.FileShare]::None
+    )
+  } catch [System.IO.IOException] {
+    Set-DubProgress 5 "Un autre modele prepare deja ce runtime; attente sans retelechargement" "runtime"
+    Start-Sleep -Seconds 2
+  }
+}
+
+try {
+Set-DubProgress 8 "Creation de l'environnement traduction" "venv"
 $venvPath = Join-Path $engineRoot "venv"
-if (-not (Test-Path -LiteralPath (Join-Path $venvPath "Scripts\python.exe"))) { & python -m venv $venvPath }
+$basePython = if ($env:DUB_BASE_PYTHON) { $env:DUB_BASE_PYTHON } else { "python" }
+if (-not (Test-Path -LiteralPath (Join-Path $venvPath "Scripts\python.exe"))) { & $basePython -m venv $venvPath }
 $pythonExe = Join-Path $venvPath "Scripts\python.exe"
-& $pythonExe -m pip install --upgrade pip
-& $pythonExe -m pip install "huggingface-hub>=0.30,<1" sentencepiece
-if ($LASTEXITCODE -ne 0) { throw "L'installation du gestionnaire de modèles a échoué." }
 
+Set-DubProgress 16 "Mise a jour des outils Python" "python"
+& $pythonExe -m pip install --upgrade pip wheel setuptools
+if ($LASTEXITCODE -ne 0) { throw "Impossible de preparer Python pour la traduction." }
+
+Set-DubProgress 25 "Installation du gestionnaire de modeles" "runtime"
+& $pythonExe -m pip install "huggingface-hub>=0.30,<1" sentencepiece
+if ($LASTEXITCODE -ne 0) { throw "L'installation du gestionnaire de modeles a echoue." }
+
+Set-DubProgress 32 "Installation du runtime $($env:DUB_MODEL_RUNTIME)" "runtime"
 if ($env:DUB_MODEL_RUNTIME -eq "llama_cpp") {
-  & $pythonExe -m pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+  $hasNvidia = [bool](Get-Command "nvidia-smi" -ErrorAction SilentlyContinue)
+  if ($hasNvidia) {
+    $previousErrorAction = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    & $pythonExe -c "import sys; from llama_cpp import llama_supports_gpu_offload; sys.exit(0 if llama_supports_gpu_offload() else 1)" 2>$null
+    $llamaCudaReady = $LASTEXITCODE -eq 0
+    $ErrorActionPreference = $previousErrorAction
+    if ($llamaCudaReady) {
+      Set-DubProgress 32 "Runtime llama.cpp CUDA partage deja pret" "runtime"
+    } else {
+      & $pythonExe -m pip install --upgrade --force-reinstall --no-deps `
+        --index-url https://abetlen.github.io/llama-cpp-python/whl/cu125 `
+        "llama-cpp-python>=0.3.22,<1"
+    }
+  } else {
+    $previousErrorAction = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    & $pythonExe -c "import llama_cpp" 2>$null
+    $llamaCpuReady = $LASTEXITCODE -eq 0
+    $ErrorActionPreference = $previousErrorAction
+    if (-not $llamaCpuReady) {
+      & $pythonExe -m pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+    }
+  }
 } elseif ($env:DUB_MODEL_RUNTIME -eq "ctranslate2") {
   & $pythonExe -m pip install "ctranslate2>=4.6,<5" "transformers>=4.51,<5"
 } elseif ($env:DUB_MODEL_RUNTIME -eq "transformers") {
@@ -24,38 +88,14 @@ if ($env:DUB_MODEL_RUNTIME -eq "llama_cpp") {
 } else {
   throw "Runtime de traduction inconnu: $($env:DUB_MODEL_RUNTIME)"
 }
-if ($LASTEXITCODE -ne 0) { throw "L'installation du runtime quantifié a échoué." }
+if ($LASTEXITCODE -ne 0) { throw "L'installation du runtime de traduction a echoue." }
 
-$downloadCode = @'
-import json, os
-from pathlib import Path
-from huggingface_hub import hf_hub_download, snapshot_download
-root = Path(os.environ["DUB_ENGINE_MODELS"])
-repo = os.environ["DUB_MODEL_REPO"]
-file_name = os.environ.get("DUB_MODEL_FILE", "")
-runtime = os.environ.get("DUB_MODEL_RUNTIME", "")
-if runtime == "onnx":
-    from optimum.exporters.onnx import main_export
-    output = root / "onnx"
-    task = "text2text-generation-with-past" if os.environ.get("DUB_MODEL_KIND") == "seq2seq" else "text-generation-with-past"
-    main_export(model_name_or_path=repo, output=output, task=task)
-    model_path = output
-elif file_name:
-    downloaded = hf_hub_download(repo_id=repo, filename=file_name, revision=os.environ.get("DUB_MODEL_REVISION", "main"), local_dir=root)
-    model_path = downloaded
-else:
-    model_path = snapshot_download(repo_id=repo, revision=os.environ.get("DUB_MODEL_REVISION", "main"), local_dir=root / "snapshot")
-manifest = {
-    "schema_version": 2,
-    "engine_id": os.environ["DUB_ENGINE_ID"],
-    "repo_id": repo,
-    "original_repo_id": os.environ.get("DUB_MODEL_ORIGINAL_REPO", ""),
-    "file_name": file_name or None,
-    "model_path": str(model_path),
-    "runtime": runtime,
-    "quantization": os.environ.get("DUB_MODEL_QUANTIZATION", ""),
+Set-DubProgress 38 "Preparation du telechargement modele" "download"
+$env:DUB_HELPER_KIND = "translation"
+& $pythonExe (Join-Path $PSScriptRoot "download-huggingface-model.py")
+if ($LASTEXITCODE -ne 0) { throw "Le telechargement ou l'export du modele a echoue." }
+} finally {
+  if ($null -ne $runtimeLock) {
+    $runtimeLock.Dispose()
+  }
 }
-(root / "model.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-'@
-& $pythonExe -c $downloadCode
-if ($LASTEXITCODE -ne 0) { throw "Le téléchargement ou l'export du modèle a échoué." }

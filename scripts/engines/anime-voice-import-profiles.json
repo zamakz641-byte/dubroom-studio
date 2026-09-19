@@ -1,0 +1,215 @@
+{
+  "version": 1,
+  "profiles": [
+    {
+      "id": "ANM01",
+      "name": "Anime - Young Hero (Yuji Ref)",
+      "character": "Yuji Itadori",
+      "gender": "male",
+      "age": "young adult",
+      "pitch": "moderate pitch",
+      "traits": [
+        "heroic",
+        "energetic",
+        "friendly",
+        "expressive"
+      ],
+      "roles": [
+        "protagonist",
+        "young_male",
+        "hero"
+      ],
+      "source_url": "https://www.101soundboards.com/boards/1583344-jujutsu-kaisen-cursed-clash-pc-yuji-itadori-japanese-voice",
+      "test_style": "hero"
+    },
+    {
+      "id": "ANM02",
+      "name": "Anime - Calm Protagonist (Megumi Ref)",
+      "character": "Megumi Fushiguro",
+      "gender": "male",
+      "age": "young adult",
+      "pitch": "moderate pitch",
+      "traits": [
+        "calm",
+        "serious",
+        "reserved",
+        "cold"
+      ],
+      "roles": [
+        "protagonist",
+        "rival",
+        "young_male"
+      ],
+      "source_url": "https://www.101soundboards.com/boards/1583336-jujutsu-kaisen-cursed-clash-pc-megumi-fushiguro-japanese-voice",
+      "test_style": "calm"
+    },
+    {
+      "id": "ANM03",
+      "name": "Anime - Charismatic Male (Gojo Ref)",
+      "character": "Satoru Gojo",
+      "gender": "male",
+      "age": "young adult",
+      "pitch": "moderate pitch",
+      "traits": [
+        "charismatic",
+        "confident",
+        "playful",
+        "powerful"
+      ],
+      "roles": [
+        "mentor",
+        "protagonist",
+        "leader"
+      ],
+      "source_url": "https://www.101soundboards.com/boards/1583353-jujutsu-kaisen-cursed-clash-pc-satoru-gojo-young-japanese-voice/",
+      "test_style": "charismatic"
+    },
+    {
+      "id": "ANM04",
+      "name": "Anime - Deep Villain (Sukuna Ref)",
+      "character": "Ryomen Sukuna",
+      "gender": "male",
+      "age": "adult",
+      "pitch": "low pitch",
+      "traits": [
+        "deep",
+        "dominant",
+        "cold",
+        "threatening"
+      ],
+      "roles": [
+        "antagonist",
+        "villain",
+        "boss"
+      ],
+      "source_url": "https://www.101soundboards.com/boards/1583340-jujutsu-kaisen-cursed-clash-pc-ryomen-sukuna-japanese-voice",
+      "test_style": "villain"
+    },
+    {
+      "id": "ANM05",
+      "name": "Anime - Unstable Villain (Mahito Ref)",
+      "character": "Mahito",
+      "gender": "male",
+      "age": "young adult",
+      "pitch": "moderate pitch",
+      "traits": [
+        "playful",
+        "unstable",
+        "creepy",
+        "expressive"
+      ],
+      "roles": [
+        "antagonist",
+        "villain",
+        "trickster"
+      ],
+      "source_url": "https://www.101soundboards.com/boards/1583334-jujutsu-kaisen-cursed-clash-pc-mahito-japanese-voice/",
+      "test_style": "villain"
+    },
+    {
+      "id": "ANF01",
+      "name": "Anime - Soft Female (Shinobu Ref)",
+      "character": "Shinobu Kocho",
+      "gender": "female",
+      "age": "young adult",
+      "pitch": "high pitch",
+      "traits": [
+        "soft",
+        "calm",
+        "elegant",
+        "controlled"
+      ],
+      "roles": [
+        "female_lead",
+        "support",
+        "healer"
+      ],
+      "source_url": "https://www.101soundboards.com/boards/1584153-demon-slayer-kimetsu-no-yaiba-the-hinokami-chronicles-2-pc-shinobu-kocho-japanese",
+      "test_style": "female_soft"
+    },
+    {
+      "id": "ANF02",
+      "name": "Anime - Strong Young Female (Nobara Ref)",
+      "character": "Nobara Kugisaki",
+      "gender": "female",
+      "age": "young adult",
+      "pitch": "high pitch",
+      "traits": [
+        "strong",
+        "confident",
+        "energetic",
+        "sharp"
+      ],
+      "roles": [
+        "female_lead",
+        "fighter",
+        "young_female"
+      ],
+      "source_url": "https://www.101soundboards.com/boards/1583337-jujutsu-kaisen-cursed-clash-pc-nobara-kugisaki-japanese-voice",
+      "test_style": "female_strong"
+    },
+    {
+      "id": "ANF03",
+      "name": "Anime - Young Girl (Rika Ref)",
+      "character": "Rika",
+      "gender": "female",
+      "age": "child",
+      "pitch": "high pitch",
+      "traits": [
+        "young",
+        "emotional",
+        "bright",
+        "intense"
+      ],
+      "roles": [
+        "young_girl",
+        "child",
+        "secondary"
+      ],
+      "source_url": "https://www.101soundboards.com/boards/1583367-jujutsu-kaisen-cursed-clash-pc-rika-japanese-voice",
+      "test_style": "child"
+    },
+    {
+      "id": "ANF04",
+      "name": "Anime - Child Girl (Hanako Ref)",
+      "character": "Hanako Kamado",
+      "gender": "female",
+      "age": "child",
+      "pitch": "high pitch",
+      "traits": [
+        "child",
+        "innocent",
+        "soft",
+        "bright"
+      ],
+      "roles": [
+        "child",
+        "young_girl",
+        "family"
+      ],
+      "source_url": "https://www.101soundboards.com/boards/1584175-demon-slayer-kimetsu-no-yaiba-the-hinokami-chronicles-2-pc-hanako-kamado-japanese",
+      "test_style": "child"
+    },
+    {
+      "id": "ANF05",
+      "name": "Anime - Warm Adult Female (Kie Ref)",
+      "character": "Kie Kamado",
+      "gender": "female",
+      "age": "adult",
+      "pitch": "moderate pitch",
+      "traits": [
+        "warm",
+        "mature",
+        "calm",
+        "motherly"
+      ],
+      "roles": [
+        "mother",
+        "adult_female",
+        "support"
+      ],
+      "source_url": "https://www.101soundboards.com/boards/1584176-demon-slayer-kimetsu-no-yaiba-the-hinokami-chronicles-2-pc-kie-kamado-japanese",
+      "test_style": "female_soft"
+    }
+  ]
+}

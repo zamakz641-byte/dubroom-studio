@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import threading
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -12,7 +13,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .config import PATHS, VOICEBOX_SOURCE
+from .config import PATHS
+from .tts_catalog_service import build_engine_entries, runtime_engine_id as tts_runtime_engine_id
 
 
 REGISTRY_PATH = PATHS.workspace / "models" / "registry.json"
@@ -20,8 +22,30 @@ WHISPER_CATALOG_PATH = PATHS.workspace / "models" / "whisper-catalog.json"
 TRANSLATION_CATALOG_PATH = PATHS.workspace / "models" / "translation-catalog.json"
 BRAND_CATALOG_PATH = PATHS.workspace / "models" / "brand-catalog.json"
 INSTALL_STATE_ROOT = PATHS.data / "engine-state"
+TTS_CATALOG_PATH = PATHS.workspace / "models" / "tts-catalog.json"
 _install_processes: dict[str, subprocess.Popen[str]] = {}
 _install_lock = threading.Lock()
+
+TRANSLATION_RUNTIME_IDS = {
+    "llama_cpp": "translation-qwen3-0.6b-q8",
+    "ctranslate2": "translation-nllb-600m-int8",
+    "transformers": "translation-runtime-transformers",
+    "onnx": "translation-runtime-onnx",
+}
+
+
+def translation_runtime_id(model: dict[str, Any]) -> str:
+    runtime = str(model.get("runtime") or "transformers")
+    return TRANSLATION_RUNTIME_IDS.get(runtime, f"translation-runtime-{runtime.replace('_', '-')}")
+
+
+def engine_runtime_id(engine: dict[str, Any]) -> str:
+    model = engine.get("model") or {}
+    if engine.get("adapter") == "native-tts":
+        return tts_runtime_engine_id(model)
+    if engine.get("category") == "translation":
+        return translation_runtime_id(model)
+    return str(engine["id"])
 
 
 def _now() -> str:
@@ -34,12 +58,17 @@ def load_registry() -> dict[str, Any]:
     payload = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
     if not isinstance(payload.get("engines"), list):
         raise ValueError("Engine registry must contain an engines array")
-    # Voicebox is the single TTS orchestration layer. Legacy standalone voice
-    # adapters remain on disk only for migration and are not exposed to users.
-    payload["engines"] = [item for item in payload["engines"] if item.get("id") != "supertonic-local"]
+    payload["engines"] = [item for item in payload["engines"] if item.get("id") != "supertonic-local" and not str(item.get("id", "")).startswith("tts-")]
     if WHISPER_CATALOG_PATH.exists():
         catalog = json.loads(WHISPER_CATALOG_PATH.read_text(encoding="utf-8"))
         payload["engines"] = [item for item in payload["engines"] if not str(item.get("id", "")).startswith("faster-whisper-")]
+        nvidia_runtime_gb = (
+            1.2
+            if os.name == "nt"
+            and _system_command_exists("nvidia-smi")
+            and not _shared_cuda_runtime_exists()
+            else 0.0
+        )
         for model in catalog.get("models", []):
             engine_id = str(model["id"])
             size = float(model.get("download_gb", 0))
@@ -53,12 +82,18 @@ def load_registry() -> dict[str, Any]:
                 "description": "Installable Faster Whisper model with isolated runtime, word timestamps and automatic hardware fallback.",
                 "installable": True,
                 "source": "https://github.com/SYSTRAN/faster-whisper",
-                "license": "MIT runtime · model weights retain their own terms",
+                "license": "MIT runtime - model weights retain their own terms",
                 "capabilities": ["transcription", "language-detection", "word-timestamps"],
                 "languages": [model.get("languages", "multilingual")],
-                "requirements": {"disk_space_gb": round(size * 1.35 + 0.35, 2), "download_size_gb": size, "minimum_ram_gb": 4 if model.get("vram_gb", 1) <= 2 else 8, "recommended_vram_gb": model.get("vram_gb", 1)},
+                "requirements": {
+                    "disk_space_gb": round(size * 1.35 + 0.35 + nvidia_runtime_gb, 2),
+                    "download_size_gb": round(size + nvidia_runtime_gb, 2),
+                    "runtime_download_size_gb": nvidia_runtime_gb,
+                    "minimum_ram_gb": 4 if model.get("vram_gb", 1) <= 2 else 8,
+                    "recommended_vram_gb": model.get("vram_gb", 1),
+                },
                 "model": {"repo_id": model["repo_id"], "revision": "main", "model_name": model.get("model_name"), "parameters_m": model.get("parameters_m"), "quality_rank": model.get("quality_rank"), "speed_rank": model.get("speed_rank"), "optimized": bool(model.get("optimized")), "recommended": bool(model.get("recommended")), "family": family, "family_id": f"asr-{family.lower().replace(' ', '-')}", "format": "CTranslate2", "variant": model.get("label"), "runtime": "ctranslate2", "quantization": "INT8 / FP16 runtime"},
-                "installer": {"script": "install-huggingface-asr.ps1", "steps": ["Create isolated Python environment", "Install Faster Whisper", "Download and verify model", "Run load test"], "checks": [{"root": "models_root", "path": f"{engine_id}/model.json"}, {"root": "environments_root", "path": f"{engine_id}/venv/Scripts/python.exe"}]},
+                "installer": {"script": "install-huggingface-asr.ps1", "steps": ["Create isolated Python environment", "Install Faster Whisper and NVIDIA acceleration when available", "Download and verify model", "Run load test"], "checks": [{"root": "models_root", "path": f"{engine_id}/model.json"}, {"root": "environments_root", "path": f"{engine_id}/venv/Scripts/python.exe"}]},
             })
             quantized_engine = payload["engines"][-1]
             raw_repo = str(model.get("original_repo_id") or "")
@@ -69,12 +104,12 @@ def load_registry() -> dict[str, Any]:
                 alternate = json.loads(json.dumps(quantized_engine))
                 alternate.update({
                     "id": variant_id,
-                    "display_name": f"{model['label']} · {'Brut' if suffix == 'raw' else 'ONNX'}",
-                    "tagline": f"{model_format} · {'poids originaux' if suffix == 'raw' else 'graphe portable CPU/GPU'}",
+                    "display_name": f"{model['label']} - {'Brut' if suffix == 'raw' else 'ONNX'}",
+                    "tagline": f"{model_format} - {'poids originaux' if suffix == 'raw' else 'graphe portable CPU/GPU'}",
                     "description": "Original Transformers weights with full precision and maximum compatibility." if suffix == "raw" else "Exported ONNX graph for portable inference with ONNX Runtime.",
                     "source": f"https://huggingface.co/{raw_repo}",
                     "requirements": {**alternate["requirements"], "disk_space_gb": round(max(size * multiplier, 0.5) + 1.5, 2), "download_size_gb": round(max(size * multiplier, 0.4), 2), "recommended_vram_gb": max(int(model.get("vram_gb", 1) * (1.7 if suffix == "raw" else 1.25)), 2)},
-                    "model": {**alternate["model"], "repo_id": raw_repo, "original_repo_id": raw_repo, "runtime": runtime, "format": model_format, "quantization": "FP16 / FP32" if suffix == "raw" else "ONNX Runtime", "variant": f"{model['label']} · {model_format}"},
+                    "model": {**alternate["model"], "repo_id": raw_repo, "original_repo_id": raw_repo, "runtime": runtime, "format": model_format, "quantization": "FP16 / FP32" if suffix == "raw" else "ONNX Runtime", "variant": f"{model['label']} - {model_format}"},
                     "installer": {"script": "install-huggingface-asr.ps1", "steps": ["Create isolated Python environment", f"Install {model_format} runtime", "Download original weights" if suffix == "raw" else "Export verified ONNX graph", "Write runtime manifest"], "checks": [{"root": "models_root", "path": f"{variant_id}/model.json"}, {"root": "environments_root", "path": f"{variant_id}/venv/Scripts/python.exe"}]},
                 })
                 payload["engines"].append(alternate)
@@ -85,11 +120,12 @@ def load_registry() -> dict[str, Any]:
         for model in catalog.get("models", []):
             engine_id = str(model["id"])
             size = float(model.get("download_gb", 0))
+            shared_runtime_id = translation_runtime_id(model)
             payload["engines"].append({
                 "id": engine_id,
                 "display_name": model["label"],
                 "category": "translation",
-                "tagline": f"{model.get('quantization', 'local')} · {model.get('tier', 'local').title()} · {model.get('languages', 'multilingual')}",
+                "tagline": f"{model.get('quantization', 'local')} - {model.get('tier', 'local').title()} - {model.get('languages', 'multilingual')}",
                 "description": "Quantized local translation model. The selected artifact, runtime, provenance and license are recorded in a portable manifest.",
                 "installable": True,
                 "source": f"https://huggingface.co/{model['repo_id']}",
@@ -97,8 +133,8 @@ def load_registry() -> dict[str, Any]:
                 "capabilities": ["translation", str(model.get("quantization", "quantized")), "context-adaptation", "duration-adaptation"] if model.get("kind") == "causal" else ["translation", str(model.get("quantization", "INT8")), "many-to-many", "low-resource-languages"],
                 "languages": [model.get("languages", "multilingual")],
                 "requirements": {"disk_space_gb": round(size * 1.25 + 1.2, 2), "download_size_gb": size, "minimum_ram_gb": 8 if model.get("vram_gb", 2) <= 4 else 16, "recommended_vram_gb": model.get("vram_gb", 2)},
-                "model": {"repo_id": model["repo_id"], "revision": "main", "family_id": f"translation-{str(model.get('family', engine_id)).lower().replace(' ', '-').replace('.', '-')}", "format": "GGUF" if model.get("runtime") == "llama_cpp" else "CTranslate2", "variant": model.get("label"), **model},
-                "installer": {"script": "install-huggingface-translation.ps1", "steps": ["Create isolated translation runtime", f"Install {model.get('runtime', 'local')} backend", f"Download only {model.get('quantization', 'selected')} weights", "Write provenance and verified local manifest"], "checks": [{"root": "models_root", "path": f"{engine_id}/model.json"}, {"root": "environments_root", "path": f"{engine_id}/venv/Scripts/python.exe"}]},
+                "model": {"repo_id": model["repo_id"], "revision": "main", "runtime_id": shared_runtime_id, "family_id": f"translation-{str(model.get('family', engine_id)).lower().replace(' ', '-').replace('.', '-')}", "format": "GGUF" if model.get("runtime") == "llama_cpp" else "CTranslate2", "variant": model.get("label"), **model},
+                "installer": {"script": "install-huggingface-translation.ps1", "steps": ["Create or reuse the shared translation runtime", f"Install {model.get('runtime', 'local')} backend once", f"Download only {model.get('quantization', 'selected')} weights", "Write provenance and verified local manifest"], "checks": [{"root": "models_root", "path": f"{engine_id}/model.json"}, {"root": "environments_root", "path": f"{shared_runtime_id}/venv/Scripts/python.exe"}]},
             })
             original_repo = str(model.get("original_repo_id") or model["repo_id"])
             base_key = f"{original_repo}:{model.get('parameters_b', '')}"
@@ -114,16 +150,57 @@ def load_registry() -> dict[str, Any]:
                 disk = round(parameters * (2.25 if suffix == "raw" else 2.5) + 2.0, 2)
                 alternate.update({
                     "id": variant_id,
-                    "display_name": f"{model.get('family', model['label'])} {parameters:g}B · {'Brut' if suffix == 'raw' else 'ONNX'}",
-                    "tagline": f"{model_format} · {model.get('languages', 'multilingual')} · poids originaux",
+                    "display_name": f"{model.get('family', model['label'])} {parameters:g}B - {'Brut' if suffix == 'raw' else 'ONNX'}",
+                    "tagline": f"{model_format} - {model.get('languages', 'multilingual')} - poids originaux",
                     "description": "Original model weights for maximum quality and fine-tuning compatibility." if suffix == "raw" else "Portable ONNX export optimized for local inference providers.",
                     "source": f"https://huggingface.co/{original_repo}",
                     "requirements": {**alternate["requirements"], "disk_space_gb": disk, "download_size_gb": round(disk - 1.2, 2), "minimum_ram_gb": max(8, int(parameters * 3)), "recommended_vram_gb": max(2, int(parameters * (2.2 if suffix == "raw" else 1.65)))},
-                    "model": {**alternate["model"], "repo_id": original_repo, "original_repo_id": original_repo, "file_name": "", "runtime": runtime, "format": model_format, "quantization": "BF16 / FP16" if suffix == "raw" else "ONNX Runtime", "variant": f"{model.get('family', model['label'])} {parameters:g}B · {model_format}"},
-                    "installer": {"script": "install-huggingface-translation.ps1", "steps": ["Create isolated translation runtime", f"Install {model_format} backend", "Download original weights" if suffix == "raw" else "Export verified ONNX graph", "Write provenance and local manifest"], "checks": [{"root": "models_root", "path": f"{variant_id}/model.json"}, {"root": "environments_root", "path": f"{variant_id}/venv/Scripts/python.exe"}]},
+                    "model": {**alternate["model"], "repo_id": original_repo, "original_repo_id": original_repo, "file_name": "", "runtime": runtime, "runtime_id": translation_runtime_id({"runtime": runtime}), "format": model_format, "quantization": "BF16 / FP16" if suffix == "raw" else "ONNX Runtime", "variant": f"{model.get('family', model['label'])} {parameters:g}B - {model_format}"},
+                    "installer": {"script": "install-huggingface-translation.ps1", "steps": ["Create or reuse the shared translation runtime", f"Install {model_format} backend once", "Download original weights" if suffix == "raw" else "Export verified ONNX graph", "Write provenance and local manifest"], "checks": [{"root": "models_root", "path": f"{variant_id}/model.json"}, {"root": "environments_root", "path": f"{translation_runtime_id({'runtime': runtime})}/venv/Scripts/python.exe"}]},
                 })
                 payload["engines"].append(alternate)
+    if TTS_CATALOG_PATH.exists():
+        payload["engines"].extend(build_engine_entries(TTS_CATALOG_PATH))
+    payload["engines"] = [
+        item for item in payload["engines"] if item.get("id") != "asr-funasr-zh"
+    ]
+    payload["engines"].append({
+        "id": "asr-funasr-zh",
+        "display_name": "Paraformer-zh · Mandarin CUDA",
+        "category": "asr",
+        "adapter": "funasr-zh",
+        "tagline": "Mandarin production ASR · timestamps · shared CUDA runtime",
+        "description": "Chinese-specialized Paraformer with FSMN-VAD. Selected automatically for zh projects; Whisper remains the fallback for other languages.",
+        "installable": False,
+        "source": "https://huggingface.co/funasr/paraformer-zh",
+        "license": "Apache-2.0",
+        "capabilities": ["transcription", "mandarin", "timestamps", "vad", "cuda"],
+        "languages": ["zh", "zh-CN", "zh-TW"],
+        "requirements": {
+            "disk_space_gb": 1.1,
+            "download_size_gb": 0.83,
+            "minimum_ram_gb": 8,
+            "recommended_vram_gb": 4
+        },
+        "model": {
+            "repo_id": "funasr/paraformer-zh",
+            "revision": "main",
+            "runtime": "funasr",
+            "format": "PyTorch",
+            "family": "Paraformer",
+            "variant": "Paraformer-zh + FSMN-VAD",
+            "quantization": "CUDA FP32"
+        },
+        "installer": {
+            "steps": ["Reuse shared Torch 2.8 CUDA", "Load Paraformer-zh", "Load FSMN-VAD", "Run Mandarin CUDA smoke test"],
+            "checks": [
+                {"root": "models_root", "path": "asr-funasr-zh/model.json"},
+                {"root": "environments_root", "path": "asr-funasr-zh/venv/Scripts/python.exe"}
+            ]
+        }
+    })
     return payload
+
 
 
 def list_engines() -> list[dict[str, Any]]:
@@ -140,22 +217,33 @@ def get_engine(engine_id: str) -> dict[str, Any]:
 def engine_snapshot(engine: dict[str, Any]) -> dict[str, Any]:
     state = _read_state(engine["id"])
     detected = _checks_pass(engine)
-    if state.get("status") in {"queued", "installing", "repairing", "failed", "cancelled"}:
+    artifacts_present = _model_artifacts_present(engine)
+    if state.get("status") in {"queued", "installing", "repairing"}:
         status = state["status"]
     elif detected:
         status = "ready"
+    elif artifacts_present:
+        status = "needs_repair"
+    elif state.get("status") in {"failed", "cancelled"}:
+        status = state["status"]
     else:
         status = "not_installed"
-    verification = _capability_verification(engine, detected)
+    verification = _capability_verification(engine, detected, artifacts_present)
+    ready = status == "ready"
     return {
         **engine,
         "brand": _brand_for_engine(engine),
         "installation": {
             "status": status,
-            "progress": int(state.get("progress", 100 if detected else 0)),
-            "message": state.get("message", "Validated locally" if detected else "Available to install"),
+            "progress": 100 if ready else int(state.get("progress", 0)),
+            "message": "Engine ready" if ready else state.get("message", "Available to install"),
             "updated_at": state.get("updated_at"),
             "log_path": state.get("log_path"),
+            "phase": state.get("phase"),
+            "downloaded_bytes": state.get("downloaded_bytes"),
+            "total_bytes": state.get("total_bytes"),
+            "speed_bps": state.get("speed_bps"),
+            "eta_seconds": state.get("eta_seconds"),
         },
         "verification": verification,
     }
@@ -176,7 +264,8 @@ def _brand_for_engine(engine: dict[str, Any]) -> dict[str, Any]:
         "demucs": "demucs", "pyannote": "pyannote",
         "qwen": "qwen", "aya": "aya", "cohere": "aya", "phi": "phi",
         "nllb": "nllb", "facebook": "nllb", "whisper": "whisper",
-        "systran": "whisper", "voicebox": "voicebox", "rvc": "rvc",
+        "systran": "whisper", "rvc": "rvc", "kokoro": "kokoro", "luxtts": "luxtts",
+        "qwen3": "qwen", "chatterbox": "chatterbox", "tada": "tada", "supertonic": "supertonic",
         "ffmpeg": "ffmpeg", "subtitle": "vsr", "yaofanguk": "vsr",
         "yt-dlp": "youtube", "youtube": "youtube",
     }
@@ -190,7 +279,11 @@ def _brand_for_engine(engine: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _capability_verification(engine: dict[str, Any], installed: bool) -> dict[str, Any]:
+def _capability_verification(
+    engine: dict[str, Any],
+    detected: bool,
+    artifacts_present: bool = False,
+) -> dict[str, Any]:
     """Describe whether an installed artifact is actually callable by Dubroom.
 
     File checks alone only prove that an installer produced files. This contract
@@ -209,15 +302,19 @@ def _capability_verification(engine: dict[str, Any], installed: bool) -> dict[st
         adapter_name = "youtube"
         adapter_path = PATHS.workspace / "services" / "api" / "app" / "youtube_service.py"
         adapter_ready = adapter_path.is_file()
-    elif engine_id == "voicebox-runtime":
-        adapter_name = "voicebox"
-        adapter_path = PATHS.workspace / "services" / "api" / "app" / "voicebox_service.py"
-        adapter_ready = adapter_path.is_file()
     elif adapter == "rvc":
         adapter_path = PATHS.workspace / "services" / "api" / "app" / "rvc_service.py"
         adapter_ready = adapter_path.is_file() and (PATHS.installers / "run-rvc.py").is_file()
     elif adapter == "subclean":
         adapter_path = PATHS.workspace / "services" / "api" / "app" / "subclean_service.py"
+        adapter_ready = adapter_path.is_file()
+    elif adapter == "native-tts":
+        adapter_name = "native-tts-worker"
+        adapter_path = PATHS.installers / "run-tts.py"
+        adapter_ready = adapter_path.is_file()
+    elif adapter == "funasr-zh":
+        adapter_name = "funasr-zh-worker"
+        adapter_path = PATHS.installers / "run-funasr-zh.py"
         adapter_ready = adapter_path.is_file()
     elif category == "asr":
         adapter_name = "asr-worker"
@@ -227,28 +324,54 @@ def _capability_verification(engine: dict[str, Any], installed: bool) -> dict[st
         adapter_name = "translation-worker"
         adapter_path = PATHS.workspace / "services" / "api" / "app" / "translation_worker.py"
         adapter_ready = adapter_path.is_file()
+    elif category == "alignment":
+        adapter_name = "whisperx-worker"
+        adapter_path = PATHS.installers / "run-whisperx.py"
+        adapter_ready = adapter_path.is_file()
+    elif category == "separation":
+        adapter_name = "audio-separation-worker"
+        adapter_path = PATHS.installers / "run-audio-separation.py"
+        adapter_ready = adapter_path.is_file()
+    elif category == "diarization":
+        adapter_name = "speaker-diarization-worker"
+        adapter_path = PATHS.installers / "run-speaker-diarization.py"
+        adapter_ready = adapter_path.is_file()
     else:
         adapter_name = ""
         adapter_ready = False
 
     manifest_path = PATHS.environments / engine_id / "ready.json"
+    runtime_manifest_path = PATHS.environments / engine_runtime_id(engine) / "ready.json"
     smoke_test = False
     smoke_label = "not-run"
     if engine_id == "ffmpeg-system":
         smoke_test = adapter_ready
         smoke_label = "command-version" if smoke_test else "failed"
-    elif manifest_path.is_file():
+    elif manifest_path.is_file() or runtime_manifest_path.is_file():
+        selected_manifest = (
+            manifest_path if manifest_path.is_file() else runtime_manifest_path
+        )
         try:
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
+            manifest = json.loads(selected_manifest.read_text(encoding="utf-8-sig"))
             smoke_label = str(manifest.get("self_test") or "installer-validation")
             smoke_test = True
         except (json.JSONDecodeError, OSError):
             smoke_label = "invalid-manifest"
+    elif detected and _read_state(engine_id).get("status") == "ready":
+        # Some shared-runtime installers predate per-model ready manifests. A
+        # successful installer state plus all current file/runtime checks is the
+        # recorded smoke test for those installations.
+        smoke_test = True
+        smoke_label = "installer-completed"
 
-    usable = bool(installed and adapter_ready and smoke_test)
+    installed = bool(detected or artifacts_present)
+    usable = bool(detected and adapter_ready and smoke_test)
     if not installed:
         status = "not-installed"
         message = "Runtime or model is not installed"
+    elif not detected:
+        status = "needs-repair"
+        message = "Model files are downloaded, but the runtime needs repair or validation"
     elif not adapter_ready:
         status = "adapter-missing"
         message = "Installed files exist, but no executable Dubroom adapter is enabled"
@@ -273,13 +396,15 @@ def _capability_verification(engine: dict[str, Any], installed: bool) -> dict[st
 def installation_preview(engine_id: str) -> dict[str, Any]:
     engine = get_engine(engine_id)
     installer = engine.get("installer") or {}
+    runtime_id = engine_runtime_id(engine)
     return {
         "engine_id": engine_id,
         "display_name": engine.get("display_name", engine_id),
         "disk_space_gb": engine.get("requirements", {}).get("disk_space_gb"),
         "steps": installer.get("steps", []),
         "script": installer.get("script"),
-        "environment_root": str(PATHS.environments / engine_id),
+        "environment_root": str(PATHS.environments / runtime_id),
+        "shared_runtime_id": runtime_id,
         "models_root": str(PATHS.models / engine_id),
         "cache_root": str(PATHS.cache / engine_id),
         "credentials": engine.get("credentials", []),
@@ -378,6 +503,8 @@ def queue_install(engine_id: str, repair: bool = False) -> dict[str, Any]:
 
 def run_install(engine_id: str, repair: bool = False, credentials: dict[str, str] | None = None) -> None:
     engine = get_engine(engine_id)
+    engine_model = engine.get("model") or {}
+    shared_runtime_id = engine_runtime_id(engine)
     script_path = (PATHS.installers / engine["installer"]["script"]).resolve()
     state_root = INSTALL_STATE_ROOT / engine_id
     state_root.mkdir(parents=True, exist_ok=True)
@@ -390,13 +517,18 @@ def run_install(engine_id: str, repair: bool = False, credentials: dict[str, str
     env.update({
         "DUB_ENGINE_ID": engine_id,
         "DUB_BASE_PYTHON": str(base_python),
+        # Keep the model installation marker separate from the compatibility
+        # runtime. Several Qwen or Chatterbox variants can share one Python
+        # environment without overwriting each other's ready.json manifest.
         "DUB_ENGINE_ENV": str(PATHS.environments / engine_id),
+        "DUB_TTS_RUNTIME_ENV": str(PATHS.environments / shared_runtime_id),
         "DUB_ENGINE_MODELS": str(PATHS.models / engine_id),
         "DUB_ENGINE_CACHE": str(PATHS.cache / engine_id),
         "DUB_ENGINE_STATE": str(_state_path(engine_id)),
         "DUB_ENGINE_LOG": str(log_path),
         "DUB_ENGINE_REPAIR": "1" if repair else "0",
         "HF_HOME": str(PATHS.cache / "huggingface"),
+        "HF_HUB_DISABLE_XET": "1",
         "TORCH_HOME": str(PATHS.cache / "torch"),
         "PIP_CACHE_DIR": str(PATHS.cache / "pip"),
         "DUB_MODEL_REPO": str((engine.get("model") or {}).get("repo_id", "")),
@@ -407,7 +539,9 @@ def run_install(engine_id: str, repair: bool = False, credentials: dict[str, str
         "DUB_MODEL_ORIGINAL_REPO": str((engine.get("model") or {}).get("original_repo_id", "")),
         "DUB_MODEL_KIND": str((engine.get("model") or {}).get("kind", "causal")),
         "DUB_ENGINE_PACKAGES": ";".join((engine.get("installer") or {}).get("packages", [])),
-        "DUB_VOICEBOX_SOURCE": str(VOICEBOX_SOURCE),
+        "DUB_TTS_FAMILY": str((engine.get("model") or {}).get("family", "")),
+        "DUB_TTS_PACKAGE": str((engine.get("model") or {}).get("package", "")),
+        "DUB_TTS_PYTHON": str((engine.get("model") or {}).get("python", "3.12")),
     })
     credentials = credentials or {}
     if credentials.get("hf_token"):
@@ -415,14 +549,30 @@ def run_install(engine_id: str, repair: bool = False, credentials: dict[str, str
     command = ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script_path)]
     process: subprocess.Popen[str] | None = None
     try:
-        stale_venv = _quarantine_stale_venv(engine_id)
+        stale_venv = _quarantine_stale_venv(shared_runtime_id)
         with log_path.open("a", encoding="utf-8") as log_file:
             if stale_venv:
                 log_file.write(f"Moved non-portable Python environment to {stale_venv}\n")
             process = subprocess.Popen(command, env=env, cwd=PATHS.workspace, stdout=log_file, stderr=subprocess.STDOUT, text=True)
             with _install_lock:
                 _install_processes[engine_id] = process
-            return_code = process.wait()
+            started_at = time.monotonic()
+            last_heartbeat = 0.0
+            while process.poll() is None:
+                time.sleep(1)
+                elapsed = time.monotonic() - started_at
+                if elapsed - last_heartbeat >= 10:
+                    current_state = _read_state(engine_id)
+                    base_message = str(current_state.get("message") or "Installer active").split(" · active ")[0]
+                    minutes, seconds = divmod(int(elapsed), 60)
+                    current_state.update({
+                        "message": f"{base_message} · active {minutes}m {seconds:02d}s",
+                        "elapsed_seconds": round(elapsed, 1),
+                        "updated_at": _now(),
+                    })
+                    _write_state(engine_id, current_state)
+                    last_heartbeat = elapsed
+            return_code = process.returncode
         if _read_state(engine_id).get("status") == "cancelled":
             return
         if return_code != 0:
@@ -443,7 +593,10 @@ def cancel_install(engine_id: str) -> dict[str, Any]:
     with _install_lock:
         process = _install_processes.get(engine_id)
     if process and process.poll() is None:
-        process.terminate()
+        if os.name == "nt":
+            subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], capture_output=True, text=True, check=False)
+        else:
+            process.terminate()
     state = _read_state(engine_id)
     log_path = state.get("log_path")
     cancelled = {
@@ -458,6 +611,29 @@ def cancel_install(engine_id: str) -> dict[str, Any]:
 
 
 def _checks_pass(engine: dict[str, Any]) -> bool:
+    if engine.get("adapter") == "native-tts":
+        engine_id = str(engine.get("id") or "")
+        runtime_id = engine_runtime_id(engine)
+        model_manifest = PATHS.models / engine_id / "model.json"
+        runtime_python = (
+            PATHS.environments
+            / runtime_id
+            / "venv"
+            / "Scripts"
+            / "python.exe"
+        )
+        validation_manifest = PATHS.environments / engine_id / "ready.json"
+        shared_validation_manifest = PATHS.environments / runtime_id / "ready.json"
+        return bool(
+            _model_artifacts_present(engine)
+            and model_manifest.is_file()
+            and _python_runtime_usable(runtime_python)
+            and (
+                validation_manifest.is_file()
+                or shared_validation_manifest.is_file()
+            )
+        )
+
     checks = (engine.get("installer") or {}).get("checks", [])
     if not checks:
         return engine.get("category") == "system" and _system_command_exists(engine.get("command"))
@@ -475,6 +651,47 @@ def _checks_pass(engine: dict[str, Any]) -> bool:
         if candidate.name.lower() == "python.exe" and not _python_runtime_usable(candidate):
             return False
     return True
+
+
+def _model_artifacts_present(engine: dict[str, Any]) -> bool:
+    """Detect downloaded weights separately from a healthy executable runtime."""
+    engine_id = str(engine.get("id") or "")
+    if not engine_id:
+        return False
+    candidates = [PATHS.models / engine_id / "model.json"]
+    if engine_id.startswith("faster-whisper-"):
+        candidates.append(
+            PATHS.models
+            / "asr"
+            / "faster-whisper"
+            / engine_id
+            / "model.json"
+        )
+    for manifest_path in candidates:
+        if not manifest_path.is_file():
+            continue
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8-sig"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        referenced = [
+            manifest.get("model_path"),
+            manifest.get("snapshot"),
+            manifest.get("file_path"),
+        ]
+        paths = [Path(str(value)) for value in referenced if value]
+        if not paths and manifest_path.parent.name == engine_id:
+            paths = [
+                manifest_path.parent / "model",
+                manifest_path.parent / "snapshot",
+            ]
+        if any(
+            path.is_file()
+            or (path.is_dir() and any(item.is_file() for item in path.rglob("*")))
+            for path in paths
+        ):
+            return True
+    return False
 
 
 def _python_runtime_usable(python_executable: Path) -> bool:
@@ -511,10 +728,60 @@ def _quarantine_stale_venv(engine_id: str) -> Path | None:
 def _system_command_exists(command: str | None) -> bool:
     if not command:
         return False
+    resolved = _resolve_system_command(command)
+    if not resolved:
+        return False
     try:
-        return subprocess.run([command, "-version"], capture_output=True, timeout=4, check=False).returncode == 0
+        version_args = ["-L"] if command.lower().removesuffix(".exe") == "nvidia-smi" else ["-version"]
+        return subprocess.run([resolved, *version_args], capture_output=True, timeout=4, check=False).returncode == 0
     except (OSError, subprocess.SubprocessError):
         return False
+
+
+def _shared_cuda_runtime_exists() -> bool:
+    torch_lib = (
+        PATHS.environments
+        / "rvc-runtime"
+        / "venv"
+        / "Lib"
+        / "site-packages"
+        / "torch"
+        / "lib"
+    )
+    return (torch_lib / "cublas64_12.dll").is_file() and (torch_lib / "cudnn64_9.dll").is_file()
+
+
+def _resolve_system_command(command: str) -> str | None:
+    from shutil import which
+
+    resolved = which(command)
+    if resolved:
+        return resolved
+    if os.name != "nt":
+        return None
+
+    executable = command if command.lower().endswith(".exe") else f"{command}.exe"
+    candidates: list[Path] = []
+    local_app_data = os.environ.get("LOCALAPPDATA")
+    if local_app_data:
+        winget_root = Path(local_app_data) / "Microsoft" / "WinGet" / "Packages"
+        try:
+            for package_dir in winget_root.glob("Gyan.FFmpeg_*"):
+                candidates.extend(package_dir.glob("ffmpeg-*/bin"))
+        except OSError:
+            pass
+    candidates.extend(
+        [
+            PATHS.data / "bin",
+            PATHS.data / "tools" / "ffmpeg" / "bin",
+            PATHS.workspace / "bin",
+        ]
+    )
+    for directory in candidates:
+        candidate = directory / executable
+        if candidate.is_file():
+            return str(candidate)
+    return None
 
 
 def _state_path(engine_id: str) -> Path:
@@ -525,13 +792,26 @@ def _read_state(engine_id: str) -> dict[str, Any]:
     path = _state_path(engine_id)
     if not path.exists():
         return {}
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return {}
+    for attempt in range(3):
+        try:
+            return json.loads(path.read_text(encoding="utf-8-sig"))
+        except (json.JSONDecodeError, OSError):
+            if attempt < 2:
+                import time
+                time.sleep(0.05 * (attempt + 1))
+    return {}
 
 
 def _write_state(engine_id: str, state: dict[str, Any]) -> None:
     path = _state_path(engine_id)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    serialized = json.dumps(state, indent=2)
+    for attempt in range(3):
+        try:
+            path.write_text(serialized, encoding="utf-8")
+            return
+        except OSError:
+            if attempt < 2:
+                import time
+                time.sleep(0.05 * (attempt + 1))
+    raise OSError(f"Could not update engine state after retries: {path}")

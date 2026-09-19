@@ -20,7 +20,7 @@ async function inspectText(page, label) {
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     const viewport = { width: innerWidth, height: innerHeight };
     const mojibake = /(?:Ã.|Â.|â€|â€™|â€œ|â€|ï¿½|�)/;
-    const translationKey = /^(?:activity|casting|common|dashboard|density|engines|export|library|models|nav|notifications|onboarding|performance|profile|projects|rvc|settings|shell|studio|subclean|theme|tools|voicebox|workflow)\.[\w.-]+$/i;
+    const translationKey = /^(?:activity|casting|common|dashboard|density|engines|export|library|models|nav|notifications|onboarding|performance|profile|projects|rvc|settings|shell|studio|subclean|theme|tools|tts|workflow)\.[\w.-]+$/i;
     let node;
     while ((node = walker.nextNode())) {
       const text = (node.nodeValue || "").replace(/\s+/g, " ").trim();

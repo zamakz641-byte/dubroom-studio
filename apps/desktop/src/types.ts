@@ -29,6 +29,27 @@ export interface LibraryAsset {
   updated_at: string;
 }
 
+export interface TerminologyTerm {
+  id: number;
+  source_term: string;
+  source_language: string;
+  target_language: string;
+  category: string;
+  definition: string;
+  preferred_translation: string;
+  alternatives: string[];
+  forbidden: string[];
+  scope: "global" | "project";
+  project_id?: string | null;
+  status: string;
+  confidence: number;
+  suspicion_score: number;
+  occurrences: number;
+  examples: string[];
+  sources: { title?: string; url?: string; snippet?: string }[];
+  locked: boolean;
+}
+
 export interface ProjectRecord {
   id: string;
   name: string;
@@ -40,7 +61,10 @@ export interface ProjectRecord {
   media_manifest_path?: string | null;
   source_language?: string | null;
   target_language?: string | null;
+  output_aspect?: "source" | "16:9" | "9:16" | "1:1" | "4:5" | null;
   performance_profile?: string | null;
+  content_type?: ProjectContentType;
+  dubbing_mode?: ProjectDubbingMode;
   created_at: string;
   updated_at: string;
 }
@@ -61,7 +85,20 @@ export interface Speaker {
   voice_engine?: string | null;
   voice_model?: string | null;
   voice_instruct?: string | null;
-  effects_chain?: VoiceboxEffect[];
+  effects_chain?: TtsEffect[];
+  character_id?: string | null;
+  character_name?: string | null;
+  character_role?: string | null;
+  sex?: "male" | "female" | "uncertain" | string | null;
+  age_group?: "child" | "teen" | "young_adult" | "adult" | "elderly" | "unknown" | string | null;
+  importance?: "primary" | "major" | "supporting" | "minor" | "crowd" | string | null;
+  dedicated_voice?: boolean;
+  voice_archetype?: string | null;
+  render_voice_key?: string | null;
+  casting_confidence?: number | null;
+  casting_status?: "auto" | "needs_review" | "locked" | string | null;
+  identity_locked?: boolean;
+  voice_locked?: boolean;
 }
 export interface Segment {
   id: string;
@@ -74,8 +111,25 @@ export interface Segment {
   start: string;
   end: string;
   sourceText: string;
+  subtitleEvidence?: Array<{
+    text: string;
+    start: number;
+    end: number;
+    source: string;
+    overlap_ratio: number;
+    match_confidence: number;
+    revision?: string;
+  }>;
   translatedText: string;
   adaptedText: string;
+  rawTranslation?: string;
+  fidelityScore?: number | null;
+  fidelityIssues?: Array<{ type?: string; detail?: string }>;
+  voiceAudioReady?: boolean;
+  voiceAudioDuration?: number | null;
+  voiceAudioEngine?: string | null;
+  voiceAudioStatus?: "ready" | "failed" | "merged" | null;
+  voiceSkip?: boolean;
   emotion: string;
   intensity: number;
   pace: number;
@@ -99,8 +153,105 @@ export interface AnalysisState {
   updated_at: string;
   source_language?: string | null;
   target_language?: string | null;
+  revision: number;
+  narrative_profile: NarrativeProfile;
+  narrative_instructions?: string;
+  subtitle_evidence_revision?: string | null;
+  last_operation?: string | null;
   mix?: MixSettings;
 }
+export type ProjectContentType =
+  | "anime"
+  | "manga_recap"
+  | "manhwa_recap"
+  | "live_action"
+  | "gameplay"
+  | "podcast"
+  | "other";
+export type ProjectDubbingMode = "single" | "multi";
+
+export interface TranscriptExportResult {
+  format: "manifest" | "chat" | "json" | "srt" | "vtt";
+  output_dir: string;
+  segment_count: number;
+  context_count: number;
+  transcript_fingerprint: string;
+  files: Array<{ name: string; path: string; size_bytes: number }>;
+}
+
+export interface TranscriptImportSample {
+  id: string;
+  start: string;
+  end: string;
+  source_text: string;
+  previous_text: string;
+  target_text: string;
+}
+
+export interface TranscriptImportPreview {
+  format: string;
+  path: string;
+  revision: number;
+  transcript_fingerprint: string;
+  imported_fingerprint?: string | null;
+  segment_count: number;
+  parsed_count: number;
+  matched_count: number;
+  changed_count: number;
+  untouched_count: number;
+  duplicate_ids: string[];
+  unknown_ids: string[];
+  empty_ids: string[];
+  source_mismatch_ids: string[];
+  invalid_character_ids: string[];
+  character_conflicts: string[];
+  invalid_emotion_ids: string[];
+  invalid_voice_unit_ids: string[];
+  invalid_bridge_ids: string[];
+  invalid_registry_ids: string[];
+  invalid_casting_ids: string[];
+  casting_review_ids: string[];
+  invalid_speaker_section_ids: string[];
+  missing_registry_ids: string[];
+  incomplete_multispeaker: boolean;
+  prompt_revision?: string | null;
+  expected_prompt_revision?: string | null;
+  prompt_revision_mismatch: boolean;
+  casting_r4?: boolean;
+  dedicated_voice_count?: number;
+  narrator_rendered_character_count?: number;
+  fingerprint_mismatch: boolean;
+  timing_warning_count: number;
+  timing_warnings: Array<{
+    id: string;
+    duration_seconds: number;
+    word_count: number;
+    words_per_second: number;
+    kind: "likely_too_long" | "likely_too_short";
+  }>;
+  can_apply: boolean;
+  samples: TranscriptImportSample[];
+}
+
+export interface TranscriptImportResult {
+  state: AnalysisState;
+  preview: TranscriptImportPreview;
+  changed_ids: string[];
+  audit_path: string;
+  next_stage: "voice_generation";
+}
+
+export type NarrativeProfile =
+  | "natural_recap"
+  | "external_narrator"
+  | "cinematic_omniscient"
+  | "documentary"
+  | "mc_first_person"
+  | "dramatic"
+  | "dark_suspense"
+  | "comedic_ironic"
+  | "short_condensed"
+  | "multi_character";
 
 export interface JobRecord {
   id: string;
@@ -113,6 +264,100 @@ export interface JobRecord {
   updated_at: string;
   artifacts: Record<string, string>;
   options?: Record<string, unknown>;
+}
+
+export interface SharedDependencyState {
+  status: string;
+  python?: string;
+  python_version?: string;
+  paths: string[];
+  providers: Record<string, string>;
+  missing: string[];
+  error?: string;
+}
+
+export interface AudioPreservationState {
+  version: number;
+  status: "not_processed" | "running" | "ready" | "failed" | "cancelled" | string;
+  progress: number;
+  message: string;
+  error?: string | null;
+  backend: string;
+  model: string;
+  fingerprint?: string | null;
+  duration?: number | null;
+  cache_hit: boolean;
+  created_at?: string | null;
+  updated_at?: string | null;
+  tracks: {
+    original?: string | null;
+    vocals?: string | null;
+    bed?: string | null;
+  };
+  runtime: {
+    engine_id: string;
+    runtime_root: string;
+    python: string;
+    execution_provider?: string;
+    device?: "cpu" | "cuda" | string;
+    device_name?: string | null;
+    torch?: string | null;
+    cuda?: string | null;
+    torchaudio?: string | null;
+    worker: string;
+    ready_manifest: string;
+    installed: boolean;
+    adapter_ready: boolean;
+    usable: boolean;
+    shared_dependencies: SharedDependencyState;
+    profiles?: Record<string, {
+      engine_id: string;
+      usable: boolean;
+      device?: string;
+      device_name?: string | null;
+    }>;
+  };
+}
+
+export interface DiarizationTurn {
+  start: number;
+  end: number;
+  speaker: string;
+}
+
+export interface DiarizationState {
+  version: number;
+  status: "not_processed" | "running" | "ready" | "failed" | "cancelled" | string;
+  progress: number;
+  message: string;
+  error?: string | null;
+  speaker_count: number;
+  turn_count: number;
+  speakers: string[];
+  turns: DiarizationTurn[];
+  duration?: number | null;
+  elapsed_seconds?: number | null;
+  cache_hit: boolean;
+  source_path?: string | null;
+  manifest_path: string;
+  runtime: {
+    engine_id: string;
+    model_repo: string;
+    python: string;
+    execution_provider: string;
+    shared_runtime: boolean;
+    device: "cpu" | "cuda" | string;
+    runtime_ready: boolean;
+    model_ready: boolean;
+    model_path?: string | null;
+    worker: string;
+    adapter_ready: boolean;
+    usable: boolean;
+    requires_hf_token: boolean;
+    message: string;
+  };
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export type ActivityKind =
@@ -148,6 +393,18 @@ export type ExportContainer = "mp4" | "mkv" | "mov" | "webm";
 export type ExportVideoCodec =
   "copy" | "h264" | "h265" | "av1" | "vp9" | "prores";
 export type ExportAudioCodec = "aac" | "opus" | "flac" | "pcm";
+export type SubtitleStyle =
+  | "cinema"
+  | "social"
+  | "minimal"
+  | "manga"
+  | "documentary";
+export type SubtitleCleanup =
+  | "none"
+  | "auto"
+  | "blur"
+  | "crop"
+  | "subclean";
 export interface ExportOptions {
   delivery: ExportDelivery;
   container: ExportContainer;
@@ -156,15 +413,32 @@ export interface ExportOptions {
   quality: number;
   preset: "ultrafast" | "veryfast" | "fast" | "medium" | "slow";
   audio_bitrate: string;
+  max_output_size_gb: number;
+  hardware_acceleration: "auto" | "nvenc" | "cpu";
   resolution: "source" | "720p" | "1080p" | "1440p" | "2160p";
   aspect: "source" | "16:9" | "9:16" | "1:1" | "4:5";
   framing: "fit" | "crop" | "blur";
-  upscale: "off" | "standard" | "ai-anime" | "ai-general";
+  reframe_scale: number;
+  reframe_x: number;
+  reframe_y: number;
+  upscale: "off" | "standard" | "clarity" | "ai-anime" | "ai-general";
   normalize_audio: boolean;
+  audio_mastering: boolean;
   original_volume: number;
   voice_volume: number;
   music_volume: number;
   ducking: boolean;
+  subtitles_enabled: boolean;
+  subtitle_style: SubtitleStyle;
+  subtitle_position: "bottom" | "top";
+  subtitle_cleanup: SubtitleCleanup;
+  subtitle_cleanup_band: number;
+  subtitle_subclean_mode:
+    | "sttn-auto"
+    | "sttn-det"
+    | "lama"
+    | "propainter"
+    | "opencv";
   music_path?: string | null;
   short_duration: number;
   short_mode: "fixed" | "dialogue";
@@ -247,6 +521,11 @@ export interface EngineInstallation {
   message: string;
   updated_at?: string | null;
   log_path?: string | null;
+  phase?: string | null;
+  downloaded_bytes?: number | null;
+  total_bytes?: number | null;
+  speed_bps?: number | null;
+  eta_seconds?: number | null;
 }
 export interface EngineVerification {
   status: "not-installed" | "adapter-missing" | "untested" | "usable";
@@ -349,11 +628,8 @@ export interface AppConfig {
   api: { host: string; port: number; base_url: string };
   paths: Record<string, string>;
   preferences: Record<string, unknown>;
-  voicebox?: {
-    host: string;
-    port: number;
-    base_url: string;
-    source: string;
+  tts?: {
+    runtime: string;
     data: string;
     models: string;
   };
@@ -402,6 +678,7 @@ export interface YouTubeInfo {
   live: boolean;
   webpage_url: string;
 }
+export type YouTubeMediaType = "video" | "audio";
 export interface YouTubeDownload {
   id: string;
   status:
@@ -415,6 +692,9 @@ export interface YouTubeDownload {
   message: string;
   url: string;
   title: string;
+  media_type?: YouTubeMediaType;
+  start_seconds?: number | null;
+  end_seconds?: number | null;
   path?: string | null;
   eta?: string | null;
   speed?: string | null;
@@ -502,17 +782,19 @@ export interface ModelDownloadCheck {
   message: string;
 }
 
-export interface VoiceboxStatus {
-  online: boolean;
-  base_url: string;
-  source: string;
-  source_ready: boolean;
-  runtime_ready: boolean;
+export interface TtsStatus {
+  ready: boolean;
+  runtime: "dubroom-native-tts";
+  daemon_required: false;
   data: string;
   models: string;
-  pid: number | null;
+  installed_count: number;
+  model_count: number;
+  active_generations: number;
 }
-export interface VoiceboxModel {
+export interface TtsModel {
+  id: string;
+  family: string;
   model_name: string;
   display_name: string;
   hf_repo_id?: string | null;
@@ -524,20 +806,34 @@ export interface VoiceboxModel {
   model_size?: string | null;
   recommended_vram_gb?: number;
   languages?: string[];
+  voice_modes?: Array<"preset" | "cloned" | "designed" | "voice-style-json">;
+  sample_rate?: number;
+  license?: string;
+  source?: string;
+  installation_status?: string;
   tier?: "light" | "balanced" | "quality" | "studio";
   brand?: EngineBrand;
+  capabilities?: string[];
+  speaker_mode?: "single-speaker" | "multi-speaker-native" | string;
+  multi_speaker_compatible?: boolean;
+  supports_preset?: boolean;
+  supports_cloning?: boolean;
+  supports_design?: boolean;
+  supports_expression?: boolean;
+  supports_streaming?: boolean;
+  local_only?: boolean;
 }
-export interface VoiceboxEffect {
+export interface TtsEffect {
   type: string;
   enabled?: boolean;
   params?: Record<string, number | string | boolean>;
 }
-export interface VoiceboxProfile {
+export interface TtsProfile {
   id: string;
   name: string;
   description?: string | null;
   language?: string | null;
-  effects_chain?: VoiceboxEffect[];
+  effects_chain?: TtsEffect[];
   voice_type?: string | null;
   preset_engine?: string | null;
   preset_voice_id?: string | null;
@@ -546,10 +842,105 @@ export interface VoiceboxProfile {
   personality?: string | null;
   generation_count?: number;
   sample_count?: number;
+  prompt_ready?: boolean;
+  prompt_count?: number;
   created_at?: string;
   updated_at?: string;
+  origin?: string;
+  voice_source?: string;
+  provider_profile_id?: string | null;
+  engine_family?: string | null;
+  engine_display_name?: string | null;
+  model_size?: string | null;
+  speaker_mode?: "single-speaker" | "multi-speaker-native" | string;
+  multi_speaker_compatible?: boolean;
+  gender?: string | null;
+  age_group?: string | null;
+  primary_role?: string | null;
+  voice_archetype?: string | null;
+  casting_tags?: string[];
+  usage_scope?: "both" | "single" | "multi" | string;
+  age?: string | null;
+  pitch?: string | null;
+  traits?: string[];
+  roles?: string[];
+  supports_expression?: boolean;
 }
-export interface VoiceboxProfileInput {
+
+export interface VoiceLibraryBuildState {
+  status: "idle" | "queued" | "running" | "ready" | "failed" | "cancelled" | string;
+  progress: number;
+  message: string;
+  error?: string | null;
+  selected: string[];
+  generated: string[];
+  failed: Array<{ id: string; error: string }>;
+  full_tests: boolean;
+  started_at?: string | null;
+  completed_at?: string | null;
+  log_path: string;
+}
+
+export interface VoiceLibraryTemplate {
+  id: string;
+  name: string;
+  gender: string;
+  age: string;
+  pitch: string;
+  traits: string[];
+  roles: string[];
+  voice_archetype?: string | null;
+  casting_tags?: string[];
+  status: "ready" | "failed" | "not_generated" | string;
+  profile_id?: string | null;
+  speaker_mode: string;
+  multi_speaker_compatible: boolean;
+}
+
+export interface VoiceLibraryCatalog {
+  runtime: {
+    ready: boolean;
+    python: string;
+    model_path: string;
+    device: "cpu" | "cuda" | string;
+    torch?: string | null;
+    cuda?: string | null;
+    local_only: boolean;
+  };
+  build: VoiceLibraryBuildState;
+  summary: {
+    configured: number;
+    generated: number;
+    single_speaker: number;
+    multi_speaker_assignable: number;
+  };
+  templates: VoiceLibraryTemplate[];
+  engines: Array<{
+    id: string;
+    display_name: string;
+    family: string;
+    downloaded: boolean;
+    languages: string[];
+    speaker_mode: string;
+    multi_speaker_compatible: boolean;
+    voice_sources: string[];
+    supports_preset: boolean;
+    supports_cloning: boolean;
+    supports_design: boolean;
+    supports_expression: boolean;
+    supports_streaming: boolean;
+    local_only: boolean;
+  }>;
+  catalog_path: string;
+}
+
+export interface VoiceLibraryBuildInput {
+  voices?: string[];
+  full_tests?: boolean;
+  regenerate?: boolean;
+  tests_only?: boolean;
+}
+export interface TtsProfileInput {
   name: string;
   description?: string | null;
   language: string;
@@ -559,14 +950,19 @@ export interface VoiceboxProfileInput {
   design_prompt?: string | null;
   default_engine?: string | null;
   personality?: string | null;
+  gender: "female" | "male" | "neutral" | "unspecified";
+  age_group: "child" | "teen" | "young_adult" | "adult" | "senior" | "unspecified";
+  primary_role: "mc" | "female_lead" | "narrator" | "antagonist" | "supporting" | "child" | "background" | "other";
+  roles?: string[];
+  usage_scope: "both" | "single" | "multi";
 }
-export interface VoiceboxPresetVoice {
+export interface TtsPresetVoice {
   voice_id: string;
   name: string;
   gender?: string;
   language?: string;
 }
-export interface VoiceboxGeneration {
+export interface TtsGeneration {
   id: string;
   profile_id: string;
   text: string;
@@ -580,8 +976,11 @@ export interface VoiceboxGeneration {
   status: string;
   error?: string | null;
   created_at: string;
+  updated_at?: string;
+  sample_rate?: number | null;
+  device?: string | null;
 }
-export interface VoiceboxGenerateInput {
+export interface TtsGenerateInput {
   profile_id: string;
   text: string;
   language: string;
@@ -592,5 +991,5 @@ export interface VoiceboxGenerateInput {
   max_chunk_chars?: number;
   crossfade_ms?: number;
   normalize?: boolean;
-  effects_chain?: VoiceboxEffect[] | null;
+  effects_chain?: TtsEffect[] | null;
 }

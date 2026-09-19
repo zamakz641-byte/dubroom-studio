@@ -1,0 +1,27 @@
+{
+  "source_file": "exiled-for-having-no-magic-yet-he-builds-guns-th-translation-manifest-FR(1).json",
+  "duration_seconds": 300.0018125,
+  "before": {
+    "segment_count": 112,
+    "median_duration_seconds": 2.15,
+    "segments_under_1_8_seconds": 27,
+    "segments_under_2_seconds": 40
+  },
+  "after_simulation": {
+    "segment_count": 82,
+    "median_duration_seconds": 3.47,
+    "mean_duration_seconds": 3.457,
+    "minimum_duration_seconds": 2.0,
+    "maximum_duration_seconds": 5.96,
+    "segments_under_2_seconds": 0
+  },
+  "settings": {
+    "preferred_seconds": 4.8,
+    "maximum_seconds": 7.0,
+    "minimum_complete_seconds": 2.0,
+    "minimum_fragment_seconds": 2.7,
+    "maximum_merge_gap_seconds": 0.5,
+    "wav_fade_in_ms": 8,
+    "wav_fade_out_ms": 28
+  }
+}

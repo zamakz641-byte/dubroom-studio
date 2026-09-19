@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "source": "https://github.com/SYSTRAN/faster-whisper/blob/master/faster_whisper/utils.py",
+  "models": [
+    {"id":"faster-whisper-tiny","model_name":"tiny","label":"Whisper Tiny","repo_id":"Systran/faster-whisper-tiny","parameters_m":39,"download_gb":0.08,"vram_gb":1,"quality_rank":1,"speed_rank":10,"languages":"multilingual"},
+    {"id":"faster-whisper-tiny-en","model_name":"tiny.en","label":"Whisper Tiny English","repo_id":"Systran/faster-whisper-tiny.en","parameters_m":39,"download_gb":0.08,"vram_gb":1,"quality_rank":1,"speed_rank":10,"languages":"english"},
+    {"id":"faster-whisper-base","model_name":"base","label":"Whisper Base","repo_id":"Systran/faster-whisper-base","parameters_m":74,"download_gb":0.15,"vram_gb":1,"quality_rank":2,"speed_rank":7,"languages":"multilingual"},
+    {"id":"faster-whisper-base-en","model_name":"base.en","label":"Whisper Base English","repo_id":"Systran/faster-whisper-base.en","parameters_m":74,"download_gb":0.15,"vram_gb":1,"quality_rank":2,"speed_rank":7,"languages":"english"},
+    {"id":"faster-whisper-small","model_name":"small","label":"Whisper Small","repo_id":"Systran/faster-whisper-small","parameters_m":244,"download_gb":0.47,"vram_gb":2,"quality_rank":3,"speed_rank":4,"languages":"multilingual","recommended":true},
+    {"id":"faster-whisper-small-en","model_name":"small.en","label":"Whisper Small English","repo_id":"Systran/faster-whisper-small.en","parameters_m":244,"download_gb":0.47,"vram_gb":2,"quality_rank":3,"speed_rank":4,"languages":"english"},
+    {"id":"faster-whisper-distil-small-en","model_name":"distil-small.en","label":"Distil Whisper Small English","repo_id":"Systran/faster-distil-whisper-small.en","parameters_m":166,"download_gb":0.33,"vram_gb":2,"quality_rank":3,"speed_rank":7,"languages":"english","optimized":true},
+    {"id":"faster-whisper-medium","model_name":"medium","label":"Whisper Medium","repo_id":"Systran/faster-whisper-medium","parameters_m":769,"download_gb":1.5,"vram_gb":5,"quality_rank":4,"speed_rank":2,"languages":"multilingual"},
+    {"id":"faster-whisper-medium-en","model_name":"medium.en","label":"Whisper Medium English","repo_id":"Systran/faster-whisper-medium.en","parameters_m":769,"download_gb":1.5,"vram_gb":5,"quality_rank":4,"speed_rank":2,"languages":"english"},
+    {"id":"faster-whisper-distil-medium-en","model_name":"distil-medium.en","label":"Distil Whisper Medium English","repo_id":"Systran/faster-distil-whisper-medium.en","parameters_m":394,"download_gb":0.8,"vram_gb":3,"quality_rank":4,"speed_rank":5,"languages":"english","optimized":true},
+    {"id":"faster-whisper-large-v1","model_name":"large-v1","label":"Whisper Large v1","repo_id":"Systran/faster-whisper-large-v1","parameters_m":1550,"download_gb":2.9,"vram_gb":10,"quality_rank":5,"speed_rank":1,"languages":"multilingual"},
+    {"id":"faster-whisper-large-v2","model_name":"large-v2","label":"Whisper Large v2","repo_id":"Systran/faster-whisper-large-v2","parameters_m":1550,"download_gb":2.9,"vram_gb":10,"quality_rank":6,"speed_rank":1,"languages":"multilingual"},
+    {"id":"faster-whisper-distil-large-v2","model_name":"distil-large-v2","label":"Distil Whisper Large v2","repo_id":"Systran/faster-distil-whisper-large-v2","parameters_m":756,"download_gb":1.5,"vram_gb":6,"quality_rank":6,"speed_rank":4,"languages":"english","optimized":true},
+    {"id":"faster-whisper-large-v3","model_name":"large-v3","label":"Whisper Large v3","repo_id":"Systran/faster-whisper-large-v3","parameters_m":1550,"download_gb":2.9,"vram_gb":10,"quality_rank":7,"speed_rank":1,"languages":"multilingual"},
+    {"id":"faster-whisper-distil-large-v3","model_name":"distil-large-v3","label":"Distil Whisper Large v3","repo_id":"Systran/faster-distil-whisper-large-v3","parameters_m":756,"download_gb":1.5,"vram_gb":6,"quality_rank":7,"speed_rank":4,"languages":"multilingual","optimized":true},
+    {"id":"faster-whisper-distil-large-v35","model_name":"distil-large-v3.5","label":"Distil Whisper Large v3.5","repo_id":"distil-whisper/distil-large-v3.5-ct2","parameters_m":756,"download_gb":1.5,"vram_gb":6,"quality_rank":8,"speed_rank":4,"languages":"multilingual","optimized":true},
+    {"id":"faster-whisper-turbo","model_name":"turbo","label":"Whisper Large v3 Turbo","repo_id":"dropbox-dash/faster-whisper-large-v3-turbo","parameters_m":809,"download_gb":1.6,"vram_gb":6,"quality_rank":8,"speed_rank":8,"languages":"multilingual","optimized":true}
+  ]
+}
+

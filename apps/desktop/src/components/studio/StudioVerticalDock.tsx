@@ -46,12 +46,12 @@ export function StudioVerticalDock({
     <Group
       id="studio-vertical-layout"
       orientation="vertical"
-      className="min-h-0 flex-1"
+      className="min-h-0 min-w-0 w-full max-w-full flex-1 overflow-hidden"
     >
       <Panel
         id="studio-stage-panel"
         minSize={260}
-        className="h-full min-h-0 overflow-hidden"
+        className="h-full min-h-0 min-w-0 max-w-full overflow-hidden"
       >
         {stage}
       </Panel>
@@ -67,7 +67,7 @@ export function StudioVerticalDock({
         minSize={MIN_TIMELINE_HEIGHT}
         maxSize={MAX_TIMELINE_HEIGHT}
         groupResizeBehavior="preserve-pixel-size"
-        className="h-full min-h-0 overflow-hidden"
+        className="h-full min-h-0 min-w-0 max-w-full overflow-hidden"
         onResize={rememberTimelineHeight}
       >
         {timeline}

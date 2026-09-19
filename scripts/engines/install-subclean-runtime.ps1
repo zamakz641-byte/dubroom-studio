@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
 $engineRoot = [System.IO.Path]::GetFullPath($env:DUB_ENGINE_ENV)
 $sourceRoot = Join-Path $engineRoot "source"
@@ -11,7 +11,11 @@ function Set-DubProgress {
   param([int]$Progress, [string]$Message)
   if (-not $env:DUB_ENGINE_STATE) { return }
   $status = if ($env:DUB_ENGINE_REPAIR -eq "1") { "repairing" } else { "installing" }
-  @{status=$status;progress=$Progress;message=$Message;log_path=$env:DUB_ENGINE_LOG;updated_at=(Get-Date).ToUniversalTime().ToString("o")} | ConvertTo-Json | Set-Content -LiteralPath $env:DUB_ENGINE_STATE -Encoding UTF8
+  $payload = @{status=$status;progress=$Progress;message=$Message;log_path=$env:DUB_ENGINE_LOG;updated_at=(Get-Date).ToUniversalTime().ToString("o")} | ConvertTo-Json
+  for ($attempt = 0; $attempt -lt 3; $attempt++) {
+    try { Set-Content -LiteralPath $env:DUB_ENGINE_STATE -Value $payload -Encoding UTF8; return }
+    catch { Start-Sleep -Milliseconds (50 * ($attempt + 1)) }
+  }
 }
 
 Set-DubProgress 5 "Synchronisation de SubClean"
@@ -41,8 +45,12 @@ Set-DubProgress 25 "Selection du profil materiel"
 $gpuNames = @(Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name)
 if (($gpuNames | Where-Object { $_ -match "NVIDIA" }).Count -gt 0) {
   & $uvExe pip install --python $pythonExe torch==2.7.0 torchvision==0.22.0 --index-url https://download.pytorch.org/whl/cu128
-  & $uvExe pip install --python $pythonExe paddlepaddle-gpu==3.0.0
-  $profile = "cuda"
+  if ($LASTEXITCODE -ne 0) { throw "L'installation de PyTorch CUDA 12.8 a echoue." }
+  # VSR's official Windows CUDA 12.8 build uses Paddle 3.0 CPU for OCR and
+  # PyTorch CUDA for neural inpainting. Mixing Paddle cu118 with Torch cu128
+  # loads incompatible CUDA runtimes on recent RTX machines.
+  & $uvExe pip install --python $pythonExe paddlepaddle==3.0.0
+  $profile = "cuda128-torch-paddle-cpu"
 } else {
   & $uvExe pip install --python $pythonExe torch==2.7.0 torchvision==0.22.0 --index-url https://download.pytorch.org/whl/cpu
   & $uvExe pip install --python $pythonExe paddlepaddle==3.0.0
@@ -60,3 +68,4 @@ if ($LASTEXITCODE -ne 0) { throw "La validation de la CLI SubClean a echoue." }
 
 @{engine_id=$env:DUB_ENGINE_ID;source=$sourceRoot;python=$pythonExe;profile=$profile;self_test="cli-help";models_downloaded=$false;installed_at=(Get-Date).ToUniversalTime().ToString("o")} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $engineRoot "ready.json") -Encoding UTF8
 Set-DubProgress 99 "SubClean pret; les poids seront telecharges a la premiere demande"
+

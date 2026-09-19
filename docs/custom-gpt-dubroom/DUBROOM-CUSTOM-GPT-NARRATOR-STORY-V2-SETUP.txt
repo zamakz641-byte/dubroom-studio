@@ -1,0 +1,28 @@
+DUBROOM CUSTOM GPT - NARRATOR STORY V2 SETUP
+
+Edit the private Narrator Story GPT in Configuration view.
+
+Name:
+DubRoom Narrator Story V2
+
+Description:
+Builds one synchronized English narrator script for a complete Chinese story from a DubRoom transcription bundle or prepared scene-locked manifest.
+
+Instructions field:
+Replace all old instructions with the complete content of:
+INSTRUCTIONS_CHINESE_NARRATOR_STORY_V2_BUNDLE_COMPAT_8000.txt
+
+Knowledge:
+Remove the old Narrator Story V1 knowledge files to avoid conflicting contracts. Upload only:
+KNOWLEDGE_NARRATOR_STORY_BUNDLE_AND_MANIFEST_V2.txt
+
+Capabilities:
+- Enable Code Interpreter & Data Analysis.
+- Web search is unnecessary for story facts.
+- Image generation is unnecessary.
+
+Conversation starter:
+Process this complete DubRoom file. If it is a transcription bundle, prepare the narrator-story manifest first; if it is already prepared, script it directly. Read the entire story, write English narration only, validate all timings and return the completed UTF-8 JSON download.
+
+Recommended user prompt with the uploaded JSON:
+Process this complete DubRoom file with Narrator Story V2. The transcription-bundle format is valid. Use Data Analysis, prepare scenes and narration slots when missing, write one continuous English full-story narration, validate it, and return only the completed JSON download plus the validation summary.

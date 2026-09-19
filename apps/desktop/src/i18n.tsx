@@ -98,7 +98,7 @@ const en: Record<string, string> = {
   "onboarding.models.body":
     "The engine catalog will show download size, estimated VRAM, compatibility and license before each installation.",
   "onboarding.models.whisper": "Whisper ladder",
-  "onboarding.models.voicebox": "Voicebox runtime",
+  "onboarding.models.tts": "Native TTS engines",
   "onboarding.models.none": "Nothing will be downloaded now",
   "onboarding.models.after":
     "Open Engines after setup to install with one click.",
@@ -202,7 +202,7 @@ const fr: Record<string, string> = {
   "onboarding.models.body":
     "Le catalogue indiquera taille, VRAM estimée, compatibilité et licence avant chaque installation.",
   "onboarding.models.whisper": "Gamme Whisper",
-  "onboarding.models.voicebox": "Runtime Voicebox",
+  "onboarding.models.tts": "Moteurs TTS natifs",
   "onboarding.models.none": "Aucun téléchargement maintenant",
   "onboarding.models.after":
     "Ouvrez Moteurs après la configuration pour installer en un clic.",
@@ -673,21 +673,21 @@ Object.assign(en, {
   "engines.manageToken": "Create or manage this token",
   "engines.pathNote":
     "Files go to configured data storage, never into application code.",
-  "voicebox.deck": "VOICEBOX MODEL CATALOG",
-  "voicebox.title": "Official voice engines",
-  "voicebox.steps":
+  "tts.deck": "TTS MODEL CATALOG",
+  "tts.title": "Official voice engines",
+  "tts.steps":
     "Step 1: install the runtime. Step 2: choose only the models you need.",
-  "voicebox.connected": "Runtime connected",
-  "voicebox.stopped": "Runtime stopped",
-  "voicebox.required": "Runtime required",
-  "voicebox.runtimeInstalling": "Installing runtime…",
-  "voicebox.installRuntime": "Install Voicebox",
-  "voicebox.start": "Start",
-  "voicebox.languages": "languages",
-  "voicebox.preparing": "Preparing…",
-  "voicebox.runtimeFirst": "Install the runtime first",
-  "voicebox.startFirst": "Start Voicebox",
-  "voicebox.installModel": "Install this model",
+  "tts.connected": "Runtime connected",
+  "tts.stopped": "Runtime stopped",
+  "tts.required": "Runtime required",
+  "tts.runtimeInstalling": "Installing runtime…",
+  "tts.installRuntime": "Install a TTS engine",
+  "tts.start": "Start",
+  "tts.languages": "languages",
+  "tts.preparing": "Preparing…",
+  "tts.runtimeFirst": "Install the runtime first",
+  "tts.startFirst": "Start TTS",
+  "tts.installModel": "Install this model",
 });
 Object.assign(fr, {
   "common.auto": "Auto",
@@ -783,28 +783,28 @@ Object.assign(fr, {
   "engines.manageToken": "Créer ou gérer ce jeton",
   "engines.pathNote":
     "Les fichiers seront placés dans l’espace de données configuré, jamais dans le code de l’application.",
-  "voicebox.deck": "CATALOGUE VOCAL VOICEBOX",
-  "voicebox.title": "Moteurs vocaux officiels",
-  "voicebox.steps":
+  "tts.deck": "CATALOGUE VOCAL TTS",
+  "tts.title": "Moteurs vocaux officiels",
+  "tts.steps":
     "Étape 1 : installez le runtime. Étape 2 : choisissez seulement les modèles nécessaires.",
-  "voicebox.connected": "Runtime connecté",
-  "voicebox.stopped": "Runtime arrêté",
-  "voicebox.required": "Runtime requis",
-  "voicebox.runtimeInstalling": "Installation du runtime…",
-  "voicebox.installRuntime": "Installer Voicebox",
-  "voicebox.start": "Démarrer",
-  "voicebox.languages": "langues",
-  "voicebox.preparing": "Préparation…",
-  "voicebox.runtimeFirst": "Installer le runtime d’abord",
-  "voicebox.startFirst": "Démarrer Voicebox",
-  "voicebox.installModel": "Installer ce modèle",
+  "tts.connected": "Runtime connecté",
+  "tts.stopped": "Runtime arrêté",
+  "tts.required": "Runtime requis",
+  "tts.runtimeInstalling": "Installation du runtime…",
+  "tts.installRuntime": "Installer un moteur TTS",
+  "tts.start": "Démarrer",
+  "tts.languages": "langues",
+  "tts.preparing": "Préparation…",
+  "tts.runtimeFirst": "Installer le runtime d’abord",
+  "tts.startFirst": "Démarrer TTS",
+  "tts.installModel": "Installer ce modèle",
 });
 
 Object.assign(en, {
-  "library.voiceboxNotInstalled": "Voicebox runtime requires installation",
+  "library.ttsNotInstalled": "Install at least one native TTS engine",
 });
 Object.assign(fr, {
-  "library.voiceboxNotInstalled": "Le runtime Voicebox doit être installé",
+  "library.ttsNotInstalled": "Installez au moins un moteur TTS natif",
 });
 
 Object.assign(en, {
@@ -933,11 +933,18 @@ Object.assign(en, {
   "studio.translationTitle": "Translation & adaptation",
   "studio.translationBody":
     "Keep original meaning, translation and time-fitted dubbing text separate.",
+  "studio.translationMode": "Translation mode",
+  "studio.translationQuick": "Quick",
+  "studio.translationFaithful": "Faithful",
+  "studio.translationMaximum": "Maximum + web research",
+  "studio.translationExperimental": "Experimental",
+  "studio.rawTranslation": "Specialist raw translation",
+  "studio.fidelityScore": "Fidelity score",
   "studio.charactersBody":
     "Turn detected speakers into coherent reusable roles.",
   "studio.voicesTitle": "Voices & casting",
   "studio.voicesBody":
-    "Assign a Voicebox profile, engine and acting direction to every character.",
+    "Assign a TTS profile, engine and acting direction to every character.",
   "studio.syncBody":
     "Fit takes to the original timing without mixing translation and audio work.",
   "studio.mixBody": "Balance voice, ambience and music after timing approval.",
@@ -969,11 +976,18 @@ Object.assign(fr, {
   "studio.translationTitle": "Traduction & adaptation",
   "studio.translationBody":
     "Séparez le sens original, la traduction et la formulation qui doit tenir dans le temps.",
+  "studio.translationMode": "Mode de traduction",
+  "studio.translationQuick": "Rapide",
+  "studio.translationFaithful": "Fidèle",
+  "studio.translationMaximum": "Maximum + recherche web",
+  "studio.translationExperimental": "Expérimental",
+  "studio.rawTranslation": "Traduction brute spécialisée",
+  "studio.fidelityScore": "Score de fidélité",
   "studio.charactersBody":
     "Transformez les speakers détectés en rôles cohérents et réutilisables.",
   "studio.voicesTitle": "Voix & casting",
   "studio.voicesBody":
-    "Assignez un profil Voicebox, un moteur et une direction de jeu distincts à chaque personnage.",
+    "Assignez un profil TTS, un moteur et une direction de jeu distincts à chaque personnage.",
   "studio.syncBody":
     "Ajustez les prises sur le temps original sans mélanger traduction et mixage.",
   "studio.mixBody":
@@ -984,7 +998,7 @@ Object.assign(fr, {
 
 Object.assign(en, {
   "casting.newProfile": "New profile",
-  "casting.refresh": "Refresh Voicebox",
+  "casting.refresh": "Refresh TTS",
   "casting.connected": "Connected to voice studio",
   "casting.notInstalled": "Runtime not installed",
   "casting.ready": "{{profiles}} profiles · {{models}} models ready",
@@ -994,7 +1008,7 @@ Object.assign(en, {
   "casting.absent": "missing",
   "casting.noRole": "No role to dub",
   "casting.noRoleBody":
-    "Validate characters first. Every role then receives an independent Voicebox profile.",
+    "Validate characters first. Every role then receives an independent TTS profile.",
   "casting.profile": "Voice profile",
   "casting.chooseProfile": "Choose an authorized profile",
   "casting.engine": "Engine and quality",
@@ -1032,7 +1046,7 @@ Object.assign(en, {
 });
 Object.assign(fr, {
   "casting.newProfile": "Nouveau profil",
-  "casting.refresh": "Actualiser Voicebox",
+  "casting.refresh": "Actualiser TTS",
   "casting.connected": "Connecté au studio vocal",
   "casting.notInstalled": "Runtime non installé",
   "casting.ready": "{{profiles}} profils · {{models}} modèles prêts",
@@ -1042,7 +1056,7 @@ Object.assign(fr, {
   "casting.absent": "absent",
   "casting.noRole": "Aucun rôle à doubler",
   "casting.noRoleBody":
-    "Validez d’abord les personnages. Chaque rôle recevra ensuite un profil Voicebox indépendant.",
+    "Validez d’abord les personnages. Chaque rôle recevra ensuite un profil TTS indépendant.",
   "casting.profile": "Profil vocal",
   "casting.chooseProfile": "Choisir un profil autorisé",
   "casting.engine": "Moteur et qualité",
@@ -1121,8 +1135,8 @@ Object.assign(en, {
   "activity.detail.partial": "Some items require attention.",
   "activity.detail.failed": "Operation failed · hover for technical details.",
   "activity.detail.skipped": "A required engine or source is missing.",
-  "library.voiceboxOnline": "Voicebox connected",
-  "library.voiceboxOffline": "Voicebox is stopped",
+  "library.ttsOnline": "TTS connected",
+  "library.ttsOffline": "TTS is stopped",
   "library.profiles": "voice profiles",
   "library.modelsReady": "models ready",
   "library.localBody":
@@ -1131,13 +1145,16 @@ Object.assign(en, {
   "library.noDescription": "No description yet.",
   "library.samplesCount": "samples",
   "library.generations": "generations",
-  "library.startVoicebox":
-    "Start Voicebox from Engines to manage the voice library.",
+  "library.startTTS":
+    "Start TTS from Engines to manage the voice library.",
   "library.testBench": "VOICE TEST BENCH",
   "library.testVoice": "Test this profile",
   "library.testPlaceholder": "Write a short sentence to hear this voice…",
   "library.generateTest": "Generate test",
   "library.generating": "Generating…",
+  "library.generationHistory": "Generated audio history",
+  "library.noGenerations": "No audio has been generated with this profile yet.",
+  "library.failedGeneration": "Failed generation",
   "library.openSamples": "Manage samples",
   "library.authorizedVoice": "Local authorized profile",
   "library.workspace": "ASSET WORKSPACE",
@@ -1191,8 +1208,8 @@ Object.assign(fr, {
   "activity.detail.failed":
     "Échec de l’opération · survolez pour le détail technique.",
   "activity.detail.skipped": "Un moteur ou une source nécessaire manque.",
-  "library.voiceboxOnline": "Voicebox connecté",
-  "library.voiceboxOffline": "Voicebox est arrêté",
+  "library.ttsOnline": "TTS connecté",
+  "library.ttsOffline": "TTS est arrêté",
   "library.profiles": "profils vocaux",
   "library.modelsReady": "modèles prêts",
   "library.localBody":
@@ -1201,14 +1218,17 @@ Object.assign(fr, {
   "library.noDescription": "Aucune description pour le moment.",
   "library.samplesCount": "échantillons",
   "library.generations": "générations",
-  "library.startVoicebox":
-    "Démarrez Voicebox depuis Moteurs pour gérer la bibliothèque vocale.",
+  "library.startTTS":
+    "Démarrez TTS depuis Moteurs pour gérer la bibliothèque vocale.",
   "library.testBench": "BANC D’ESSAI VOCAL",
   "library.testVoice": "Tester ce profil",
   "library.testPlaceholder":
     "Écrivez une courte phrase pour entendre cette voix…",
   "library.generateTest": "Générer le test",
   "library.generating": "Génération…",
+  "library.generationHistory": "Historique des audios générés",
+  "library.noGenerations": "Aucun audio n’a encore été généré avec ce profil.",
+  "library.failedGeneration": "Génération échouée",
   "library.openSamples": "Gérer les échantillons",
   "library.authorizedVoice": "Profil local autorisé",
   "library.workspace": "ESPACE RESSOURCES",
@@ -1238,12 +1258,12 @@ Object.assign(fr, {
 });
 
 Object.assign(en, {
-  "library.startVoicebox":
-    "Install or start Voicebox from Engines to manage the voice library.",
+  "library.startTTS":
+    "Install or start TTS from Engines to manage the voice library.",
 });
 Object.assign(fr, {
-  "library.startVoicebox":
-    "Installez ou démarrez Voicebox depuis Moteurs pour gérer la bibliothèque vocale.",
+  "library.startTTS":
+    "Installez ou démarrez TTS depuis Moteurs pour gérer la bibliothèque vocale.",
 });
 Object.assign(en, {
   "common.all": "All",
@@ -1311,6 +1331,10 @@ Object.assign(en, {
   "import.finalizing": "FINALIZING CONTAINER",
   "import.installTimeout": "The importer installation did not finish in time.",
   "import.clipboardDenied": "Clipboard access was denied.",
+  "import.outputFormat": "Final format",
+  "import.outputFormatSource": "Same as source",
+  "import.aspectLandscape": "Landscape",
+  "import.aspectSquare": "Square",
 });
 Object.assign(fr, {
   "common.cancel": "Annuler",
@@ -1350,6 +1374,10 @@ Object.assign(fr, {
   "import.installTimeout":
     "L’installation de l’importateur n’a pas terminé à temps.",
   "import.clipboardDenied": "L’accès au presse-papiers a été refusé.",
+  "import.outputFormat": "Format final",
+  "import.outputFormatSource": "Identique à la source",
+  "import.aspectLandscape": "Paysage",
+  "import.aspectSquare": "Carré",
 });
 Object.assign(en, {
   "onboarding.flow.source": "SOURCE",
@@ -1399,7 +1427,7 @@ Object.assign(en, {
   "rvc.signalPath": "POST-TTS SIGNAL PATH",
   "rvc.title": "Shape the timbre without losing the take",
   "rvc.body":
-    "Voicebox creates the performance. RVC optionally transforms its vocal identity before synchronization and mixing.",
+    "TTS creates the performance. RVC optionally transforms its vocal identity before synchronization and mixing.",
   "rvc.sync": "SYNC",
   "rvc.models": "Voice model vault",
   "rvc.modelsBody": "Only models you explicitly import appear here.",
@@ -1488,7 +1516,7 @@ Object.assign(fr, {
   "rvc.signalPath": "CHAÎNE DU SIGNAL APRÈS TTS",
   "rvc.title": "Transformer le timbre sans perdre la prise",
   "rvc.body":
-    "Voicebox crée l’interprétation. RVC transforme facultativement l’identité vocale avant la synchronisation et le mixage.",
+    "TTS crée l’interprétation. RVC transforme facultativement l’identité vocale avant la synchronisation et le mixage.",
   "rvc.sync": "SYNCHRO",
   "rvc.models": "Coffre de modèles vocaux",
   "rvc.modelsBody":
@@ -1580,11 +1608,11 @@ Object.assign(en, {
     "Remove embedded subtitles before transcription without overwriting the original source.",
   "workflow.rvcStage": "RVC conversion",
   "workflow.rvcStageBody":
-    "Transform Voicebox takes after generation while keeping every source file.",
+    "Transform TTS takes after generation while keeping every source file.",
   "workflow.cleanupHero": "Clean the picture before dubbing",
   "workflow.cleanupHeroBody":
     "Automatic detection or manual region, local inpainting and a preview before applying the result.",
-  "workflow.rvcHero": "Apply a vocal identity after Voicebox",
+  "workflow.rvcHero": "Apply a vocal identity after TTS",
   "workflow.rvcHeroBody":
     "Import only voice models you are authorized to use, adjust pitch and compare the result.",
   "workflow.area": "Choose the region",
@@ -1593,7 +1621,7 @@ Object.assign(en, {
   "workflow.validate": "Approve",
   "workflow.validateBody": "Preview then reversible derived source",
   "workflow.take": "Choose the take",
-  "workflow.takeBody": "Voicebox output or WAV file",
+  "workflow.takeBody": "TTS output or WAV file",
   "workflow.convert": "Convert",
   "workflow.convertBody": ".pth model, index and pitch",
   "workflow.compare": "Compare",
@@ -1616,11 +1644,11 @@ Object.assign(fr, {
     "Retirez les sous-titres incrustés avant la transcription, sans écraser la source originale.",
   "workflow.rvcStage": "Conversion RVC",
   "workflow.rvcStageBody":
-    "Transformez les prises Voicebox après génération, tout en conservant chaque fichier source.",
+    "Transformez les prises TTS après génération, tout en conservant chaque fichier source.",
   "workflow.cleanupHero": "Nettoyer l’image avant le doublage",
   "workflow.cleanupHeroBody":
     "Détection automatique ou zone manuelle, puis inpainting local avec aperçu avant application.",
-  "workflow.rvcHero": "Appliquer une identité vocale après Voicebox",
+  "workflow.rvcHero": "Appliquer une identité vocale après TTS",
   "workflow.rvcHeroBody":
     "Importez uniquement des modèles autorisés, réglez la hauteur et comparez le résultat.",
   "workflow.area": "Choisir la zone",
@@ -1629,7 +1657,7 @@ Object.assign(fr, {
   "workflow.validate": "Valider",
   "workflow.validateBody": "Aperçu puis source dérivée réversible",
   "workflow.take": "Choisir la prise",
-  "workflow.takeBody": "Sortie Voicebox ou fichier WAV",
+  "workflow.takeBody": "Sortie TTS ou fichier WAV",
   "workflow.convert": "Convertir",
   "workflow.convertBody": "Modèle .pth, index et hauteur",
   "workflow.compare": "Comparer",
@@ -1687,6 +1715,53 @@ Object.assign(en, {
   "export.check.translation": "Translations are approved",
   "export.check.voices": "Voice takes are generated",
   "export.check.ffmpeg": "FFmpeg pipeline is ready",
+  "export.subtitleStage": "SUBTITLE FINISH",
+  "export.subtitleStageBody":
+    "Clean embedded captions first, then render the translated DubRoom subtitles.",
+  "export.oldSubtitles": "Existing embedded subtitles",
+  "export.cleanup.none": "Keep the source",
+  "export.cleanup.auto": "Automatic",
+  "export.cleanup.blur": "Blur the lower band",
+  "export.cleanup.crop": "Crop and enlarge",
+  "export.cleanup.subclean": "SubClean AI",
+  "export.subtitleBand": "Lower subtitle band",
+  "export.subcleanMethod": "SubClean reconstruction",
+  "export.cleanupMethod": "Method",
+  "export.cleanupSpeed": "Speed",
+  "export.cleanupQuality": "Quality",
+  "export.cleanup.cropShort": "Crop",
+  "export.cleanup.blurShort": "Blur",
+  "export.reframeTitle": "Visual reframing",
+  "export.reframeBody":
+    "The monitor shows the exact crop used by the final export.",
+  "export.reframeReset": "Reset",
+  "export.reframeZoom": "Additional zoom",
+  "export.reframeHorizontal": "Horizontal position",
+  "export.reframeVertical": "Vertical position",
+  "export.reframeDrag": "Drag directly on the video to adjust the frame.",
+  "export.reframePreview": "EXPORT FRAME",
+  "export.reframe.fit": "Fit",
+  "export.reframe.fill": "Fill",
+  "export.reframe.blur": "Blurred frame",
+  "export.addOurSubtitles": "Render translated subtitles",
+  "export.subtitleStyle": "Subtitle style",
+  "export.style.cinema": "Cinema",
+  "export.style.social": "Social / Shorts",
+  "export.style.minimal": "Minimal",
+  "export.style.manga": "Manga",
+  "export.style.documentary": "Documentary",
+  "export.subtitlePosition": "Position",
+  "export.position.bottom": "Bottom",
+  "export.position.top": "Top",
+  "export.videoEnhance": "FAST VIDEO ENHANCEMENT",
+  "export.videoEnhanceBody":
+    "Lanczos preserves fine lines efficiently. Clarity+ adds a light sharpening pass.",
+  "export.enhance.off": "Original",
+  "export.enhance.standard": "Fast quality",
+  "export.enhance.clarity": "Clarity+",
+  "export.enhanceResolution": "Output resolution",
+  "export.upscaleActive": "Upscaling will be applied",
+  "export.upscaleNotNeeded": "The selected output is not larger than the source",
 });
 Object.assign(fr, {
   "export.delivery": "LIVRABLE",
@@ -1735,6 +1810,55 @@ Object.assign(fr, {
   "export.check.translation": "Les traductions sont validées",
   "export.check.voices": "Les prises vocales sont générées",
   "export.check.ffmpeg": "Le pipeline FFmpeg est prêt",
+  "export.subtitleStage": "FINITION DES SOUS-TITRES",
+  "export.subtitleStageBody":
+    "Nettoyez d’abord les textes incrustés, puis ajoutez les sous-titres traduits de DubRoom.",
+  "export.oldSubtitles": "Sous-titres déjà incrustés",
+  "export.cleanup.none": "Conserver la source",
+  "export.cleanup.auto": "Automatique",
+  "export.cleanup.blur": "Flouter la bande basse",
+  "export.cleanup.crop": "Recadrer et agrandir",
+  "export.cleanup.subclean": "SubClean IA",
+  "export.subtitleBand": "Bande occupée en bas",
+  "export.subcleanMethod": "Reconstruction SubClean",
+  "export.cleanupMethod": "Méthode",
+  "export.cleanupSpeed": "Rapidité",
+  "export.cleanupQuality": "Qualité",
+  "export.cleanup.cropShort": "Recadrage",
+  "export.cleanup.blurShort": "Flou",
+  "export.reframeTitle": "Recadrage visuel",
+  "export.reframeBody":
+    "Le moniteur affiche exactement le cadrage utilisé dans l’export final.",
+  "export.reframeReset": "Réinitialiser",
+  "export.reframeZoom": "Zoom supplémentaire",
+  "export.reframeHorizontal": "Position horizontale",
+  "export.reframeVertical": "Position verticale",
+  "export.reframeDrag":
+    "Faites glisser directement la vidéo pour ajuster le cadre.",
+  "export.reframePreview": "CADRE EXPORT",
+  "export.reframe.fit": "Ajuster",
+  "export.reframe.fill": "Remplir",
+  "export.reframe.blur": "Fond flou",
+  "export.addOurSubtitles": "Ajouter nos sous-titres traduits",
+  "export.subtitleStyle": "Style des sous-titres",
+  "export.style.cinema": "Cinéma",
+  "export.style.social": "Social / Shorts",
+  "export.style.minimal": "Minimal",
+  "export.style.manga": "Manga",
+  "export.style.documentary": "Documentaire",
+  "export.subtitlePosition": "Position",
+  "export.position.bottom": "En bas",
+  "export.position.top": "En haut",
+  "export.videoEnhance": "AMÉLIORATION VIDÉO RAPIDE",
+  "export.videoEnhanceBody":
+    "Lanczos préserve rapidement les détails. Netteté+ ajoute un renforcement léger.",
+  "export.enhance.off": "Original",
+  "export.enhance.standard": "Qualité rapide",
+  "export.enhance.clarity": "Netteté+",
+  "export.enhanceResolution": "Résolution de sortie",
+  "export.upscaleActive": "L’agrandissement sera bien appliqué",
+  "export.upscaleNotNeeded":
+    "La sortie choisie n’est pas plus grande que la source",
 });
 Object.assign(en, {
   "performance.auto": "Auto performance",
@@ -1790,7 +1914,18 @@ Object.assign(en, {
   "library.assetName": "Name",
   "library.assetNamePlaceholder": "Example: Character names",
   "library.assetContent": "Content",
-  "library.glossaryPlaceholder": "One pronunciation rule per line…",
+  "library.glossaryPlaceholder": "One source -> target translation per line…",
+  "library.sourceLanguage": "Source language",
+  "library.targetLanguage": "Target language",
+  "library.smartDictionary": "Smart terminology",
+  "library.termsToReview": "Detected terms to validate",
+  "library.detectedTerms": "terms",
+  "library.suspicion": "suspicion",
+  "library.preferredTranslation": "Preferred translation",
+  "library.research": "Research",
+  "library.validate": "Validate",
+  "library.locked": "Locked",
+  "library.noTermsToReview": "No ambiguous project term detected yet.",
   "library.presetPlaceholder":
     "Describe the direction, effects and mix settings…",
   "library.save": "Save locally",
@@ -1801,12 +1936,68 @@ Object.assign(fr, {
   "library.assetName": "Nom",
   "library.assetNamePlaceholder": "Ex. Noms des personnages",
   "library.assetContent": "Contenu",
-  "library.glossaryPlaceholder": "Une règle de prononciation par ligne…",
+  "library.glossaryPlaceholder": "Une traduction source -> cible par ligne…",
+  "library.sourceLanguage": "Langue source",
+  "library.targetLanguage": "Langue cible",
+  "library.smartDictionary": "Terminologie intelligente",
+  "library.termsToReview": "Termes détectés à valider",
+  "library.detectedTerms": "termes",
+  "library.suspicion": "suspicion",
+  "library.preferredTranslation": "Traduction préférée",
+  "library.research": "Rechercher",
+  "library.validate": "Valider",
+  "library.locked": "Verrouillé",
+  "library.noTermsToReview": "Aucun terme de projet ambigu détecté pour le moment.",
   "library.presetPlaceholder":
     "Décrivez la direction, les effets et les réglages de mixage…",
   "library.save": "Enregistrer localement",
   "library.assetEmpty": "Aucune ressource locale",
   "library.assetRequired": "Saisissez un nom et un contenu.",
+});
+
+Object.assign(en, {
+  "studio.translationExpress": "Express",
+  "studio.translationStudio": "Studio",
+  "studio.translationMaster": "Master",
+  "studio.narrativeProfile": "Narrative profile",
+  "studio.profile.naturalRecap": "Narrator recap · recommended",
+  "studio.profile.externalNarrator": "Neutral external narrator",
+  "studio.profile.cinematicOmniscient": "Cinematic omniscient",
+  "studio.profile.documentary": "Documentary",
+  "studio.profile.mcFirstPerson": "Hero · first person",
+  "studio.profile.dramatic": "Dramatic",
+  "studio.profile.darkSuspense": "Dark suspense",
+  "studio.profile.comedicIronic": "Ironic / light",
+  "studio.profile.shortCondensed": "Condensed / Shorts",
+  "studio.profile.multiCharacter": "Multi-character",
+  "studio.narrativeDirection": "Custom narrative direction",
+  "studio.narrativeDirectionPlaceholder":
+    "Example: oral French, calm narrator, short sentences, preserve humour…",
+  "studio.results": "results",
+  "studio.translatedSegments": "translated segments",
+  "studio.savedRevision": "Saved version",
+});
+Object.assign(fr, {
+  "studio.translationExpress": "Express",
+  "studio.translationStudio": "Studio",
+  "studio.translationMaster": "Master",
+  "studio.narrativeProfile": "Profil narratif",
+  "studio.profile.naturalRecap": "Récap narrateur · recommandé",
+  "studio.profile.externalNarrator": "Narrateur extérieur neutre",
+  "studio.profile.cinematicOmniscient": "Cinéma omniscient",
+  "studio.profile.documentary": "Documentaire",
+  "studio.profile.mcFirstPerson": "Héros · première personne",
+  "studio.profile.dramatic": "Dramatique",
+  "studio.profile.darkSuspense": "Suspense sombre",
+  "studio.profile.comedicIronic": "Ironique / léger",
+  "studio.profile.shortCondensed": "Condensé / Shorts",
+  "studio.profile.multiCharacter": "Multi-personnages",
+  "studio.narrativeDirection": "Direction narrative personnalisée",
+  "studio.narrativeDirectionPlaceholder":
+    "Ex. français oral, narrateur calme, phrases courtes, conserver l’humour…",
+  "studio.results": "résultats",
+  "studio.translatedSegments": "segments traduits",
+  "studio.savedRevision": "Version sauvegardée",
 });
 
 Object.assign(en, {
@@ -2598,6 +2789,8 @@ Object.assign(ar, {
 Object.assign(en, {
   "common.ready": "Ready",
   "common.offline": "Offline",
+  "engines.installed": "Installed",
+  "engines.needsRepair": "Downloaded · repair needed",
   "engines.variantCount": "{{count}} variants",
   "engines.readyCount": "{{ready}}/{{total}} ready",
   "engines.tts": "Voice synthesis",
@@ -2608,6 +2801,8 @@ Object.assign(en, {
 Object.assign(fr, {
   "common.ready": "Prêt",
   "common.offline": "Hors ligne",
+  "engines.installed": "Installés",
+  "engines.needsRepair": "Téléchargé · réparation requise",
   "engines.variantCount": "{{count}} variantes",
   "engines.readyCount": "{{ready}}/{{total}} prêtes",
   "engines.tts": "Synthèse vocale",
@@ -2618,6 +2813,8 @@ Object.assign(fr, {
 Object.assign(es, {
   "common.ready": "Listo",
   "common.offline": "Sin conexión",
+  "engines.installed": "Instalados",
+  "engines.needsRepair": "Descargado · necesita reparación",
   "engines.variantCount": "{{count}} variantes",
   "engines.readyCount": "{{ready}}/{{total}} listas",
   "engines.tts": "Síntesis de voz",
@@ -2628,6 +2825,8 @@ Object.assign(es, {
 Object.assign(pt, {
   "common.ready": "Pronto",
   "common.offline": "Offline",
+  "engines.installed": "Instalados",
+  "engines.needsRepair": "Baixado · requer reparação",
   "engines.variantCount": "{{count}} variantes",
   "engines.readyCount": "{{ready}}/{{total}} prontas",
   "engines.tts": "Síntese de voz",
@@ -2638,6 +2837,8 @@ Object.assign(pt, {
 Object.assign(de, {
   "common.ready": "Bereit",
   "common.offline": "Offline",
+  "engines.installed": "Installiert",
+  "engines.needsRepair": "Heruntergeladen · Reparatur nötig",
   "engines.variantCount": "{{count}} Varianten",
   "engines.readyCount": "{{ready}}/{{total}} bereit",
   "engines.tts": "Sprachsynthese",
@@ -2648,6 +2849,8 @@ Object.assign(de, {
 Object.assign(ja, {
   "common.ready": "準備完了",
   "common.offline": "オフライン",
+  "engines.installed": "インストール済み",
+  "engines.needsRepair": "ダウンロード済み・修復が必要",
   "engines.variantCount": "{{count}} バリアント",
   "engines.readyCount": "{{ready}}/{{total}} 準備完了",
   "engines.tts": "音声合成",
@@ -2658,6 +2861,8 @@ Object.assign(ja, {
 Object.assign(ko, {
   "common.ready": "준비됨",
   "common.offline": "오프라인",
+  "engines.installed": "설치됨",
+  "engines.needsRepair": "다운로드됨 · 복구 필요",
   "engines.variantCount": "{{count}}개 변형",
   "engines.readyCount": "{{ready}}/{{total}} 준비됨",
   "engines.tts": "음성 합성",
@@ -2668,6 +2873,8 @@ Object.assign(ko, {
 Object.assign(zh, {
   "common.ready": "就绪",
   "common.offline": "离线",
+  "engines.installed": "已安装",
+  "engines.needsRepair": "已下载 · 需要修复",
   "engines.variantCount": "{{count}} 个变体",
   "engines.readyCount": "{{ready}}/{{total}} 已就绪",
   "engines.tts": "语音合成",
@@ -2678,6 +2885,8 @@ Object.assign(zh, {
 Object.assign(ar, {
   "common.ready": "جاهز",
   "common.offline": "غير متصل",
+  "engines.installed": "مثبت",
+  "engines.needsRepair": "تم التنزيل · يحتاج إلى إصلاح",
   "engines.variantCount": "{{count}} إصدارات",
   "engines.readyCount": "{{ready}}/{{total}} جاهزة",
   "engines.tts": "توليد الصوت",
@@ -3079,57 +3288,57 @@ Object.assign(ar, {
 
 Object.assign(en, {
   "engines.sourceVerified": "Source verified",
-  "voicebox.modelsReady": "{{ready}}/{{total}} models ready",
-  "voicebox.languageCount": "{{count}} languages",
-  "voicebox.languageCountOne": "1 language",
+  "tts.modelsReady": "{{ready}}/{{total}} models ready",
+  "tts.languageCount": "{{count}} languages",
+  "tts.languageCountOne": "1 language",
 });
 Object.assign(fr, {
   "engines.sourceVerified": "Source vérifiée",
-  "voicebox.modelsReady": "{{ready}}/{{total}} modèles prêts",
-  "voicebox.languageCount": "{{count}} langues",
-  "voicebox.languageCountOne": "1 langue",
+  "tts.modelsReady": "{{ready}}/{{total}} modèles prêts",
+  "tts.languageCount": "{{count}} langues",
+  "tts.languageCountOne": "1 langue",
 });
 Object.assign(es, {
   "engines.sourceVerified": "Fuente verificada",
-  "voicebox.modelsReady": "{{ready}}/{{total}} modelos listos",
-  "voicebox.languageCount": "{{count}} idiomas",
-  "voicebox.languageCountOne": "1 idioma",
+  "tts.modelsReady": "{{ready}}/{{total}} modelos listos",
+  "tts.languageCount": "{{count}} idiomas",
+  "tts.languageCountOne": "1 idioma",
 });
 Object.assign(pt, {
   "engines.sourceVerified": "Fonte verificada",
-  "voicebox.modelsReady": "{{ready}}/{{total}} modelos prontos",
-  "voicebox.languageCount": "{{count}} idiomas",
-  "voicebox.languageCountOne": "1 idioma",
+  "tts.modelsReady": "{{ready}}/{{total}} modelos prontos",
+  "tts.languageCount": "{{count}} idiomas",
+  "tts.languageCountOne": "1 idioma",
 });
 Object.assign(de, {
   "engines.sourceVerified": "Quelle geprüft",
-  "voicebox.modelsReady": "{{ready}}/{{total}} Modelle bereit",
-  "voicebox.languageCount": "{{count}} Sprachen",
-  "voicebox.languageCountOne": "1 Sprache",
+  "tts.modelsReady": "{{ready}}/{{total}} Modelle bereit",
+  "tts.languageCount": "{{count}} Sprachen",
+  "tts.languageCountOne": "1 Sprache",
 });
 Object.assign(ja, {
   "engines.sourceVerified": "ソース確認済み",
-  "voicebox.modelsReady": "{{ready}}/{{total}} モデル準備完了",
-  "voicebox.languageCount": "{{count}} 言語",
-  "voicebox.languageCountOne": "1 言語",
+  "tts.modelsReady": "{{ready}}/{{total}} モデル準備完了",
+  "tts.languageCount": "{{count}} 言語",
+  "tts.languageCountOne": "1 言語",
 });
 Object.assign(ko, {
   "engines.sourceVerified": "소스 확인됨",
-  "voicebox.modelsReady": "{{ready}}/{{total}}개 모델 준비됨",
-  "voicebox.languageCount": "{{count}}개 언어",
-  "voicebox.languageCountOne": "1개 언어",
+  "tts.modelsReady": "{{ready}}/{{total}}개 모델 준비됨",
+  "tts.languageCount": "{{count}}개 언어",
+  "tts.languageCountOne": "1개 언어",
 });
 Object.assign(zh, {
   "engines.sourceVerified": "来源已验证",
-  "voicebox.modelsReady": "{{ready}}/{{total}} 个模型已就绪",
-  "voicebox.languageCount": "{{count}} 种语言",
-  "voicebox.languageCountOne": "1 种语言",
+  "tts.modelsReady": "{{ready}}/{{total}} 个模型已就绪",
+  "tts.languageCount": "{{count}} 种语言",
+  "tts.languageCountOne": "1 种语言",
 });
 Object.assign(ar, {
   "engines.sourceVerified": "تم التحقق من المصدر",
-  "voicebox.modelsReady": "{{ready}}/{{total}} نماذج جاهزة",
-  "voicebox.languageCount": "{{count}} لغات",
-  "voicebox.languageCountOne": "لغة واحدة",
+  "tts.modelsReady": "{{ready}}/{{total}} نماذج جاهزة",
+  "tts.languageCount": "{{count}} لغات",
+  "tts.languageCountOne": "لغة واحدة",
 });
 
 Object.assign(en, {
@@ -3460,6 +3669,415 @@ Object.assign(ar, {
   "studio.track.unmute": "إلغاء كتم المسار",
   "studio.track.lock": "قفل المسار",
   "studio.track.unlock": "إلغاء قفل المسار",
+});
+
+Object.assign(en, {
+  "studio.exchange.kicker": "EXTERNAL TRANSLATION",
+  "studio.exchange.exportChat": "Export the transcript for an AI chat",
+  "studio.exchange.exportManifest":
+    "Create the complete GPT kit for this project",
+  "studio.exchange.importTranslated": "Import the translated script",
+  "studio.exchange.exportShort": "GPT kit",
+  "studio.exchange.importShort": "Import",
+  "studio.exchange.exportReady":
+    "{{segments}} segments prepared in {{files}} files. The folder is open.",
+  "studio.exchange.importApplied":
+    "{{changed}} translated segments imported. Voice generation is ready.",
+  "studio.exchange.previewTitle": "Check the translated script",
+  "studio.exchange.validationFailed": "The translated script cannot be imported",
+  "studio.exchange.detected": "Detected",
+  "studio.exchange.matched": "Matched",
+  "studio.exchange.changed": "Changed",
+  "studio.exchange.timingWarnings": "Timing alerts",
+  "studio.exchange.blocked":
+    "This file no longer matches the current transcript or contains duplicate identifiers.",
+  "studio.exchange.invalidV3":
+    "The V3 speaker, voice-unit, emotion, bridge or registry data is invalid ({{count}} errors).",
+  "studio.exchange.incompleteV3":
+    "A Multi-Speaker import must contain every source segment before voice casting.",
+  "studio.exchange.promptOld":
+    "This file used an older GPT prompt. Review it carefully and use the current kit next time.",
+  "studio.exchange.unknownIds":
+    "{{count}} unknown identifiers will be ignored.",
+  "studio.exchange.preserveTiming":
+    "Identifiers, timestamps, speakers and source text remain unchanged.",
+  "studio.exchange.importing": "Importing…",
+  "studio.exchange.apply": "Import and continue to voices",
+});
+Object.assign(fr, {
+  "studio.exchange.kicker": "TRADUCTION EXTERNE",
+  "studio.exchange.exportChat":
+    "Exporter la transcription pour un chat IA",
+  "studio.exchange.exportManifest":
+    "Créer le kit GPT complet adapté à ce projet",
+  "studio.exchange.importTranslated": "Importer le script traduit",
+  "studio.exchange.exportShort": "Kit GPT",
+  "studio.exchange.importShort": "Importer",
+  "studio.exchange.exportReady":
+    "{{segments}} segments préparés dans {{files}} fichiers. Le dossier est ouvert.",
+  "studio.exchange.importApplied":
+    "{{changed}} segments traduits importés. La génération des voix est prête.",
+  "studio.exchange.previewTitle": "Vérifier le script traduit",
+  "studio.exchange.validationFailed":
+    "Le script traduit ne peut pas être importé",
+  "studio.exchange.detected": "Détectés",
+  "studio.exchange.matched": "Correspondances",
+  "studio.exchange.changed": "Modifiés",
+  "studio.exchange.timingWarnings": "Alertes de durée",
+  "studio.exchange.blocked":
+    "Ce fichier ne correspond plus à la transcription actuelle ou contient des identifiants en double.",
+  "studio.exchange.invalidV3":
+    "Les locuteurs, unités vocales, émotions, ponts ou personnages V3 contiennent {{count}} erreurs.",
+  "studio.exchange.incompleteV3":
+    "Un import Multi-Speaker doit contenir tous les segments avant le casting des voix.",
+  "studio.exchange.promptOld":
+    "Ce fichier vient d’anciennes consignes GPT. Vérifiez-le attentivement et utilisez ensuite le kit actuel.",
+  "studio.exchange.unknownIds":
+    "{{count}} identifiants inconnus seront ignorés.",
+  "studio.exchange.preserveTiming":
+    "Les identifiants, timecodes, clusters acoustiques et textes sources resteront inchangés. Les personnages résolus seront appliqués au casting.",
+  "studio.exchange.importing": "Importation…",
+  "studio.exchange.apply": "Importer et passer aux voix",
+});
+
+Object.assign(en, {
+  "profile.sampleRequired": "Select or record a voice sample.",
+  "profile.autoTranscript":
+    "Optional: leave this blank and Whisper will transcribe the sample automatically after the voice model is released.",
+  "profile.referencePlaceholder":
+    "Exact transcript, or leave blank for automatic Whisper transcription",
+});
+Object.assign(fr, {
+  "profile.sampleRequired": "Sélectionnez ou enregistrez un échantillon vocal.",
+  "profile.autoTranscript":
+    "Facultatif : laissez ce champ vide et Whisper transcrira automatiquement l’échantillon après libération du modèle vocal.",
+  "profile.referencePlaceholder":
+    "Transcription exacte, ou laissez vide pour utiliser Whisper",
+});
+Object.assign(en, {
+  "settings.cleanRestart": "Clean restart",
+  "settings.cleanRestartBody": "Stops DubRoom, its local API and loaded model processes, then starts a fresh studio session.",
+  "settings.cleanRestartConfirm": "Restart DubRoom now? Current background operations will be stopped.",
+  "settings.restartNow": "Restart DubRoom",
+  "settings.restarting": "Restarting…",
+  "youtubeRange.title": "DOWNLOAD RANGE",
+  "youtubeRange.body": "Keep the whole source or extract only the precise section you need.",
+  "youtubeRange.full": "Complete source",
+  "youtubeRange.excerpt": "Precise excerpt",
+  "youtubeRange.start": "Beginning",
+  "youtubeRange.end": "End",
+  "youtubeRange.hint": "Enter seconds, MM:SS or HH:MM:SS.",
+  "youtubeRange.invalid": "Check the beginning and end. The excerpt must be at least 0.5 seconds and stay inside the video.",
+  "import.downloadExcerpt": "Download this excerpt",
+  "profile.youtubeSample": "Import a reference from YouTube",
+  "profile.youtubeSampleBody": "DubRoom downloads audio only. Choose the exact seconds containing one clean, expressive voice.",
+  "profile.downloadYouTubeAudio": "Extract this audio",
+  "profile.youtubeAudioReady": "The YouTube audio reference is ready.",
+});
+Object.assign(fr, {
+  "settings.cleanRestart": "Redémarrage propre",
+  "settings.cleanRestartBody": "Arrête DubRoom, son API locale et les modèles chargés, puis relance une session propre.",
+  "settings.cleanRestartConfirm": "Redémarrer DubRoom maintenant ? Les opérations en arrière-plan seront arrêtées.",
+  "settings.restartNow": "Redémarrer DubRoom",
+  "settings.restarting": "Redémarrage…",
+  "youtubeRange.title": "PLAGE À TÉLÉCHARGER",
+  "youtubeRange.body": "Gardez toute la source ou extrayez seulement le passage précis dont vous avez besoin.",
+  "youtubeRange.full": "Source complète",
+  "youtubeRange.excerpt": "Extrait précis",
+  "youtubeRange.start": "Début",
+  "youtubeRange.end": "Fin",
+  "youtubeRange.hint": "Saisissez des secondes, MM:SS ou HH:MM:SS.",
+  "youtubeRange.invalid": "Vérifiez le début et la fin. L’extrait doit durer au moins 0,5 seconde et rester dans la vidéo.",
+  "import.downloadExcerpt": "Télécharger cet extrait",
+  "profile.youtubeSample": "Importer une référence depuis YouTube",
+  "profile.youtubeSampleBody": "DubRoom télécharge uniquement l’audio. Choisissez précisément les secondes contenant une seule voix propre et expressive.",
+  "profile.downloadYouTubeAudio": "Extraire cet audio",
+  "profile.youtubeAudioReady": "La référence audio YouTube est prête.",
+});
+Object.assign(en, {
+  "export.audioCodec": "Audio codec",
+  "export.audioBitrate": "Audio bitrate",
+  "export.maxOutputSize": "Optional size limit (0 = automatic)",
+  "export.sizeAutomatic": "Automatic quality",
+  "export.audioMastering": "Voice mastering",
+  "export.hardwareAcceleration": "Video encoding",
+  "export.hardwareAuto": "Automatic (GPU when available)",
+  "export.hardwareNvenc": "NVIDIA GPU — NVENC",
+  "export.hardwareCpu": "Processor — maximum software quality",
+  "export.voiceVolume": "Generated voices",
+  "export.originalVolume": "Original dialogue / ambience",
+  "export.musicVolume": "Preserved music / SFX",
+  "export.normalizeAudio": "Broadcast loudness normalization",
+  "export.ducking": "Lower music / SFX under dialogue",
+  "export.audioMasteringBody":
+    "48 kHz high-quality resampling, voice cleanup, gentle compression and true-peak protection. No voice speed-up is applied.",
+});
+Object.assign(fr, {
+  "export.audioCodec": "Codec audio",
+  "export.audioBitrate": "Débit audio",
+  "export.maxOutputSize": "Limite facultative (0 = automatique)",
+  "export.sizeAutomatic": "Qualité automatique",
+  "export.audioMastering": "Mastering des voix",
+  "export.hardwareAcceleration": "Encodage vidéo",
+  "export.hardwareAuto": "Automatique (GPU si disponible)",
+  "export.hardwareNvenc": "GPU NVIDIA — NVENC",
+  "export.hardwareCpu": "Processeur — qualité logicielle maximale",
+  "export.voiceVolume": "Voix générées",
+  "export.originalVolume": "Dialogue original / ambiance",
+  "export.musicVolume": "Musique / SFX préservés",
+  "export.normalizeAudio": "Normalisation du volume de diffusion",
+  "export.ducking": "Baisser la musique / les SFX sous les dialogues",
+  "export.audioMasteringBody":
+    "Rééchantillonnage haute qualité à 48 kHz, nettoyage des voix, compression douce et protection des crêtes. Aucune accélération des voix.",
+});
+
+Object.assign(en, {
+  "studio.audioPreservation.kicker": "DIALOGUE ISOLATION",
+  "studio.audioPreservation.title": "Audio Preservation",
+  "studio.audioPreservation.body":
+    "Keep the original soundtrack intact and isolate only the dialogue that will be replaced.",
+  "studio.audioPreservation.notProcessed": "Not processed",
+  "studio.audioPreservation.processing": "Processing",
+  "studio.audioPreservation.ready": "Ready",
+  "studio.audioPreservation.failed": "Failed",
+  "studio.audioPreservation.cancelled": "Cancelled",
+  "studio.audioPreservation.separate": "Separate dialogue / background",
+  "studio.audioPreservation.reprocess": "Reprocess audio",
+  "studio.audioPreservation.cinema": "Cinema quality",
+  "studio.audioPreservation.cinemaBody": "Bandit: dialogue, music and SFX optimized for video.",
+  "studio.audioPreservation.fast": "Fast",
+  "studio.audioPreservation.fastBody": "Demucs: quicker fallback for simple mixes.",
+  "studio.audioPreservation.original": "Original",
+  "studio.audioPreservation.voices": "Voices",
+  "studio.audioPreservation.bed": "SFX + Music",
+  "studio.audioPreservation.cacheReused": "Existing separation reused from cache",
+  "studio.audioPreservation.runtime": "Shared runtime",
+  "studio.audioPreservation.cpuRuntime": "CPU fallback",
+  "studio.audioPreservation.repairRuntime": "Repair required",
+  "studio.audioPreservation.noSilentDownload":
+    "Project jobs reuse compatible local dependencies and never reinstall packages silently.",
+  "studio.exchange.detectSpeakersFirst":
+    "Analyze voice changes before exporting. ChatGPT will resolve the stable characters from context before voice casting.",
+});
+Object.assign(fr, {
+  "studio.audioPreservation.kicker": "ISOLATION DES DIALOGUES",
+  "studio.audioPreservation.title": "Préservation audio",
+  "studio.audioPreservation.body":
+    "Conserve la bande-son originale intacte et isole uniquement les dialogues qui seront remplacés.",
+  "studio.audioPreservation.notProcessed": "Non traité",
+  "studio.audioPreservation.processing": "Traitement en cours",
+  "studio.audioPreservation.ready": "Prêt",
+  "studio.audioPreservation.failed": "Échec",
+  "studio.audioPreservation.cancelled": "Annulé",
+  "studio.audioPreservation.separate": "Séparer dialogues / ambiance",
+  "studio.audioPreservation.reprocess": "Retraiter l’audio",
+  "studio.audioPreservation.cinema": "Qualité cinéma",
+  "studio.audioPreservation.cinemaBody": "Bandit : dialogues, musique et SFX spécialisés vidéo.",
+  "studio.audioPreservation.fast": "Rapide",
+  "studio.audioPreservation.fastBody": "Demucs : repli plus rapide pour les mixages simples.",
+  "studio.audioPreservation.original": "Original",
+  "studio.audioPreservation.voices": "Voix",
+  "studio.audioPreservation.bed": "SFX + Musique",
+  "studio.audioPreservation.cacheReused": "Séparation existante réutilisée depuis le cache",
+  "studio.audioPreservation.runtime": "Runtime partagé",
+  "studio.audioPreservation.cpuRuntime": "Repli CPU",
+  "studio.audioPreservation.repairRuntime": "Réparation requise",
+  "studio.audioPreservation.noSilentDownload":
+    "Les jobs réutilisent les dépendances locales compatibles et ne réinstallent jamais de paquets silencieusement.",
+  "studio.exchange.detectSpeakersFirst":
+    "Analyse d’abord les changements de voix. ChatGPT résoudra les personnages stables grâce au contexte avant le casting.",
+});
+
+Object.assign(en, {
+  "import.contentType": "Video type",
+  "import.contentType.anime": "Anime",
+  "import.contentType.manga_recap": "Manga recap",
+  "import.contentType.manhwa_recap": "Manhwa recap",
+  "import.contentType.live_action": "Live action",
+  "import.contentType.gameplay": "Gameplay",
+  "import.contentType.podcast": "Podcast / interview",
+  "import.contentType.other": "Other",
+  "voiceLibrary.myVoices": "My voices",
+  "voiceLibrary.omniCatalog": "OmniVoice catalog",
+  "voiceLibrary.cloneWithOmniVoice": "Clone with OmniVoice",
+});
+Object.assign(fr, {
+  "import.contentType": "Type de vidéo",
+  "import.contentType.anime": "Anime",
+  "import.contentType.manga_recap": "Récap manga",
+  "import.contentType.manhwa_recap": "Récap manhwa",
+  "import.contentType.live_action": "Prise de vue réelle",
+  "import.contentType.gameplay": "Gameplay",
+  "import.contentType.podcast": "Podcast / interview",
+  "import.contentType.other": "Autre",
+  "voiceLibrary.myVoices": "Mes voix",
+  "voiceLibrary.omniCatalog": "Catalogue OmniVoice",
+  "voiceLibrary.cloneWithOmniVoice": "Cloner avec OmniVoice",
+});
+
+Object.assign(en, {
+  "studio.diarization.kicker": "ACOUSTIC VOICE ANALYSIS",
+  "studio.diarization.title": "Where do voices change?",
+  "studio.diarization.body":
+    "Find probable voice changes and provide cautious sex/age hints. ChatGPT resolves the final characters from story context.",
+  "studio.diarization.notProcessed": "Not processed",
+  "studio.diarization.processing": "Analyzing voice changes",
+  "studio.diarization.ready": "Acoustic hints ready",
+  "studio.diarization.failed": "Detection failed",
+  "studio.diarization.detect": "Analyze voice changes",
+  "studio.diarization.reprocess": "Analyze again",
+  "studio.diarization.needsVocals": "Run Audio Preservation first to create vocals.wav.",
+  "studio.diarization.needsModel": "Install Pyannote Community-1 from Engines. Its Hugging Face token is only needed for the initial model download.",
+  "studio.diarization.result": "RESULT",
+  "studio.diarization.speakers": "speakers",
+  "studio.diarization.turns": "speech turns",
+  "studio.diarization.elapsed": "processing time",
+  "studio.diarization.cacheReused": "Existing acoustic hints reused from project cache",
+  "studio.diarization.runtime": "Shared dependencies",
+  "studio.diarization.noSilentDownload":
+    "The project job is local-only. It reuses Pyannote from WhisperX and never downloads a model silently.",
+});
+Object.assign(fr, {
+  "studio.diarization.kicker": "ANALYSE ACOUSTIQUE DES VOIX",
+  "studio.diarization.title": "Où les voix changent-elles ?",
+  "studio.diarization.body":
+    "Repère les changements probables de voix et fournit des indices prudents de sexe et d’âge. ChatGPT résout ensuite les personnages grâce au contexte.",
+  "studio.diarization.notProcessed": "Non traité",
+  "studio.diarization.processing": "Analyse des changements de voix",
+  "studio.diarization.ready": "Indices acoustiques prêts",
+  "studio.diarization.failed": "Échec de la détection",
+  "studio.diarization.detect": "Analyser les changements de voix",
+  "studio.diarization.reprocess": "Analyser à nouveau",
+  "studio.diarization.needsVocals": "Lance d’abord Préservation audio pour créer vocals.wav.",
+  "studio.diarization.needsModel": "Installe Pyannote Community-1 dans Moteurs. Le jeton Hugging Face sert uniquement au premier téléchargement du modèle.",
+  "studio.diarization.result": "RÉSULTAT",
+  "studio.diarization.speakers": "locuteurs",
+  "studio.diarization.turns": "prises de parole",
+  "studio.diarization.elapsed": "temps de traitement",
+  "studio.diarization.cacheReused": "Indices acoustiques réutilisés depuis le cache du projet",
+  "studio.diarization.runtime": "Dépendances partagées",
+  "studio.diarization.noSilentDownload":
+    "Le job reste 100 % local : il réutilise Pyannote de WhisperX et ne télécharge jamais de modèle silencieusement.",
+});
+
+Object.assign(en, {
+  "voiceLibrary.loading": "Loading the local voice catalog",
+  "voiceLibrary.kicker": "MULTI-SPEAKER CASTING",
+  "voiceLibrary.title": "OmniVoice designed voice library",
+  "voiceLibrary.body":
+    "Each profile generates one consistent voice. DubRoom assigns different profiles to detected speakers for multi-speaker dubbing.",
+  "voiceLibrary.singleSpeaker": "Single-speaker voice",
+  "voiceLibrary.multiAssignable": "Multi-speaker assignable",
+  "voiceLibrary.multiNative": "Native multi-speaker",
+  "voiceLibrary.localOnly": "Local only",
+  "voiceLibrary.generated": "voices generated",
+  "voiceLibrary.male": "Male profiles",
+  "voiceLibrary.female": "Female profiles",
+  "voiceLibrary.special": "Special profiles",
+  "voiceLibrary.cancel": "Cancel generation",
+  "voiceLibrary.generateSelected": "Generate selected",
+  "voiceLibrary.generateAll": "Generate all 18",
+  "voiceLibrary.fullTests": "All expressive tests",
+  "voiceLibrary.noDownload": "Existing local model and shared CUDA runtime only",
+});
+Object.assign(fr, {
+  "voiceLibrary.loading": "Chargement du catalogue vocal local",
+  "voiceLibrary.kicker": "CASTING MULTI-SPEAKER",
+  "voiceLibrary.title": "Bibliothèque de voix conçues OmniVoice",
+  "voiceLibrary.body":
+    "Chaque profil génère une voix cohérente. DubRoom assigne ensuite des profils différents aux speakers détectés pour le doublage multi-speaker.",
+  "voiceLibrary.singleSpeaker": "Voix single-speaker",
+  "voiceLibrary.multiAssignable": "Assignable en multi-speaker",
+  "voiceLibrary.multiNative": "Multi-speaker natif",
+  "voiceLibrary.localOnly": "Local uniquement",
+  "voiceLibrary.generated": "voix générées",
+  "voiceLibrary.male": "Profils masculins",
+  "voiceLibrary.female": "Profils féminins",
+  "voiceLibrary.special": "Profils spéciaux",
+  "voiceLibrary.cancel": "Annuler la génération",
+  "voiceLibrary.generateSelected": "Générer la sélection",
+  "voiceLibrary.generateAll": "Générer les 18 voix",
+  "voiceLibrary.fullTests": "Tous les tests expressifs",
+  "voiceLibrary.noDownload": "Modèle local existant et runtime CUDA partagé uniquement",
+});
+
+Object.assign(en, {
+  "import.dubbingMode": "Dubbing mode",
+  "import.dubbingMode.single": "Single voice",
+  "import.dubbingMode.singleBody": "One narrator or one recurring voice",
+  "import.dubbingMode.multi": "Multi-speaker",
+  "import.dubbingMode.multiBody": "Detect and cast every speaker",
+  "import.contentTypeHelp": "Used to adapt analysis and translation style.",
+  "profile.castingIdentity": "Casting identity",
+  "profile.castingIdentityBody": "The same profile can be reused in single-voice and multi-speaker projects.",
+  "profile.gender": "Voice gender",
+  "profile.gender.female": "Female",
+  "profile.gender.male": "Male",
+  "profile.gender.neutral": "Neutral / androgynous",
+  "profile.gender.unspecified": "Not specified",
+  "profile.ageGroup": "Age range",
+  "profile.ageGroup.child": "Child",
+  "profile.ageGroup.teen": "Teen",
+  "profile.ageGroup.young_adult": "Young adult",
+  "profile.ageGroup.adult": "Adult",
+  "profile.ageGroup.senior": "Senior",
+  "profile.ageGroup.unspecified": "Not specified",
+  "profile.primaryRole": "Main casting role",
+  "profile.role.mc": "Main character (MC)",
+  "profile.role.female_lead": "Main heroine / waifu",
+  "profile.role.narrator": "Narrator",
+  "profile.role.antagonist": "Antagonist",
+  "profile.role.supporting": "Supporting character",
+  "profile.role.child": "Child character",
+  "profile.role.background": "Background character",
+  "profile.role.other": "Other / unassigned",
+  "profile.usageScope": "Recommended use",
+  "profile.usage.both": "Single voice + multi-speaker",
+  "profile.usage.single": "Single voice primarily",
+  "profile.usage.multi": "Multi-speaker casting primarily",
+  "voiceLibrary.reusableProfile": "Reusable casting profile",
+  "studio.singleCasting.title": "Single-voice project",
+  "studio.singleCasting.body": "No speaker detection is needed. Choose one reusable voice for the narrator or main role, then continue to voice generation.",
+  "studio.singleCasting.continue": "Continue to voice",
+});
+Object.assign(fr, {
+  "import.dubbingMode": "Mode de doublage",
+  "import.dubbingMode.single": "Voix unique",
+  "import.dubbingMode.singleBody": "Un narrateur ou une voix récurrente",
+  "import.dubbingMode.multi": "Multi-speaker",
+  "import.dubbingMode.multiBody": "Détecter et caster chaque locuteur",
+  "import.contentTypeHelp": "Adapte le style d’analyse et de traduction.",
+  "profile.castingIdentity": "Identité de casting",
+  "profile.castingIdentityBody": "Le même profil reste utilisable en voix unique et en multi-speaker.",
+  "profile.gender": "Genre de la voix",
+  "profile.gender.female": "Femme",
+  "profile.gender.male": "Homme",
+  "profile.gender.neutral": "Neutre / androgyne",
+  "profile.gender.unspecified": "Non précisé",
+  "profile.ageGroup": "Tranche d’âge",
+  "profile.ageGroup.child": "Enfant",
+  "profile.ageGroup.teen": "Adolescent",
+  "profile.ageGroup.young_adult": "Jeune adulte",
+  "profile.ageGroup.adult": "Adulte",
+  "profile.ageGroup.senior": "Senior",
+  "profile.ageGroup.unspecified": "Non précisé",
+  "profile.primaryRole": "Rôle principal",
+  "profile.role.mc": "Personnage principal (MC)",
+  "profile.role.female_lead": "Héroïne / waifu principale",
+  "profile.role.narrator": "Narrateur",
+  "profile.role.antagonist": "Antagoniste",
+  "profile.role.supporting": "Personnage secondaire",
+  "profile.role.child": "Personnage enfant",
+  "profile.role.background": "Figurant / arrière-plan",
+  "profile.role.other": "Autre / non attribué",
+  "profile.usageScope": "Utilisation conseillée",
+  "profile.usage.both": "Voix unique + multi-speaker",
+  "profile.usage.single": "Surtout voix unique",
+  "profile.usage.multi": "Surtout casting multi-speaker",
+  "voiceLibrary.reusableProfile": "Profil de casting réutilisable",
+  "studio.singleCasting.title": "Projet à voix unique",
+  "studio.singleCasting.body": "Aucune détection de locuteurs n’est nécessaire. Choisis une voix réutilisable pour le narrateur ou le rôle principal, puis continue vers la génération.",
+  "studio.singleCasting.continue": "Continuer vers les voix",
 });
 
 const catalogs: Record<Locale, Record<string, string>> = {

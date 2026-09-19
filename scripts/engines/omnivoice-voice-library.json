@@ -1,0 +1,883 @@
+{
+  "version": 1,
+  "model": "k2-fsa/OmniVoice",
+  "sample_rate": 24000,
+  "num_step": 32,
+  "reference_text": "I have waited a long time for this moment. Now I am ready to begin.",
+  "voice_design_note": "Only official OmniVoice Voice Design attributes are used in instruct: gender, age and pitch. Semantic traits/roles are metadata for DubRoom/GPT matching, not Voice Design instructions.",
+  "profiles": [
+    {
+      "id": "M01",
+      "name": "Young Male Neutral",
+      "gender": "male",
+      "age": "young adult",
+      "pitch": "moderate pitch",
+      "traits": [
+        "neutral",
+        "calm",
+        "versatile"
+      ],
+      "roles": [
+        "protagonist",
+        "secondary",
+        "narrator"
+      ],
+      "voice_archetype": "M_PROTAG_NEUTRAL",
+      "casting_tags": [
+        "young",
+        "neutral",
+        "calm",
+        "versatile",
+        "protagonist",
+        "soft_fallback"
+      ]
+    },
+    {
+      "id": "M02",
+      "name": "Young Male Deep",
+      "gender": "male",
+      "age": "young adult",
+      "pitch": "low pitch",
+      "traits": [
+        "cold",
+        "serious",
+        "confident"
+      ],
+      "roles": [
+        "protagonist",
+        "antagonist",
+        "rival"
+      ],
+      "voice_archetype": "M_PROTAG_POWERFUL",
+      "casting_tags": [
+        "young",
+        "deep",
+        "cold",
+        "serious",
+        "confident",
+        "powerful",
+        "rival",
+        "antagonist_fallback"
+      ]
+    },
+    {
+      "id": "M03",
+      "name": "Young Male Bright",
+      "gender": "male",
+      "age": "young adult",
+      "pitch": "high pitch",
+      "traits": [
+        "energetic",
+        "youthful",
+        "expressive"
+      ],
+      "roles": [
+        "protagonist",
+        "comic",
+        "secondary"
+      ],
+      "voice_archetype": "M_SUPPORT_YOUNG",
+      "casting_tags": [
+        "young",
+        "bright",
+        "energetic",
+        "expressive",
+        "supporting"
+      ]
+    },
+    {
+      "id": "M04",
+      "name": "Teen Male",
+      "gender": "male",
+      "age": "teenager",
+      "pitch": "moderate pitch",
+      "traits": [
+        "young",
+        "reactive",
+        "nervous"
+      ],
+      "roles": [
+        "teenager",
+        "student",
+        "secondary"
+      ],
+      "voice_archetype": "M_SUPPORT_YOUNG",
+      "casting_tags": [
+        "teen",
+        "young",
+        "reactive",
+        "nervous",
+        "student",
+        "supporting"
+      ]
+    },
+    {
+      "id": "M05",
+      "name": "Adult Male Authority",
+      "gender": "male",
+      "age": "middle-aged",
+      "pitch": "low pitch",
+      "traits": [
+        "authoritative",
+        "serious",
+        "dominant"
+      ],
+      "roles": [
+        "leader",
+        "father",
+        "antagonist",
+        "elder"
+      ],
+      "voice_archetype": "M_ANTAG_MATURE_DOMINANT",
+      "casting_tags": [
+        "adult",
+        "authoritative",
+        "serious",
+        "dominant",
+        "leader",
+        "antagonist"
+      ]
+    },
+    {
+      "id": "M06",
+      "name": "Adult Male Neutral",
+      "gender": "male",
+      "age": "middle-aged",
+      "pitch": "moderate pitch",
+      "traits": [
+        "warm",
+        "stable",
+        "mature"
+      ],
+      "roles": [
+        "mentor",
+        "father",
+        "secondary"
+      ],
+      "voice_archetype": "M_SUPPORT_MATURE",
+      "casting_tags": [
+        "adult",
+        "warm",
+        "stable",
+        "mature",
+        "mentor",
+        "supporting"
+      ]
+    },
+    {
+      "id": "M07",
+      "name": "Elder Male Deep",
+      "gender": "male",
+      "age": "elderly",
+      "pitch": "low pitch",
+      "traits": [
+        "old",
+        "deep",
+        "wise"
+      ],
+      "roles": [
+        "elder",
+        "master",
+        "grandfather"
+      ],
+      "voice_archetype": "M_ANTAG_OLD_MENACING",
+      "casting_tags": [
+        "elderly",
+        "old",
+        "deep",
+        "wise",
+        "authority",
+        "antagonist_fallback"
+      ]
+    },
+    {
+      "id": "M08",
+      "name": "Elder Male Neutral",
+      "gender": "male",
+      "age": "elderly",
+      "pitch": "moderate pitch",
+      "traits": [
+        "mature",
+        "calm",
+        "measured"
+      ],
+      "roles": [
+        "elder",
+        "merchant",
+        "secondary"
+      ],
+      "voice_archetype": "M_SUPPORT_MATURE",
+      "casting_tags": [
+        "elderly",
+        "calm",
+        "measured",
+        "merchant",
+        "supporting"
+      ]
+    },
+    {
+      "id": "F01",
+      "name": "Young Female Neutral",
+      "gender": "female",
+      "age": "young adult",
+      "pitch": "moderate pitch",
+      "traits": [
+        "neutral",
+        "calm",
+        "versatile"
+      ],
+      "roles": [
+        "female_lead",
+        "secondary",
+        "narrator"
+      ],
+      "voice_archetype": "F_LEAD_WARM",
+      "casting_tags": [
+        "young",
+        "neutral",
+        "calm",
+        "versatile",
+        "female_lead",
+        "warm_fallback"
+      ]
+    },
+    {
+      "id": "F02",
+      "name": "Young Female Bright",
+      "gender": "female",
+      "age": "young adult",
+      "pitch": "high pitch",
+      "traits": [
+        "energetic",
+        "bright",
+        "expressive"
+      ],
+      "roles": [
+        "female_lead",
+        "comic",
+        "secondary"
+      ],
+      "voice_archetype": "F_LEAD_EXPRESSIVE",
+      "casting_tags": [
+        "young",
+        "bright",
+        "energetic",
+        "expressive",
+        "female_lead"
+      ]
+    },
+    {
+      "id": "F03",
+      "name": "Young Female Low",
+      "gender": "female",
+      "age": "young adult",
+      "pitch": "low pitch",
+      "traits": [
+        "cold",
+        "serious",
+        "confident"
+      ],
+      "roles": [
+        "female_lead",
+        "antagonist",
+        "rival"
+      ],
+      "voice_archetype": "F_LEAD_COLD",
+      "casting_tags": [
+        "young",
+        "low",
+        "cold",
+        "serious",
+        "confident",
+        "female_lead",
+        "rival"
+      ]
+    },
+    {
+      "id": "F04",
+      "name": "Teen Female",
+      "gender": "female",
+      "age": "teenager",
+      "pitch": "high pitch",
+      "traits": [
+        "young",
+        "bright",
+        "reactive"
+      ],
+      "roles": [
+        "teenager",
+        "student",
+        "secondary"
+      ],
+      "voice_archetype": "F_SUPPORT_YOUNG",
+      "casting_tags": [
+        "teen",
+        "young",
+        "bright",
+        "reactive",
+        "student",
+        "supporting",
+        "bratty_fallback"
+      ]
+    },
+    {
+      "id": "F05",
+      "name": "Adult Female Authority",
+      "gender": "female",
+      "age": "middle-aged",
+      "pitch": "moderate pitch",
+      "traits": [
+        "authoritative",
+        "mature",
+        "confident"
+      ],
+      "roles": [
+        "leader",
+        "mother",
+        "antagonist"
+      ],
+      "voice_archetype": "F_MATURE_DOMINANT",
+      "casting_tags": [
+        "adult",
+        "authoritative",
+        "mature",
+        "confident",
+        "leader",
+        "antagonist"
+      ]
+    },
+    {
+      "id": "F06",
+      "name": "Adult Female Deep",
+      "gender": "female",
+      "age": "middle-aged",
+      "pitch": "low pitch",
+      "traits": [
+        "mature",
+        "cold",
+        "controlled"
+      ],
+      "roles": [
+        "mentor",
+        "mother",
+        "antagonist"
+      ],
+      "voice_archetype": "F_SUPPORT_MATURE",
+      "casting_tags": [
+        "adult",
+        "mature",
+        "cold",
+        "controlled",
+        "mentor",
+        "antagonist_fallback"
+      ]
+    },
+    {
+      "id": "F07",
+      "name": "Elder Female Neutral",
+      "gender": "female",
+      "age": "elderly",
+      "pitch": "moderate pitch",
+      "traits": [
+        "old",
+        "calm",
+        "wise"
+      ],
+      "roles": [
+        "elder",
+        "master",
+        "grandmother"
+      ],
+      "voice_archetype": "F_SUPPORT_MATURE",
+      "casting_tags": [
+        "elderly",
+        "old",
+        "calm",
+        "wise",
+        "mentor",
+        "supporting"
+      ]
+    },
+    {
+      "id": "F08",
+      "name": "Elder Female Deep",
+      "gender": "female",
+      "age": "elderly",
+      "pitch": "low pitch",
+      "traits": [
+        "old",
+        "deep",
+        "strict"
+      ],
+      "roles": [
+        "elder",
+        "villain",
+        "grandmother"
+      ],
+      "voice_archetype": "F_SUPPORT_MATURE",
+      "casting_tags": [
+        "elderly",
+        "old",
+        "deep",
+        "mature",
+        "supporting"
+      ]
+    },
+    {
+      "id": "SYS01",
+      "name": "System Voice",
+      "gender": "female",
+      "age": "young adult",
+      "pitch": "moderate pitch",
+      "traits": [
+        "clean",
+        "neutral",
+        "system"
+      ],
+      "roles": [
+        "system",
+        "interface",
+        "announcement"
+      ],
+      "voice_archetype": "SYSTEM_NEUTRAL",
+      "casting_tags": [
+        "system",
+        "interface",
+        "announcement"
+      ]
+    },
+    {
+      "id": "CRE01",
+      "name": "Creature Deep",
+      "gender": "male",
+      "age": "middle-aged",
+      "pitch": "very low pitch",
+      "traits": [
+        "deep",
+        "ominous",
+        "creature"
+      ],
+      "roles": [
+        "creature",
+        "monster",
+        "demon"
+      ],
+      "voice_archetype": "CREATURE_GENERIC",
+      "casting_tags": [
+        "creature",
+        "monster",
+        "beast"
+      ]
+    },
+    {
+      "id": "R4M09A",
+      "name": "R4 Male Protagonist Soft A",
+      "gender": "male",
+      "age": "young adult",
+      "pitch": "moderate pitch",
+      "voice_archetype": "M_PROTAG_SOFT",
+      "traits": [
+        "soft",
+        "warm",
+        "calm",
+        "gentle",
+        "clear",
+        "protagonist"
+      ],
+      "roles": [
+        "protagonist",
+        "hero",
+        "mc"
+      ],
+      "casting_tags": [
+        "soft",
+        "warm",
+        "calm",
+        "gentle",
+        "young",
+        "protagonist",
+        "mc"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    },
+    {
+      "id": "R4M09B",
+      "name": "R4 Male Protagonist Soft B",
+      "gender": "male",
+      "age": "young adult",
+      "pitch": "high pitch",
+      "voice_archetype": "M_PROTAG_SOFT",
+      "traits": [
+        "soft",
+        "youthful",
+        "gentle",
+        "clear",
+        "calm",
+        "protagonist"
+      ],
+      "roles": [
+        "protagonist",
+        "hero",
+        "mc"
+      ],
+      "casting_tags": [
+        "soft",
+        "youthful",
+        "gentle",
+        "clear",
+        "young",
+        "protagonist",
+        "mc"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    },
+    {
+      "id": "R4M10A",
+      "name": "R4 Young Male Antagonist A",
+      "gender": "male",
+      "age": "young adult",
+      "pitch": "low pitch",
+      "voice_archetype": "M_ANTAG_YOUNG_ARROGANT",
+      "traits": [
+        "arrogant",
+        "mocking",
+        "confident",
+        "cold",
+        "young",
+        "rival"
+      ],
+      "roles": [
+        "antagonist",
+        "villain",
+        "rival",
+        "enemy"
+      ],
+      "casting_tags": [
+        "arrogant",
+        "mocking",
+        "confident",
+        "cold",
+        "young",
+        "rival",
+        "antagonist"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    },
+    {
+      "id": "R4M10B",
+      "name": "R4 Young Male Antagonist B",
+      "gender": "male",
+      "age": "young adult",
+      "pitch": "moderate pitch",
+      "voice_archetype": "M_ANTAG_YOUNG_ARROGANT",
+      "traits": [
+        "arrogant",
+        "energetic",
+        "contemptuous",
+        "confident",
+        "young",
+        "rival"
+      ],
+      "roles": [
+        "antagonist",
+        "villain",
+        "rival",
+        "enemy"
+      ],
+      "casting_tags": [
+        "arrogant",
+        "energetic",
+        "contemptuous",
+        "confident",
+        "young",
+        "rival",
+        "antagonist"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    },
+    {
+      "id": "R4M11A",
+      "name": "R4 Mature Male Dominant A",
+      "gender": "male",
+      "age": "middle-aged",
+      "pitch": "very low pitch",
+      "voice_archetype": "M_ANTAG_MATURE_DOMINANT",
+      "traits": [
+        "mature",
+        "dominant",
+        "authoritative",
+        "threatening",
+        "serious",
+        "deep"
+      ],
+      "roles": [
+        "antagonist",
+        "villain",
+        "leader",
+        "enemy"
+      ],
+      "casting_tags": [
+        "mature",
+        "dominant",
+        "authoritative",
+        "threatening",
+        "serious",
+        "deep",
+        "antagonist"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    },
+    {
+      "id": "R4M11B",
+      "name": "R4 Mature Male Dominant B",
+      "gender": "male",
+      "age": "middle-aged",
+      "pitch": "low pitch",
+      "voice_archetype": "M_ANTAG_MATURE_DOMINANT",
+      "traits": [
+        "mature",
+        "dominant",
+        "firm",
+        "commanding",
+        "serious",
+        "leader"
+      ],
+      "roles": [
+        "antagonist",
+        "villain",
+        "leader",
+        "enemy"
+      ],
+      "casting_tags": [
+        "mature",
+        "dominant",
+        "firm",
+        "commanding",
+        "serious",
+        "leader",
+        "antagonist"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    },
+    {
+      "id": "R4M12A",
+      "name": "R4 Elder Male Menacing A",
+      "gender": "male",
+      "age": "elderly",
+      "pitch": "very low pitch",
+      "voice_archetype": "M_ANTAG_OLD_MENACING",
+      "traits": [
+        "old",
+        "deep",
+        "menacing",
+        "rough",
+        "authoritative",
+        "elderly"
+      ],
+      "roles": [
+        "antagonist",
+        "villain",
+        "elder",
+        "master",
+        "enemy"
+      ],
+      "casting_tags": [
+        "old",
+        "elderly",
+        "deep",
+        "menacing",
+        "rough",
+        "authoritative",
+        "antagonist"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    },
+    {
+      "id": "R4M12B",
+      "name": "R4 Elder Male Menacing B",
+      "gender": "male",
+      "age": "elderly",
+      "pitch": "low pitch",
+      "voice_archetype": "M_ANTAG_OLD_MENACING",
+      "traits": [
+        "old",
+        "menacing",
+        "measured",
+        "authoritative",
+        "wise",
+        "elderly"
+      ],
+      "roles": [
+        "antagonist",
+        "villain",
+        "elder",
+        "master",
+        "enemy"
+      ],
+      "casting_tags": [
+        "old",
+        "elderly",
+        "menacing",
+        "measured",
+        "authoritative",
+        "wise",
+        "antagonist"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    },
+    {
+      "id": "R4F09A",
+      "name": "R4 Teen Female Bratty A",
+      "gender": "female",
+      "age": "teenager",
+      "pitch": "very high pitch",
+      "voice_archetype": "F_YOUNG_BRATTY",
+      "traits": [
+        "bratty",
+        "insolent",
+        "mocking",
+        "reactive",
+        "bright",
+        "young"
+      ],
+      "roles": [
+        "female_lead",
+        "rival",
+        "student",
+        "supporting"
+      ],
+      "casting_tags": [
+        "bratty",
+        "insolent",
+        "mocking",
+        "reactive",
+        "bright",
+        "young",
+        "teen",
+        "rival"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    },
+    {
+      "id": "R4F09B",
+      "name": "R4 Teen Female Bratty B",
+      "gender": "female",
+      "age": "teenager",
+      "pitch": "high pitch",
+      "voice_archetype": "F_YOUNG_BRATTY",
+      "traits": [
+        "bratty",
+        "energetic",
+        "mocking",
+        "reactive",
+        "bright",
+        "young"
+      ],
+      "roles": [
+        "female_lead",
+        "rival",
+        "student",
+        "supporting"
+      ],
+      "casting_tags": [
+        "bratty",
+        "energetic",
+        "mocking",
+        "reactive",
+        "bright",
+        "young",
+        "teen",
+        "rival"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    },
+    {
+      "id": "R4F10A",
+      "name": "R4 Mature Female Dominant A",
+      "gender": "female",
+      "age": "middle-aged",
+      "pitch": "low pitch",
+      "voice_archetype": "F_MATURE_DOMINANT",
+      "traits": [
+        "mature",
+        "dominant",
+        "authoritative",
+        "confident",
+        "controlled",
+        "firm"
+      ],
+      "roles": [
+        "female_lead",
+        "antagonist",
+        "leader",
+        "mentor"
+      ],
+      "casting_tags": [
+        "mature",
+        "dominant",
+        "authoritative",
+        "confident",
+        "controlled",
+        "firm",
+        "leader"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    },
+    {
+      "id": "R4F10B",
+      "name": "R4 Mature Female Dominant B",
+      "gender": "female",
+      "age": "middle-aged",
+      "pitch": "moderate pitch",
+      "voice_archetype": "F_MATURE_DOMINANT",
+      "traits": [
+        "mature",
+        "dominant",
+        "elegant",
+        "confident",
+        "controlled",
+        "leader"
+      ],
+      "roles": [
+        "female_lead",
+        "antagonist",
+        "leader",
+        "mentor"
+      ],
+      "casting_tags": [
+        "mature",
+        "dominant",
+        "elegant",
+        "confident",
+        "controlled",
+        "leader"
+      ],
+      "enabled": false,
+      "locked": false,
+      "candidate_status": "audition"
+    }
+  ],
+  "r4_candidate_bank_version": 2
+}

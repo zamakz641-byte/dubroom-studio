@@ -20,7 +20,7 @@ import {
   X,
   XCircle,
 } from "lucide-react";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useI18n } from "@/i18n";
 import { api } from "@/lib/api";
@@ -70,6 +70,7 @@ export function AppShell({
       (localStorage.getItem("dubroom.railState") as RailState) || "expanded",
   );
   const [panel, setPanel] = useState<ShellPanel>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const activeActivities = useMemo(
     () =>
       activities.filter((activity) =>
@@ -91,9 +92,28 @@ export function AppShell({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+  useEffect(() => {
+    if (!panel) return;
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (
+        panelRef.current?.contains(target) ||
+        target?.closest("[data-shell-panel-trigger]")
+      ) return;
+      setPanel(null);
+    };
+    document.addEventListener("pointerdown", closeOnOutsidePointer, true);
+    return () =>
+      document.removeEventListener("pointerdown", closeOnOutsidePointer, true);
+  }, [panel]);
 
   const expanded = rail === "expanded";
   const visible = rail !== "focus";
+  const contentWidth = !visible
+    ? "100%"
+    : expanded
+      ? "calc(100% - 14rem)"
+      : "calc(100% - 4rem)";
   return (
     <div
       data-testid="app-shell"
@@ -112,7 +132,7 @@ export function AppShell({
         rail={rail}
         setRail={setRail}
       />
-      <div className="flex min-h-0 min-w-0 overflow-hidden">
+      <div className="flex min-h-0 min-w-0 w-full max-w-full overflow-hidden">
       {visible && (
         <aside
           className={cn(
@@ -196,10 +216,13 @@ export function AppShell({
         </aside>
       )}
 
-      <section className="relative min-w-0 flex-1 overflow-hidden">
+      <section
+        className="relative min-w-0 shrink-0 overflow-hidden"
+        style={{ width: contentWidth, maxWidth: contentWidth }}
+      >
         <main data-testid="app-content" className="h-full min-h-0 min-w-0 overflow-hidden">{children}</main>
         {panel && (
-          <div className="absolute right-3 top-3 z-50 w-[390px] overflow-hidden rounded-2xl border border-line-strong bg-surface shadow-[var(--shadow-panel)]">
+          <div ref={panelRef} className="absolute right-3 top-3 z-50 w-[390px] overflow-hidden rounded-2xl border border-line-strong bg-surface shadow-[var(--shadow-panel)]">
             <header className="flex h-14 items-center justify-between border-b border-line px-4">
               <div>
                 <small className="ui-kicker">

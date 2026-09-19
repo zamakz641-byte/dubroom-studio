@@ -1,0 +1,197 @@
+DUBROOM NARRATOR STORY V2 - INPUT AND OUTPUT REFERENCE
+
+PURPOSE
+
+This reference supports one English narrator retelling a complete Chinese story. It supports both a raw transcription bundle and a prepared scene-locked narrator manifest. Input lanes remain separate: ASR is never overwritten by Chinese or English subtitles.
+
+INPUT TYPE A: TRANSCRIPTION BUNDLE
+
+Required root values:
+
+{
+  "kind": "dubroom_narrator_transcription_bundle",
+  "schema_version": 1,
+  "dubbing_mode": "narrator_story",
+  "source_language": "zh",
+  "target_language": "en"
+}
+
+Important arrays:
+
+- asr_segments[]: transcript_id, start, end, text.
+- subtitle_pairs[]: pair_id, start, end, zh and en evidence objects.
+- alignment[]: transcript_id and subtitle_matches. This is a navigation aid; text remains in the original lanes.
+
+The bundle does not contain prompt_revision, scenes, narration_slots or contract_fingerprint. Their absence is expected and is not a configuration error. The GPT must prepare them before scripting.
+
+Example bundle row:
+
+{
+  "transcript_id": "ASR_00001",
+  "start": 12.1,
+  "end": 15.4,
+  "text": "叶凡你居然还活着"
+}
+
+Example subtitle pair:
+
+{
+  "pair_id": "SUBPAIR_00001",
+  "start": 11.9,
+  "end": 15.5,
+  "zh": {
+    "evidence_id": "EVD_ZH_00001",
+    "kind": "subtitle_zh",
+    "language": "zh-Hans",
+    "origin": "uploader_provided",
+    "text": "叶凡，你居然还活着！"
+  },
+  "en": {
+    "evidence_id": "EVD_EN_00001",
+    "kind": "subtitle_en",
+    "language": "en",
+    "origin": "uploader_provided",
+    "text": "Ye Fan, you're actually still alive!"
+  }
+}
+
+INPUT TYPE B AND WORKING FORMAT: PREPARED MANIFEST
+
+Required root values:
+
+{
+  "kind": "dubroom_narrator_story_manifest",
+  "schema_version": 1,
+  "dubbing_mode": "narrator_story",
+  "target_language": "en",
+  "prompt_revision": "narrator-story-scene-lock-20260811-v1",
+  "status": "prepared"
+}
+
+Immutable root content includes project identity, media, source_tracks, evidence, scenes, narration_slots, sfx_intervals and contract_fingerprint. Editable root fields are status, story_bible, narration_blocks, subtitle_cues and validation.
+
+EVIDENCE ITEM
+
+{
+  "evidence_id": "EVD_ASR_00042",
+  "kind": "asr_zh",
+  "language": "zh",
+  "origin": "audio_transcription",
+  "start": 125.42,
+  "end": 128.17,
+  "text": "叶凡你居然还活着"
+}
+
+Authority order depends on the question:
+
+- Timing and audibility: audio ASR.
+- Names, ranks and Chinese terminology: strongly aligned Chinese subtitles.
+- Meaning: agreement across all lanes; uploader English is a strong aid.
+- English style: newly written natural narration, not copied subtitle prose.
+- Story facts: only supported evidence and nearby context.
+
+SCENE
+
+{
+  "scene_id": "SCN_0001",
+  "start": 11.8,
+  "end": 28.6
+}
+
+For bundle preparation, these are deterministic evidence windows rather than verified visual cuts. They still act as hard narration limits. If DubRoom later supplies real video-derived scenes, those real boundaries replace the fallback windows and become absolute.
+
+NARRATION SLOT
+
+{
+  "slot_id": "SLOT_0001",
+  "scene_id": "SCN_0001",
+  "start": 11.8,
+  "end": 28.6,
+  "duration_seconds": 16.8,
+  "safe_start": 12.0,
+  "safe_end": 28.25,
+  "usable_duration_seconds": 16.25,
+  "ideal_words": 27,
+  "max_words": 34,
+  "sfx_policy": "duckable",
+  "recommended_ducking_profile": "narration_standard",
+  "allowed_evidence_ids": [
+    "EVD_ASR_00042",
+    "EVD_ZH_00110",
+    "EVD_EN_00110"
+  ]
+}
+
+SFX policies:
+
+- protected: no narration.
+- clear: narration allowed, ducking_profile none.
+- duckable: narration allowed if useful, use the recommended ducking profile.
+
+When input A has no SFX analysis, source_tracks records sfx_analysis as not_supplied, sfx_intervals remains empty and fallback slots are duckable. This is a warning, not permission to claim that SFX were analyzed.
+
+CONTRACT FINGERPRINT
+
+The fingerprint protects prepared evidence. Build an object containing every root field except:
+
+- status
+- story_bible
+- narration_blocks
+- subtitle_cues
+- validation
+- contract_fingerprint
+
+Serialize it using JSON sorted keys, UTF-8, ensure_ascii=false, and compact separators ',' and ':'. The lowercase SHA-256 hexadecimal digest is contract_fingerprint. The completed output preserves it.
+
+COMPLETED NARRATION BLOCK
+
+{
+  "block_id": "NAR_0001",
+  "scene_id": "SCN_0001",
+  "slot_id": "SLOT_0001",
+  "planned_start": 12.0,
+  "hard_end": 28.25,
+  "text": "Ye Fan returned alive, stunning the enemies who believed their ambush had ended him.",
+  "word_count": 14,
+  "delivery": "tense",
+  "delivery_intensity": 58,
+  "evidence_ids": ["EVD_ASR_00042", "EVD_ZH_00110", "EVD_EN_00110"],
+  "ducking_profile": "narration_standard"
+}
+
+The word count uses whitespace-separated spoken words. planned_start equals slot.safe_start and hard_end equals slot.safe_end. The sentence finishes before hard_end and does not continue in another scene.
+
+NARRATOR SUBTITLE CUE
+
+{
+  "cue_id": "SUB_0001",
+  "block_id": "NAR_0001",
+  "start": 12.0,
+  "end": 28.25,
+  "lines": [
+    "Ye Fan returned alive, stunning the enemies",
+    "who believed their ambush had ended him."
+  ]
+}
+
+Joining lines with one space must reproduce the narration block text exactly. These cues are subtitles for the English narrator, not translations of every original Chinese subtitle.
+
+STORY BIBLE
+
+Use story_bible for consistent names, aliases, relationships, factions, ranks, abilities, chronology and evidence-based uncertainties. It is not spoken. For bundle fallback preparation, include a limitation such as:
+
+"sfx_analysis": "not supplied; narration slots use duckable fallback and require downstream voice-triggered ducking"
+
+VALIDATION RESULT
+
+validation should contain:
+
+{
+  "passed": true,
+  "errors": [],
+  "warnings": ["sfx_analysis_not_supplied"],
+  "narration_block_count": 0,
+  "subtitle_cue_count": 0
+}
+
+Counts must be replaced with real values. passed can remain true when the only issue is the declared SFX fallback warning. Any timing overflow, protected-slot narration, unsupported evidence ID, non-English narration, incorrect word count or changed immutable content is a hard failure and must be repaired before delivery.

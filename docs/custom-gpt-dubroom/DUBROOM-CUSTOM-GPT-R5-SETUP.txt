@@ -1,0 +1,15 @@
+DUBROOM CUSTOM GPT R5 - ENGLISH + STRICT TIMING SETUP
+
+1. Open the existing private DubRoom Custom GPT.
+2. Replace all current Instructions with:
+   INSTRUCTIONS_CHINESE_MULTISPEAKER_V5_ENGLISH_TIMING_8000.txt
+3. Remove the old R4 Knowledge file.
+4. Upload:
+   KNOWLEDGE_MULTISPEAKER_JSON_R5_ENGLISH_TIMING.txt
+5. Save the GPT.
+
+R5 accepts English Multi-Speaker V3 manifests only. Single-Speaker V2 remains separate and unchanged.
+
+Prompt to use:
+
+Process this complete DubRoom Chinese Multi-Speaker R5 manifest. Confirm target_language is en, read the whole story, fuse subtitle_evidence with ASR and diarization, write English only, keep each segment's total spoken word count within recommended_words and close to ideal, preserve every immutable field, validate programmatically, create the completed UTF-8 JSON with Data Analysis, and give me the download link plus timing summary.

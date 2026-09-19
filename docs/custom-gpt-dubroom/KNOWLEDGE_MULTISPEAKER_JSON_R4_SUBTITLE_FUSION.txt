@@ -1,0 +1,93 @@
+DUBROOM MULTI-SPEAKER V3 / DIRECTOR R4 KNOWLEDGE
+
+Purpose: stable contract for Chinese Multi-Speaker projects using subtitle + ASR fusion.
+
+The manifest remains schema_version 3. R4 changes evidence interpretation, not immutable data.
+
+SOURCE EVIDENCE
+
+`segments[].text`
+- immutable ASR/source transcript;
+- canonical parent string for `source_excerpt`.
+
+Optional `segments[].subtitle_evidence`
+- immutable, read-only;
+- aligned subtitle candidates.
+
+Recommended candidate:
+{
+  "text": "Chinese subtitle text",
+  "start": 12.34,
+  "end": 15.21,
+  "source": "soft_subtitle",
+  "overlap_ratio": 0.91,
+  "match_confidence": 0.94
+}
+
+Authority:
+- speaker/timing = diarization/audio;
+- clean aligned subtitle can correct ASR names/terms/wording;
+- story facts require ASR/subtitle/context support;
+- identity uses continuity/turn-taking/direct address;
+- ERes2NetV2 gender can be strong support, never identity;
+- current audio age head is not trusted.
+
+Cases:
+A. ASR + subtitle agree -> strong evidence.
+B. ASR corrupted + subtitle clean/high alignment -> use subtitle meaning, keep ASR unchanged.
+C. Partial overlap -> use only clearly aligned meaning.
+D. One subtitle spans multiple speakers -> keep diarization boundaries.
+E. Material conflict -> use context/confidence, lower confidence if unresolved.
+F. UI/creator/decorative text -> ignore for spoken translation.
+
+NARRATIVE IDENTITIES
+
+NARRATOR = external third-person recap voice.
+Protagonist = stable CHAR_### + mc only for proven dialogue/reaction/private thought.
+SYSTEM = audible interface/system/announcement only.
+Recurring characters keep stable IDs.
+
+CHARACTER REGISTRY
+
+Fields:
+character_id, character_name, character_role, voice_key, sex, age_group, confidence.
+
+voice_key:
+narrator, mc, female_lead, antagonist, supporting, system, creature, unknown.
+
+sex:
+male, female, uncertain.
+
+age_group:
+child, teen, young_adult, adult, elderly, unknown.
+
+Never invent numeric age.
+
+IMMUTABLE EVIDENCE
+
+Never change id, source_hash, text, subtitle_evidence, start, end, duration_seconds, recommended_words, preceding_gap_seconds, bridge_slot, context_id, section_id, temporary_cluster or other evidence fields supplied by DubRoom.
+
+VOICE UNITS
+
+Every segment needs one or more voice_units.
+
+`source_excerpt` always comes from exact parent `text`, never subtitle_evidence. Subtitle evidence may correct interpreted meaning used in translation.
+
+speech_type:
+narration, dialogue, inner_monologue, system, reaction.
+
+NARRATOR BRIDGES
+
+Enable only when bridge_slot.available and bridge_slot.sfx_safe are true and limits are respected.
+
+EMOTIONS
+
+neutral, happy, amused, sad, angry, afraid, surprised, disgusted, tender, determined, whispering, exhausted.
+
+VOCAL EVENTS
+
+[laughter], [sigh], [confirmation-en], [question-en], [question-ah], [question-oh], [question-ei], [question-yi], [surprise-ah], [surprise-oh], [surprise-wa], [surprise-yo], [dissatisfaction-hnn].
+
+OUTPUT
+
+Create `<project_id>-completed-v3.json` as UTF-8 with Data Analysis. Preserve all immutable input evidence and unchanged content.

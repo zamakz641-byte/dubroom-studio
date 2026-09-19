@@ -1,6 +1,8 @@
 import type {
   ActivityFeed,
   AnalysisState,
+  AudioPreservationState,
+  DiarizationState,
   AppConfig,
   EngineRecord,
   ExportCapabilities,
@@ -14,6 +16,8 @@ import type {
   MediaProbe,
   ModelDownloadCheck,
   ProjectRecord,
+  ProjectContentType,
+  ProjectDubbingMode,
   RuntimeStatus,
   RvcJob,
   RvcModel,
@@ -22,13 +26,19 @@ import type {
   SubCleanStatus,
   TimelineProjectState,
   TrashProjectRecord,
-  VoiceboxGenerateInput,
-  VoiceboxGeneration,
-  VoiceboxModel,
-  VoiceboxPresetVoice,
-  VoiceboxProfile,
-  VoiceboxProfileInput,
-  VoiceboxStatus,
+  TranscriptExportResult,
+  TranscriptImportPreview,
+  TranscriptImportResult,
+  TtsGenerateInput,
+  TtsGeneration,
+  TtsModel,
+  TtsPresetVoice,
+  TtsProfile,
+  TtsProfileInput,
+  VoiceLibraryBuildInput,
+  VoiceLibraryBuildState,
+  VoiceLibraryCatalog,
+  TtsStatus,
   YouTubeDownload,
   YouTubeInfo,
   YouTubeRuntime,
@@ -105,6 +115,29 @@ export const api = {
     request<{ deleted: boolean }>(`/library/assets/${encodeURIComponent(id)}`, {
       method: "DELETE",
     }),
+  terminologyTerms: (params?: {
+    project_id?: string;
+    source_language?: string;
+    target_language?: string;
+    status?: string;
+  }) => {
+    const query = new URLSearchParams(
+      Object.entries(params || {}).filter((entry): entry is [string, string] => Boolean(entry[1])),
+    );
+    return request<{ terms: import("@/types").TerminologyTerm[] }>(
+      `/terminology/terms${query.size ? `?${query}` : ""}`,
+    ).then((result) => result.terms);
+  },
+  approveTerminologyTerm: (id: number, preferred_translation: string, apply_globally = false) =>
+    request<import("@/types").TerminologyTerm>(`/terminology/terms/${id}/approve`, {
+      method: "POST",
+      body: JSON.stringify({ preferred_translation, apply_globally }),
+    }),
+  researchTerminologyTerm: (id: number) =>
+    request<{ sources: { title?: string; url?: string; snippet?: string }[] }>(
+      `/terminology/terms/${id}/research`,
+      { method: "POST" },
+    ),
   projects: () =>
     request<{ projects: ProjectRecord[] }>("/projects").then((x) => x.projects),
   trashProjects: () =>
@@ -140,6 +173,58 @@ export const api = {
       `/projects/${encodeURIComponent(id)}/analysis/state`,
       { method: "PUT", body: JSON.stringify(state) },
     ),
+  audioPreservation: (id: string) =>
+    request<AudioPreservationState>(
+      `/projects/${encodeURIComponent(id)}/audio/separation`,
+    ),
+  diarization: (id: string) =>
+    request<DiarizationState>(
+      `/projects/${encodeURIComponent(id)}/diarization`,
+    ),
+  separateAudio: (id: string) =>
+    request<JobRecord>(
+      `/projects/${encodeURIComponent(id)}/audio/separate`,
+      { method: "POST" },
+    ),
+  audioPreservationUrl: async (
+    projectId: string,
+    track: "original" | "vocals" | "bed",
+  ) =>
+    `${await baseUrl()}/projects/${encodeURIComponent(projectId)}/audio/preservation/${track}`,
+  exportTranscript: (
+    id: string,
+    format: "manifest" | "chat" | "json" | "srt" | "vtt" = "manifest",
+    chunkSize = 60,
+  ) =>
+    request<TranscriptExportResult>(
+      `/projects/${encodeURIComponent(id)}/transcript/export`,
+      {
+        method: "POST",
+        body: JSON.stringify({ format, chunk_size: chunkSize }),
+      },
+    ),
+  previewTranscriptImport: (id: string, path: string) =>
+    request<TranscriptImportPreview>(
+      `/projects/${encodeURIComponent(id)}/transcript/import/preview`,
+      {
+        method: "POST",
+        body: JSON.stringify({ path }),
+      },
+    ),
+  importTranscript: (
+    id: string,
+    path: string,
+    revision: number,
+  ) =>
+    request<TranscriptImportResult>(
+      `/projects/${encodeURIComponent(id)}/transcript/import`,
+      {
+        method: "POST",
+        body: JSON.stringify({ path, revision }),
+      },
+    ),
+  projectVoiceAudioUrl: async (projectId: string, segmentId: string) =>
+    `${await baseUrl()}/projects/${encodeURIComponent(projectId)}/audio/${encodeURIComponent(segmentId)}`,
   timelineState: (id: string) =>
     request<TimelineProjectState>(
       `/projects/${encodeURIComponent(id)}/timeline/state`,
@@ -193,48 +278,46 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ repair, dry_run: false, credentials }),
     }),
-  voiceboxStatus: () => request<VoiceboxStatus>("/voicebox/status"),
-  startVoicebox: () =>
-    request<VoiceboxStatus>("/voicebox/start", { method: "POST" }),
-  voiceboxModels: () =>
-    request<{ models: VoiceboxModel[] }>("/voicebox/models").then(
+  ttsStatus: () => request<TtsStatus>("/tts/status"),
+  ttsModels: () =>
+    request<{ models: TtsModel[] }>("/tts/models").then(
       (result) => result.models,
     ),
-  downloadVoiceboxModel: (modelName: string) =>
-    request<Record<string, unknown>>("/voicebox/models/download", {
-      method: "POST",
-      body: JSON.stringify({ model_name: modelName }),
-    }),
-  cancelVoiceboxModel: (modelName: string) =>
-    request<Record<string, unknown>>("/voicebox/models/download/cancel", {
-      method: "POST",
-      body: JSON.stringify({ model_name: modelName }),
-    }),
-  voiceboxProfiles: () =>
-    request<{ profiles: VoiceboxProfile[] }>("/voicebox/profiles").then(
+  ttsProfiles: () =>
+    request<{ profiles: TtsProfile[] }>("/tts/profiles").then(
       (result) => result.profiles,
     ),
-  createVoiceboxProfile: (input: VoiceboxProfileInput) =>
-    request<VoiceboxProfile>("/voicebox/profiles", {
+  voiceLibrary: () => request<VoiceLibraryCatalog>("/tts/voice-library"),
+  buildOmniVoiceLibrary: (input: VoiceLibraryBuildInput) =>
+    request<VoiceLibraryBuildState>("/tts/voice-library/omnivoice/build", {
       method: "POST",
       body: JSON.stringify(input),
     }),
-  addVoiceboxSample: (profileId: string, path: string, referenceText: string) =>
+  cancelOmniVoiceLibrary: () =>
+    request<VoiceLibraryBuildState>("/tts/voice-library/omnivoice/cancel", {
+      method: "POST",
+    }),
+  createTtsProfile: (input: TtsProfileInput) =>
+    request<TtsProfile>("/tts/profiles", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  addTtsSample: (profileId: string, path: string, referenceText: string) =>
     request<Record<string, unknown>>(
-      `/voicebox/profiles/${encodeURIComponent(profileId)}/samples`,
+      `/tts/profiles/${encodeURIComponent(profileId)}/samples`,
       {
         method: "POST",
         body: JSON.stringify({ path, reference_text: referenceText }),
       },
     ),
-  addVoiceboxRecordingSample: (
+  addTtsRecordingSample: (
     profileId: string,
     dataUrl: string,
     referenceText: string,
     fileName = "voice-sample.webm",
   ) =>
     request<Record<string, unknown>>(
-      `/voicebox/profiles/${encodeURIComponent(profileId)}/samples/recording`,
+      `/tts/profiles/${encodeURIComponent(profileId)}/samples/recording`,
       {
         method: "POST",
         body: JSON.stringify({
@@ -244,30 +327,50 @@ export const api = {
         }),
       },
     ),
-  voiceboxPresets: (engine: string) =>
-    request<{ engine: string; voices: VoiceboxPresetVoice[] }>(
-      `/voicebox/profiles/presets/${encodeURIComponent(engine)}`,
+  ttsPresets: (engine: string) =>
+    request<{ engine: string; voices: TtsPresetVoice[] }>(
+      `/tts/profiles/presets/${encodeURIComponent(engine)}`,
     ).then((result) => result.voices),
-  generateVoicebox: (input: VoiceboxGenerateInput) =>
-    request<VoiceboxGeneration>("/voicebox/generate", {
+  generateTts: (input: TtsGenerateInput) =>
+    request<TtsGeneration>("/tts/generate", {
       method: "POST",
       body: JSON.stringify(input),
     }),
-  voiceboxGeneration: (id: string) =>
-    request<VoiceboxGeneration>(
-      `/voicebox/generations/${encodeURIComponent(id)}`,
+  ttsGeneration: (id: string) =>
+    request<TtsGeneration>(
+      `/tts/generations/${encodeURIComponent(id)}`,
     ),
-  voiceboxGenerationAudioUrl: async (id: string) =>
-    `${await baseUrl()}/voicebox/generations/${encodeURIComponent(id)}/audio`,
+  ttsGenerations: (profileId?: string, limit = 50) =>
+    request<{ generations: TtsGeneration[] }>(
+      `/tts/generations?limit=${limit}${profileId ? `&profile_id=${encodeURIComponent(profileId)}` : ""}`,
+    ).then((result) => result.generations),
+  ttsGenerationAudioUrl: async (id: string) =>
+    `${await baseUrl()}/tts/generations/${encodeURIComponent(id)}/audio`,
   probe: (path: string) =>
     request<MediaProbe>("/media/probe", {
       method: "POST",
       body: JSON.stringify({ path }),
     }),
-  prepare: (path: string, name: string) =>
+  prepare: (
+    path: string,
+    name: string,
+    sourceLanguage?: string | null,
+    targetLanguage?: string | null,
+    outputAspect?: string | null,
+    contentType: ProjectContentType = "other",
+    dubbingMode: ProjectDubbingMode = "single",
+  ) =>
     request<MediaPrepare>("/media/prepare", {
       method: "POST",
-      body: JSON.stringify({ path, project_name: name }),
+      body: JSON.stringify({
+        path,
+        project_name: name,
+        source_language: sourceLanguage === "auto" ? null : sourceLanguage,
+        target_language: targetLanguage || null,
+        output_aspect: outputAspect || "source",
+        content_type: contentType,
+        dubbing_mode: dubbingMode,
+      }),
     }),
   youtubeRuntime: () => request<YouTubeRuntime>("/media/youtube/runtime"),
   inspectYouTube: (url: string) =>
@@ -275,10 +378,24 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ url }),
     }),
-  startYouTubeDownload: (url: string, title?: string) =>
+  startYouTubeDownload: (
+    url: string,
+    title?: string,
+    options?: {
+      mediaType?: "video" | "audio";
+      startSeconds?: number | null;
+      endSeconds?: number | null;
+    },
+  ) =>
     request<YouTubeDownload>("/media/youtube/downloads", {
       method: "POST",
-      body: JSON.stringify({ url, title }),
+      body: JSON.stringify({
+        url,
+        title,
+        media_type: options?.mediaType || "video",
+        start_seconds: options?.startSeconds ?? null,
+        end_seconds: options?.endSeconds ?? null,
+      }),
     }),
   youtubeDownload: (id: string) =>
     request<YouTubeDownload>(

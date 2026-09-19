@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from . import resource_scheduler
 from .config import PATHS
 
 
@@ -136,18 +137,24 @@ def run(job_id: str) -> None:
     ]
     if model.get("index_path"):
         command.extend(["--index", model["index_path"]])
-    _patch(job_id, status="running", progress=12, message="Loading the RVC model")
-    flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-    process = subprocess.Popen(command, cwd=PATHS.workspace, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace", creationflags=flags)
-    with _lock:
-        _processes[job_id] = process
     lines: list[str] = []
     try:
-        _patch(job_id, progress=45, message="Converting the voice timbre")
-        assert process.stdout is not None
-        for line in process.stdout:
-            lines = (lines + [line.strip()])[-20:]
-        code = process.wait()
+        with resource_scheduler.model_slot(
+            "RVC voice conversion",
+            device="cuda",
+            on_wait=lambda message: _patch(job_id, status="running", progress=5, message=message),
+            is_cancelled=lambda: get(job_id)["status"] == "cancelled",
+        ):
+            _patch(job_id, status="running", progress=12, message="Loading the RVC model on GPU")
+            flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+            process = subprocess.Popen(command, cwd=PATHS.workspace, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace", creationflags=flags)
+            with _lock:
+                _processes[job_id] = process
+            _patch(job_id, progress=45, message="Converting the voice timbre on GPU")
+            assert process.stdout is not None
+            for line in process.stdout:
+                lines = (lines + [line.strip()])[-20:]
+            code = process.wait()
         current = get(job_id)
         if current["status"] == "cancelled":
             return

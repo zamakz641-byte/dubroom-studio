@@ -1,0 +1,14 @@
+DUBROOM CUSTOM GPT R4 - SETUP
+
+1. Open the existing private DubRoom Custom GPT.
+2. Replace its current Instructions with:
+   INSTRUCTIONS_CHINESE_MULTISPEAKER_V4_SUBTITLE_FUSION_8000.txt
+3. Remove the old V3 Knowledge file.
+4. Upload:
+   KNOWLEDGE_MULTISPEAKER_JSON_R4_SUBTITLE_FUSION.txt
+5. Save the GPT.
+
+R4 remains compatible with manifests without subtitle_evidence. It then falls back to ASR + diarization + context.
+
+Prompt to use:
+Process this complete DubRoom Chinese Multi-Speaker manifest with Director R4. Read the entire story first, fuse subtitle_evidence with ASR and diarization when available, preserve every immutable field, create the completed UTF-8 JSON with Data Analysis, validate it programmatically, and give me the download link.

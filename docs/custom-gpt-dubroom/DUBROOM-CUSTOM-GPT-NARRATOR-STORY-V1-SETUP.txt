@@ -1,0 +1,27 @@
+DUBROOM CUSTOM GPT - NARRATOR STORY V1 SETUP
+
+Create a NEW private GPT. Do not overwrite the Multi-Speaker R5 GPT.
+
+Suggested name:
+DubRoom Narrator Story V1
+
+Suggested description:
+Creates one synchronized English narrator script for a complete Chinese story by fusing ASR, Chinese subtitles and English subtitles while respecting hard scene and SFX boundaries.
+
+Instructions:
+Upload the full content of `INSTRUCTIONS_CHINESE_NARRATOR_STORY_V1_8000.txt` into the GPT Instructions field.
+
+Knowledge files:
+1. `KNOWLEDGE_NARRATOR_STORY_JSON_V1.txt`
+2. `CODEX-NARRATOR-STORY-EVIDENCE-CONTRACT-V1.txt`
+
+Capabilities:
+- Enable Data Analysis / file creation.
+- Web browsing is optional and must not be used to invent story facts.
+- Image generation is unnecessary.
+
+Conversation starter:
+Process this complete DubRoom Narrator Story V1 manifest. Read the whole story first, fuse Chinese ASR with Chinese and English subtitle evidence, write one continuous English narrator script, keep every sentence fully inside its supplied scene slot, preserve protected SFX and intentional silence, validate every hard boundary programmatically, and return the completed UTF-8 JSON.
+
+Expected output filename:
+`<project_id>-narrator-story-v1-completed.json`

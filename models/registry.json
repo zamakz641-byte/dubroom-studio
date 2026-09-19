@@ -1,0 +1,443 @@
+{
+  "schema_version": 3,
+  "catalog_version": "2026.07",
+  "product": "Dubbing Studio",
+  "engines": [
+    {
+      "id": "ffmpeg-system",
+      "display_name": "FFmpeg Media Core",
+      "category": "system",
+      "tagline": "Inspection, extraction, mixage et remux vidéo",
+      "description": "Moteur média utilisé pour conserver la vidéo source et reconstruire uniquement les pistes audio.",
+      "command": "ffmpeg",
+      "installable": false,
+      "source": "https://ffmpeg.org",
+      "license": "LGPL/GPL selon le build",
+      "capabilities": [
+        "media-probe",
+        "audio-extraction",
+        "mixing",
+        "stream-copy"
+      ],
+      "requirements": {
+        "disk_space_gb": 0.4,
+        "minimum_ram_gb": 2
+      },
+      "installer": {
+        "steps": [
+          "Détection de FFmpeg",
+          "Validation de FFprobe"
+        ],
+        "checks": []
+      }
+    },
+    {
+      "id": "yt-dlp",
+      "display_name": "YouTube Importer",
+      "category": "system",
+      "tagline": "Import direct de la meilleure vidéo et du meilleur audio",
+      "description": "Télécharge une vidéo YouTube autorisée, fusionne les meilleurs flux avec FFmpeg et l’envoie directement vers une nouvelle session Studio.",
+      "installable": true,
+      "source": "https://github.com/yt-dlp/yt-dlp",
+      "license": "Unlicense · respectez les droits et conditions de la source",
+      "capabilities": [
+        "youtube-import",
+        "best-video",
+        "best-audio",
+        "progress",
+        "cancel"
+      ],
+      "requirements": {
+        "disk_space_gb": 0.2,
+        "minimum_ram_gb": 2,
+        "recommended_vram_gb": 0
+      },
+      "installer": {
+        "script": "install-ytdlp.ps1",
+        "steps": [
+          "Créer l’environnement isolé",
+          "Installer yt-dlp",
+          "Valider la commande locale"
+        ],
+        "checks": [
+          {
+            "root": "environments_root",
+            "path": "yt-dlp/ready.json"
+          },
+          {
+            "root": "environments_root",
+            "path": "yt-dlp/venv/Scripts/python.exe"
+          }
+        ]
+      }
+    },
+    {
+      "id": "faster-whisper-small",
+      "display_name": "Faster Whisper Small",
+      "category": "asr",
+      "tagline": "Transcription multilingue équilibrée",
+      "description": "Profil recommandé pour une RTX 4050. Produit des segments horodatés et sert de base à l’alignement.",
+      "installable": true,
+      "source": "https://github.com/SYSTRAN/faster-whisper",
+      "license": "MIT (code) · vérifier les conditions des poids",
+      "capabilities": [
+        "transcription",
+        "language-detection",
+        "word-timestamps"
+      ],
+      "languages": [
+        "multilingual"
+      ],
+      "requirements": {
+        "disk_space_gb": 1.4,
+        "minimum_ram_gb": 8,
+        "recommended_vram_gb": 4
+      },
+      "model": {
+        "repo_id": "Systran/faster-whisper-small",
+        "revision": "main"
+      },
+      "installer": {
+        "script": "install-huggingface-asr.ps1",
+        "steps": [
+          "Créer l’environnement Python isolé",
+          "Installer Faster Whisper",
+          "Télécharger et vérifier le modèle",
+          "Effectuer le test de chargement"
+        ],
+        "checks": [
+          {
+            "root": "models_root",
+            "path": "faster-whisper-small/model.json"
+          },
+          {
+            "root": "environments_root",
+            "path": "faster-whisper-small/venv/Scripts/python.exe"
+          }
+        ]
+      }
+    },
+    {
+      "id": "whisperx-alignment",
+      "display_name": "WhisperX Alignment",
+      "category": "alignment",
+      "tagline": "Alignement précis mot par mot",
+      "description": "Complète la transcription avec des limites temporelles précises pour le doublage.",
+      "installable": true,
+      "source": "https://github.com/m-bain/whisperX",
+      "license": "BSD-2-Clause (code) · modèles séparés",
+      "capabilities": [
+        "forced-alignment",
+        "word-timestamps"
+      ],
+      "requirements": {
+        "disk_space_gb": 2.5,
+        "minimum_ram_gb": 12,
+        "recommended_vram_gb": 4
+      },
+      "installer": {
+        "script": "install-python-engine.ps1",
+        "packages": [
+          "whisperx"
+        ],
+        "steps": [
+          "Créer l’environnement isolé",
+          "Installer WhisperX",
+          "Valider l’import Python"
+        ],
+        "checks": [
+          {
+            "root": "environments_root",
+            "path": "whisperx-alignment/ready.json"
+          }
+        ]
+      }
+    },
+    {
+      "id": "sherpa-diarization",
+      "display_name": "Sherpa Multispeaker Local",
+      "category": "diarization",
+      "tagline": "Détection rapide des locuteurs, sans compte ni jeton",
+      "description": "Moteur ONNX local recommandé. Détecte qui parle et quand, même hors ligne, et réutilise ses modèles pour tous les projets.",
+      "installable": true,
+      "source": "https://github.com/k2-fsa/sherpa-onnx",
+      "license": "Apache-2.0 (runtime) · licences des modèles incluses",
+      "capabilities": [
+        "speaker-diarization",
+        "speaker-turns",
+        "offline",
+        "no-token"
+      ],
+      "requirements": {
+        "disk_space_gb": 0.5,
+        "minimum_ram_gb": 4,
+        "recommended_vram_gb": 0
+      },
+      "installer": {
+        "script": "install-sherpa-diarization.ps1",
+        "steps": [
+          "Créer le runtime ONNX léger",
+          "Télécharger les deux modèles partagés",
+          "Valider la détection locale"
+        ],
+        "checks": [
+          {
+            "root": "environments_root",
+            "path": "sherpa-diarization/ready.json"
+          }
+        ]
+      }
+    },
+    {
+      "id": "pyannote-community",
+      "display_name": "Pyannote Community",
+      "category": "diarization",
+      "tagline": "Détection de qui parle et quand",
+      "description": "Regroupe les prises par intervenant. Un jeton Hugging Face peut être demandé par le fournisseur.",
+      "installable": true,
+      "source": "https://github.com/pyannote/pyannote-audio",
+      "license": "MIT (code) · conditions du modèle séparées",
+      "capabilities": [
+        "speaker-diarization",
+        "speaker-turns"
+      ],
+      "requirements": {
+        "disk_space_gb": 3,
+        "minimum_ram_gb": 12,
+        "recommended_vram_gb": 4
+      },
+      "model": {
+        "repo_id": "pyannote/speaker-diarization-community-1",
+        "revision": "main"
+      },
+      "credentials": [
+        {
+          "id": "hf_token",
+          "label": "Jeton Hugging Face",
+          "secret": true,
+          "required": true,
+          "help_url": "https://huggingface.co/settings/tokens"
+        }
+      ],
+      "installer": {
+        "script": "install-pyannote-community.ps1",
+        "packages": [
+          "pyannote.audio"
+        ],
+        "steps": [
+          "Vérifier le jeton fournisseur",
+          "Créer l’environnement",
+          "Installer Pyannote",
+          "Télécharger le modèle autorisé",
+          "Valider le pipeline"
+        ],
+        "checks": [
+          {
+            "root": "environments_root",
+            "path": "pyannote-community/ready.json"
+          },
+          {
+            "root": "models_root",
+            "path": "pyannote-community/model.json"
+          }
+        ]
+      }
+    },
+    {
+      "id": "demucs-separation",
+      "display_name": "Demucs Separation",
+      "category": "separation",
+      "tagline": "Séparation voix, musique et ambiance",
+      "description": "Optionnel. Prépare une piste vocale plus propre pour les vidéos fortement mixées.",
+      "installable": true,
+      "source": "https://github.com/facebookresearch/demucs",
+      "license": "MIT",
+      "capabilities": [
+        "vocal-separation",
+        "music-separation"
+      ],
+      "requirements": {
+        "disk_space_gb": 2.5,
+        "minimum_ram_gb": 8,
+        "recommended_vram_gb": 4
+      },
+      "installer": {
+        "script": "install-python-engine.ps1",
+        "packages": [
+          "demucs"
+        ],
+        "steps": [
+          "Créer l’environnement",
+          "Installer Demucs",
+          "Préparer le cache",
+          "Valider une commande locale"
+        ],
+        "checks": [
+          {
+            "root": "environments_root",
+            "path": "demucs-separation/ready.json"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cinematic-separation",
+      "display_name": "Bandit Cinéma Multilingue",
+      "category": "separation",
+      "tagline": "Dialogue, musique et effets sans sacrifier les SFX",
+      "description": "Profil qualité recommandé pour anime, manhwa et vidéo. Modèle DnR v3 spécialisé cinéma, exécuté sur le GPU partagé.",
+      "installable": true,
+      "source": "https://github.com/kwatcharasupat/bandit-v2",
+      "license": "Apache-2.0 (code) · modèle de recherche ouvert",
+      "capabilities": [
+        "dialogue-separation",
+        "music-separation",
+        "sfx-separation",
+        "cinematic-audio"
+      ],
+      "requirements": {
+        "disk_space_gb": 0.8,
+        "minimum_ram_gb": 8,
+        "recommended_vram_gb": 6
+      },
+      "installer": {
+        "script": "install-cinematic-separation.ps1",
+        "steps": [
+          "Installer l'adaptateur cinéma",
+          "Télécharger une fois le modèle multilingue",
+          "Réutiliser CUDA et PyTorch existants",
+          "Valider le modèle"
+        ],
+        "checks": [
+          {
+            "root": "environments_root",
+            "path": "cinematic-separation/ready.json"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rvc-runtime",
+      "display_name": "RVC Voice Conversion",
+      "category": "voice-conversion",
+      "tagline": "Conversion du timbre après la synthèse TTS",
+      "description": "Runtime RVC isolé pour convertir les prises générées sans remplacer ni modifier les originaux TTS.",
+      "installable": true,
+      "source": "https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI",
+      "license": "MIT pour le runtime - chaque modele importe conserve ses propres droits",
+      "capabilities": [
+        "voice-conversion",
+        "rmvpe",
+        "model-import",
+        "batch-conversion",
+        "a-b-preview"
+      ],
+      "requirements": {
+        "disk_space_gb": 5.5,
+        "minimum_ram_gb": 8,
+        "recommended_vram_gb": 4
+      },
+      "adapter": "rvc",
+      "installer": {
+        "script": "install-rvc-runtime.ps1",
+        "steps": [
+          "Cloner le runtime officiel",
+          "Creer l'environnement Python isole",
+          "Installer le profil CPU ou CUDA",
+          "Valider l'adaptateur sans telecharger de voix"
+        ],
+        "checks": [
+          {
+            "root": "environments_root",
+            "path": "rvc-runtime/ready.json"
+          },
+          {
+            "root": "environments_root",
+            "path": "rvc-runtime/venv/Scripts/python.exe"
+          },
+          {
+            "root": "environments_root",
+            "path": "rvc-runtime/source/infer/vc/modules.py"
+          }
+        ]
+      }
+    },
+    {
+      "id": "subclean-runtime",
+      "display_name": "SubClean Video Inpainting",
+      "category": "restoration",
+      "tagline": "Detection et reconstruction des sous-titres incrustes",
+      "description": "Runtime non destructif utilisant OCR, STTN, LaMa ou ProPainter pour creer une nouvelle source video nettoyee.",
+      "installable": true,
+      "source": "https://github.com/YaoFANGUK/video-subtitle-remover",
+      "license": "Verifier la licence du runtime et des poids avant distribution",
+      "capabilities": [
+        "hardcoded-subtitle-detection",
+        "mask-editor",
+        "sttn",
+        "lama",
+        "propainter",
+        "resume"
+      ],
+      "requirements": {
+        "disk_space_gb": 9,
+        "minimum_ram_gb": 12,
+        "recommended_vram_gb": 6
+      },
+      "adapter": "subclean",
+      "installer": {
+        "script": "install-subclean-runtime.ps1",
+        "steps": [
+          "Cloner le moteur de restauration",
+          "Creer l'environnement isole",
+          "Installer le profil materiel detecte",
+          "Valider la CLI sans telecharger les poids lourds"
+        ],
+        "checks": [
+          {
+            "root": "environments_root",
+            "path": "subclean-runtime/ready.json"
+          },
+          {
+            "root": "environments_root",
+            "path": "subclean-runtime/venv/Scripts/python.exe"
+          },
+          {
+            "root": "environments_root",
+            "path": "subclean-runtime/source/backend/main.py"
+          }
+        ]
+      }
+    },
+    {
+      "id": "openai-compatible",
+      "display_name": "OpenAI-Compatible Translation",
+      "category": "translation",
+      "tagline": "Traduction contextuelle et adaptation à la durée",
+      "description": "Connecteur configurable pour OpenAI ou tout serveur compatible. Aucune clé n’est enregistrée dans les projets.",
+      "installable": false,
+      "source": "configuration",
+      "license": "Selon le fournisseur choisi",
+      "capabilities": [
+        "translation",
+        "duration-adaptation",
+        "glossary",
+        "variants"
+      ],
+      "requirements": {
+        "disk_space_gb": 0,
+        "minimum_ram_gb": 2
+      },
+      "installer": {
+        "steps": [
+          "Configurer l’URL",
+          "Enregistrer la clé dans le coffre système",
+          "Tester la connexion"
+        ],
+        "checks": []
+      }
+    }
+  ]
+}
+
+

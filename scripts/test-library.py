@@ -36,12 +36,13 @@ with tempfile.TemporaryDirectory(prefix="dubroom-voices-") as folder:
         "name": "Narratrice locale",
         "language": "fr",
         "voice_type": "cloned",
-        "default_engine": "qwen",
+        "default_engine": "tts-qwen3-1.7b-base",
     })
     result = local_voice_service.add_sample(profile["id"], str(sample), "Phrase de référence")
     saved = local_voice_service.get(profile["id"])
     assert saved is not None
-    assert saved["origin"] == "dubroom-local"
+    assert saved["origin"] == "dubroom-native"
+    assert saved["default_engine"] == "tts-qwen3-1.7b-base"
     assert saved["sample_count"] == 1
     assert Path(result["sample"]["path"]).is_file()
 

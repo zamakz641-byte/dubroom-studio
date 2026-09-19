@@ -1,0 +1,932 @@
+{
+  "schema_version": 2,
+  "runtime": "dubroom-native-tts",
+  "models": [
+    {
+      "id": "tts-supertonic-3",
+      "model_name": "supertonic-3",
+      "display_name": "Supertonic 3",
+      "family": "supertonic",
+      "engine": "supertonic",
+      "hf_repo_id": "Supertone/supertonic-3",
+      "package": "supertonic>=1.3.1",
+      "python": "3.12",
+      "size_mb": 420,
+      "recommended_vram_gb": 0,
+      "minimum_ram_gb": 4,
+      "languages": [
+        "ar",
+        "bg",
+        "hr",
+        "cs",
+        "da",
+        "nl",
+        "en",
+        "et",
+        "fi",
+        "fr",
+        "de",
+        "el",
+        "hi",
+        "hu",
+        "id",
+        "it",
+        "ja",
+        "ko",
+        "lv",
+        "lt",
+        "pl",
+        "pt",
+        "ro",
+        "ru",
+        "sk",
+        "sl",
+        "es",
+        "sv",
+        "tr",
+        "uk",
+        "vi"
+      ],
+      "tier": "light",
+      "voice_modes": [
+        "preset",
+        "voice-style-json"
+      ],
+      "sample_rate": 44100,
+      "license": "MIT code · OpenRAIL-M weights",
+      "source": "https://github.com/supertone-inc/supertonic",
+      "recommended": true
+    },
+    {
+      "id": "tts-kokoro-82m",
+      "model_name": "kokoro-82m",
+      "display_name": "Kokoro 82M",
+      "family": "kokoro",
+      "engine": "kokoro",
+      "hf_repo_id": "hexgrad/Kokoro-82M",
+      "package": "kokoro>=0.9.4",
+      "python": "3.12",
+      "size_mb": 350,
+      "recommended_vram_gb": 0,
+      "minimum_ram_gb": 4,
+      "languages": [
+        "en",
+        "es",
+        "fr",
+        "hi",
+        "it",
+        "pt",
+        "ja",
+        "zh"
+      ],
+      "tier": "light",
+      "voice_modes": [
+        "preset"
+      ],
+      "sample_rate": 24000,
+      "license": "Apache-2.0 weights · MIT inference code",
+      "source": "https://github.com/hexgrad/kokoro",
+      "recommended": true
+    },
+    {
+      "id": "tts-kyutai-pocket-fr",
+      "model_name": "kyutai-pocket-tts-french-24l",
+      "display_name": "Kyutai Pocket TTS · Français",
+      "family": "kyutai_pocket",
+      "engine": "kyutai_pocket",
+      "hf_repo_id": "kyutai/pocket-tts",
+      "package": "pocket-tts==2.1.0",
+      "python": "3.12",
+      "size_mb": 620,
+      "recommended_vram_gb": 0,
+      "minimum_ram_gb": 4,
+      "languages": [
+        "fr"
+      ],
+      "tier": "fast",
+      "voice_modes": [
+        "preset",
+        "cloned"
+      ],
+      "sample_rate": 24000,
+      "license": "MIT code · CC-BY-4.0 weights",
+      "source": "https://github.com/kyutai-labs/pocket-tts",
+      "recommended": true,
+      "selection_priority": 1,
+      "runtime_engine_id": "tts-kyutai-pocket",
+      "installer_script": "install-kyutai-pocket.ps1",
+      "format": "PyTorch CPU",
+      "tagline": "Français · CPU · quasi temps réel · GPU libre",
+      "description": "Pocket TTS 100M de Kyutai. La voix française intégrée fonctionne hors ligne sur CPU. Le clonage requiert d’accepter les conditions du modèle Kyutai sur Hugging Face.",
+      "capabilities": [
+        "cpu-only",
+        "streaming",
+        "voice-state-cache",
+        "batch-model-reuse",
+        "gpu-free"
+      ],
+      "language_model": "french_24l",
+      "install_steps": [
+        "Reuse the shared Pocket TTS Python 3.12 CPU runtime",
+        "Install Pocket TTS 2.1.0 with the CPU PyTorch stack",
+        "Download and validate the French 24-layer model and Estelle voice",
+        "Keep the GPU free and record the native DubRoom adapter"
+      ]
+    },
+    {
+      "id": "tts-cosyvoice3-gguf",
+      "model_name": "cosyvoice3-0.5b-2512-gguf-q4-q8",
+      "display_name": "CosyVoice 3 Compact · CUDA",
+      "family": "cosyvoice3_gguf",
+      "engine": "cosyvoice3_gguf",
+      "hf_repo_id": "cstr/cosyvoice3-0.5b-2512-GGUF",
+      "package": "CrispASR 0.8.25",
+      "python": "3.12",
+      "size_mb": 1875,
+      "recommended_vram_gb": 2,
+      "minimum_ram_gb": 6,
+      "languages": [
+        "zh",
+        "en",
+        "ja",
+        "ko",
+        "de",
+        "es",
+        "fr",
+        "it",
+        "ru"
+      ],
+      "tier": "fast",
+      "voice_modes": [
+        "cloned"
+      ],
+      "sample_rate": 24000,
+      "license": "Apache-2.0",
+      "source": "https://github.com/FunAudioLLM/CosyVoice",
+      "recommended": false,
+      "selection_priority": 90,
+      "runtime_engine_id": "tts-cosyvoice3-gguf",
+      "installer_script": "install-cosyvoice3-gguf.ps1",
+      "format": "GGUF Q4/Q8 · CrispASR CUDA",
+      "tagline": "Français · clonage zero-shot · CUDA · environ 3× plus rapide que le CPU",
+      "description": "CosyVoice 3 quantifié avec clonage français sur GPU NVIDIA CUDA. Les poids occupent 903 Mo; le runtime CUDA partagé porte l'installation totale à environ 1,9 Go. Sur la RTX 4060 testée, un lot réel produit 6,32 s de voix en 14,19 s, chargement et premier conditionnement compris; une réplique chaude atteint RTF 1,58.",
+      "capabilities": [
+        "zero-shot-cloning",
+        "cross-lingual",
+        "gguf-quantized",
+        "persistent-batch-server",
+        "voice-conditioning-cache",
+        "flow-steps-5",
+        "clean-reference-pipeline",
+        "cuda-graphs",
+        "windows-cuda",
+        "cpu-fallback"
+      ],
+      "install_steps": [
+        "Install the compact CrispASR Windows CUDA runtime without PyTorch",
+        "Download only the Q4 LLM, Q8 flow and compact cloning companions",
+        "Reuse one resident GPU process and one cached voice across a batch",
+        "Validate French cloning on CUDA and keep CPU as the safe fallback"
+      ]
+    },
+    {
+      "id": "tts-luxtts",
+      "model_name": "luxtts",
+      "display_name": "LuxTTS",
+      "family": "luxtts",
+      "engine": "luxtts",
+      "hf_repo_id": "YatharthS/LuxTTS",
+      "package": "git+https://github.com/ysharma3501/LuxTTS.git",
+      "python": "3.12",
+      "size_mb": 760,
+      "recommended_vram_gb": 1,
+      "minimum_ram_gb": 6,
+      "languages": [
+        "en"
+      ],
+      "tier": "light",
+      "voice_modes": [
+        "cloned"
+      ],
+      "sample_rate": 48000,
+      "license": "Apache-2.0",
+      "source": "https://github.com/ysharma3501/LuxTTS",
+      "recommended": true
+    },
+    {
+      "id": "tts-omnivoice-hq",
+      "model_name": "omnivoice-hq",
+      "display_name": "OmniVoice HQ · Local Only",
+      "family": "omnivoice",
+      "engine": "omnivoice",
+      "hf_repo_id": "k2-fsa/OmniVoice",
+      "package": "omnivoice==0.2.1",
+      "packages": [
+        "omnivoice==0.2.1",
+        "num2words>=0.5.14"
+      ],
+      "python": "3.12",
+      "size_mb": 3400,
+      "recommended_vram_gb": 6,
+      "minimum_ram_gb": 12,
+      "languages": [
+        "fr",
+        "en",
+        "es",
+        "de",
+        "it",
+        "pt",
+        "ru",
+        "zh",
+        "ja",
+        "ko"
+      ],
+      "tier": "quality",
+      "voice_modes": [
+        "cloned",
+        "designed"
+      ],
+      "sample_rate": 24000,
+      "license": "Apache-2.0 code / CC-BY-NC pretrained weights",
+      "source": "https://github.com/k2-fsa/OmniVoice",
+      "runtime_engine_id": "tts-omnivoice-hq",
+      "installer_script": "install-omnivoice-hq.ps1",
+      "format": "PyTorch FP16",
+      "local_only": true,
+      "local_only_noncommercial": true,
+      "commercial_use": false,
+      "quantization": "none",
+      "dtype": "float16",
+      "parameters_m": 800,
+      "reference_audio_min_seconds": 3,
+      "reference_audio_recommended_seconds": "3-10",
+      "selection_priority": 5,
+      "capabilities": [
+        "voice-cloning",
+        "voice-design",
+        "persistent-voice-prompt",
+        "expressive-tags",
+        "batch-model-reuse",
+        "voice-conditioning-cache",
+        "fp16",
+        "no-quantization",
+        "local-only"
+      ],
+      "paralinguistic_tags": [
+        "[laughter]",
+        "[sigh]",
+        "[confirmation-en]",
+        "[question-en]",
+        "[question-ah]",
+        "[question-oh]",
+        "[question-ei]",
+        "[question-yi]",
+        "[surprise-ah]",
+        "[surprise-oh]",
+        "[surprise-wa]",
+        "[surprise-yo]",
+        "[dissatisfaction-hnn]"
+      ],
+      "expressive_presets": [
+        {
+          "id": "neutral",
+          "label": "Neutre",
+          "tag": ""
+        },
+        {
+          "id": "amused",
+          "label": "Amusé / rire",
+          "tag": "[laughter]"
+        },
+        {
+          "id": "sigh",
+          "label": "Soupir / fatigué",
+          "tag": "[sigh]"
+        },
+        {
+          "id": "surprised",
+          "label": "Surpris",
+          "tag": "[surprise-ah]"
+        },
+        {
+          "id": "dissatisfied",
+          "label": "Mécontent",
+          "tag": "[dissatisfaction-hnn]"
+        },
+        {
+          "id": "question",
+          "label": "Interrogatif",
+          "tag": "[question-en]"
+        },
+        {
+          "id": "confirmation",
+          "label": "Confirmation",
+          "tag": "[confirmation-en]"
+        }
+      ],
+      "voice_design_attributes": {
+        "gender": [
+          "male",
+          "female"
+        ],
+        "age": [
+          "child",
+          "teenager",
+          "young adult",
+          "middle-aged",
+          "elderly"
+        ],
+        "pitch": [
+          "very low pitch",
+          "low pitch",
+          "moderate pitch",
+          "high pitch",
+          "very high pitch"
+        ],
+        "style": [
+          "whisper"
+        ]
+      },
+      "default_parameters": {
+        "omnivoice_steps": 32,
+        "guidance_scale": 2.0,
+        "denoise": true,
+        "speed": 1.0,
+        "normalize_text": true,
+        "expressive_preset": "neutral"
+      },
+      "description": "OmniVoice official HQ checkpoint, FP16 and 32 diffusion steps. Voice cloning, persistent prompt cache and Voice Design. Local non-commercial use only for the pretrained weights."
+    },
+    {
+      "id": "tts-qwen3-0.6b-base",
+      "model_name": "qwen3-tts-0.6b-base",
+      "display_name": "Qwen3-TTS 0.6B Base",
+      "family": "qwen3",
+      "engine": "qwen",
+      "hf_repo_id": "Qwen/Qwen3-TTS-12Hz-0.6B-Base",
+      "package": "qwen-tts",
+      "python": "3.12",
+      "size_mb": 1800,
+      "recommended_vram_gb": 3,
+      "minimum_ram_gb": 8,
+      "languages": [
+        "zh",
+        "en",
+        "ja",
+        "ko",
+        "de",
+        "fr",
+        "ru",
+        "pt",
+        "es",
+        "it"
+      ],
+      "tier": "balanced",
+      "voice_modes": [
+        "cloned"
+      ],
+      "sample_rate": 24000,
+      "license": "Apache-2.0",
+      "source": "https://github.com/QwenLM/Qwen3-TTS",
+      "tagline": "Multilingue · rapide · accélération Faster CUDA Graphs",
+      "description": "Modèle officiel Qwen 0.6B chargé par l'accélérateur Faster Qwen sur GPU. Les mêmes poids sont réutilisés et le moteur officiel Qwen reste disponible automatiquement en secours.",
+      "capabilities": [
+        "faster-qwen-runtime",
+        "cuda-graphs",
+        "official-qwen-fallback",
+        "shared-model-weights"
+      ],
+      "recommended": true
+    },
+    {
+      "id": "tts-qwen3-0.6b-custom",
+      "model_name": "qwen3-tts-0.6b-custom",
+      "display_name": "Qwen3-TTS 0.6B CustomVoice",
+      "family": "qwen3",
+      "engine": "qwen_custom_voice",
+      "hf_repo_id": "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice",
+      "package": "qwen-tts",
+      "python": "3.12",
+      "size_mb": 1800,
+      "recommended_vram_gb": 3,
+      "minimum_ram_gb": 8,
+      "languages": [
+        "zh",
+        "en",
+        "ja",
+        "ko",
+        "de",
+        "fr",
+        "ru",
+        "pt",
+        "es",
+        "it"
+      ],
+      "tier": "balanced",
+      "voice_modes": [
+        "preset"
+      ],
+      "sample_rate": 24000,
+      "license": "Apache-2.0",
+      "source": "https://github.com/QwenLM/Qwen3-TTS",
+      "tagline": "Voix prédéfinies · rapide · accélération Faster CUDA Graphs",
+      "description": "Modèle officiel Qwen 0.6B CustomVoice. Faster Qwen accélère l'inférence sans dupliquer ni convertir les poids du modèle.",
+      "capabilities": [
+        "faster-qwen-runtime",
+        "cuda-graphs",
+        "official-qwen-fallback",
+        "shared-model-weights"
+      ]
+    },
+    {
+      "id": "tts-chatterbox-nano",
+      "model_name": "chatterbox-nano",
+      "display_name": "Chatterbox Nano",
+      "family": "chatterbox",
+      "engine": "chatterbox_nano",
+      "hf_repo_id": "ResembleAI/chatterbox-nano",
+      "package": "git+https://github.com/resemble-ai/chatterbox.git@5de7a54aa4e5e2baadb0182dde554908b48b85c2",
+      "python": "3.11",
+      "size_mb": 1200,
+      "recommended_vram_gb": 0,
+      "minimum_ram_gb": 6,
+      "languages": [
+        "en"
+      ],
+      "tier": "light",
+      "voice_modes": [
+        "cloned"
+      ],
+      "sample_rate": 24000,
+      "license": "MIT",
+      "source": "https://github.com/resemble-ai/chatterbox",
+      "parameters_m": 110,
+      "capabilities": [
+        "voice-cloning",
+        "paralinguistic-tags",
+        "timed-pause-tags",
+        "batch-model-reuse",
+        "voice-conditioning-cache",
+        "cpu-inference"
+      ],
+      "paralinguistic_tags": [
+        "[clear throat]",
+        "[sigh]",
+        "[shush]",
+        "[cough]",
+        "[groan]",
+        "[sniff]",
+        "[gasp]",
+        "[chuckle]",
+        "[laugh]"
+      ],
+      "pause_tags": [
+        "[pause]",
+        "[pause:0.35]"
+      ],
+      "reference_audio_min_seconds": 5,
+      "selection_priority": 90,
+      "description": "Ultra-light English voice cloning with native expressive event tags and a single-step decoder.",
+      "recommended": false,
+      "runtime_engine_id": "tts-chatterbox-turbo",
+      "format": "PyTorch"
+    },
+    {
+      "id": "tts-chatterbox-turbo-onnx-fp16",
+      "model_name": "chatterbox-turbo-onnx-fp16",
+      "display_name": "Chatterbox Turbo · ONNX FP16",
+      "family": "chatterbox",
+      "engine": "chatterbox_turbo_onnx_fp16",
+      "hf_repo_id": "ResembleAI/chatterbox-turbo-ONNX",
+      "package": "onnxruntime-gpu[cuda,cudnn]==1.26.0",
+      "packages": [
+        "onnxruntime-gpu[cuda,cudnn]==1.26.0",
+        "huggingface-hub>=0.34,<2",
+        "transformers>=4.46,<5",
+        "numpy>=2.0,<3",
+        "librosa>=0.11,<1",
+        "soundfile>=0.13,<1",
+        "tqdm>=4.67,<5"
+      ],
+      "python": "3.11",
+      "size_mb": 1670,
+      "recommended_vram_gb": 4,
+      "minimum_ram_gb": 8,
+      "languages": [
+        "en"
+      ],
+      "tier": "fast",
+      "voice_modes": [
+        "cloned"
+      ],
+      "sample_rate": 24000,
+      "license": "MIT",
+      "source": "https://github.com/resemble-ai/chatterbox",
+      "recommended": true,
+      "selection_priority": 1,
+      "runtime_engine_id": "tts-chatterbox-turbo-onnx-fp16",
+      "installer_script": "install-chatterbox-onnx.ps1",
+      "runtime": "onnxruntime-gpu",
+      "format": "ONNX",
+      "quantization": "fp16",
+      "parameters_m": 350,
+      "tagline": "Anglais · ONNX CUDA · FP16 · qualité préservée",
+      "description": "Export ONNX officiel de Chatterbox Turbo en FP16. Choix recommandé sur RTX 4060 pour réduire la VRAM et accélérer sans quantification 4 bits.",
+      "capabilities": [
+        "voice-cloning",
+        "onnx-cuda",
+        "fp16",
+        "paralinguistic-tags",
+        "single-step-decoder",
+        "voice-conditioning-cache",
+        "batch-model-reuse"
+      ],
+      "quality_note": "FP16 conserve les poids à demi-précision. Une légère différence numérique reste possible par rapport à PyTorch, mais ce n’est pas une quantification 4 bits."
+    },
+    {
+      "id": "tts-chatterbox-turbo-onnx-q4f16",
+      "model_name": "chatterbox-turbo-onnx-q4f16",
+      "display_name": "Chatterbox Turbo · ONNX Q4F16 (expérimental)",
+      "family": "chatterbox",
+      "engine": "chatterbox_turbo_onnx_fp16",
+      "hf_repo_id": "ResembleAI/chatterbox-turbo-ONNX",
+      "package": "onnxruntime-gpu[cuda,cudnn]==1.26.0",
+      "packages": [
+        "onnxruntime-gpu[cuda,cudnn]==1.26.0",
+        "huggingface-hub>=0.34,<2",
+        "transformers>=4.46,<5",
+        "numpy>=2.0,<3",
+        "librosa>=0.11,<1",
+        "soundfile>=0.13,<1",
+        "tqdm>=4.67,<5"
+      ],
+      "python": "3.11",
+      "size_mb": 570,
+      "recommended_vram_gb": 3,
+      "minimum_ram_gb": 8,
+      "languages": [
+        "en"
+      ],
+      "tier": "fast",
+      "voice_modes": [
+        "cloned"
+      ],
+      "sample_rate": 24000,
+      "license": "MIT",
+      "source": "https://github.com/resemble-ai/chatterbox",
+      "recommended": false,
+      "selection_priority": 20,
+      "runtime_engine_id": "tts-chatterbox-turbo-onnx-fp16",
+      "installer_script": "install-chatterbox-onnx.ps1",
+      "runtime": "onnxruntime-gpu",
+      "format": "ONNX",
+      "quantization": "q4f16",
+      "parameters_m": 350,
+      "tagline": "Anglais · ONNX CUDA · Q4F16 · ultra léger",
+      "description": "Variante officielle ONNX Q4F16, environ trois fois plus légère que FP16. À tester après FP16, car le 4 bits peut modifier légèrement le timbre ou la stabilité.",
+      "capabilities": [
+        "voice-cloning",
+        "onnx-cuda",
+        "q4f16",
+        "paralinguistic-tags",
+        "single-step-decoder",
+        "voice-conditioning-cache",
+        "batch-model-reuse",
+        "experimental"
+      ],
+      "quality_note": "Q4F16 compresse une partie des poids en 4 bits. Le gain mémoire est réel, mais l’identité vocale et la prosodie doivent être vérifiées sur ta voix."
+    },
+    {
+      "id": "tts-chatterbox-turbo",
+      "model_name": "chatterbox-turbo",
+      "display_name": "Chatterbox Turbo · PyTorch (référence)",
+      "family": "chatterbox",
+      "engine": "chatterbox_turbo",
+      "hf_repo_id": "ResembleAI/chatterbox-turbo",
+      "package": "git+https://github.com/resemble-ai/chatterbox.git@5de7a54aa4e5e2baadb0182dde554908b48b85c2",
+      "python": "3.11",
+      "size_mb": 4140,
+      "recommended_vram_gb": 4,
+      "minimum_ram_gb": 8,
+      "languages": [
+        "en"
+      ],
+      "tier": "balanced",
+      "voice_modes": [
+        "cloned"
+      ],
+      "sample_rate": 24000,
+      "license": "MIT",
+      "source": "https://github.com/resemble-ai/chatterbox",
+      "parameters_m": 350,
+      "recommended": false,
+      "selection_priority": 30,
+      "capabilities": [
+        "voice-cloning",
+        "paralinguistic-tags",
+        "timed-pause-tags",
+        "batch-model-reuse",
+        "voice-conditioning-cache",
+        "low-latency"
+      ],
+      "paralinguistic_tags": [
+        "[clear throat]",
+        "[sigh]",
+        "[shush]",
+        "[cough]",
+        "[groan]",
+        "[sniff]",
+        "[gasp]",
+        "[chuckle]",
+        "[laugh]"
+      ],
+      "pause_tags": [
+        "[pause]",
+        "[pause:0.35]"
+      ],
+      "reference_audio_min_seconds": 5,
+      "recommended_max_chars_per_segment": 300,
+      "default_parameters": {
+        "temperature": 0.8,
+        "top_p": 0.95,
+        "top_k": 1000,
+        "min_p": 0.0,
+        "repetition_penalty": 1.2,
+        "norm_loudness": true,
+        "pause_seconds": 0.35
+      },
+      "description": "Version PyTorch officielle. À conserver comme référence de qualité et solution de secours.",
+      "runtime_engine_id": "tts-chatterbox-turbo",
+      "format": "PyTorch",
+      "tagline": "Anglais · PyTorch officiel · qualité de référence"
+    },
+    {
+      "id": "tts-qwen3-1.7b-base",
+      "model_name": "qwen3-tts-1.7b-base",
+      "display_name": "Qwen3-TTS 1.7B Base",
+      "family": "qwen3",
+      "engine": "qwen",
+      "hf_repo_id": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+      "package": "qwen-tts",
+      "python": "3.12",
+      "size_mb": 3900,
+      "recommended_vram_gb": 6,
+      "minimum_ram_gb": 12,
+      "languages": [
+        "zh",
+        "en",
+        "ja",
+        "ko",
+        "de",
+        "fr",
+        "ru",
+        "pt",
+        "es",
+        "it"
+      ],
+      "tier": "quality",
+      "voice_modes": [
+        "cloned"
+      ],
+      "sample_rate": 24000,
+      "license": "Apache-2.0",
+      "source": "https://github.com/QwenLM/Qwen3-TTS",
+      "tagline": "Multilingue · qualité · accélération Faster CUDA Graphs",
+      "description": "Modèle officiel Qwen 1.7B chargé par l'accélérateur Faster Qwen sur GPU. Les mêmes poids sont réutilisés et le moteur officiel Qwen reste disponible automatiquement en secours.",
+      "capabilities": [
+        "faster-qwen-runtime",
+        "cuda-graphs",
+        "official-qwen-fallback",
+        "shared-model-weights"
+      ],
+      "recommended": true
+    },
+    {
+      "id": "tts-qwen3-1.7b-custom",
+      "model_name": "qwen3-tts-1.7b-custom",
+      "display_name": "Qwen3-TTS 1.7B CustomVoice",
+      "family": "qwen3",
+      "engine": "qwen_custom_voice",
+      "hf_repo_id": "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice",
+      "package": "qwen-tts",
+      "python": "3.12",
+      "size_mb": 3900,
+      "recommended_vram_gb": 6,
+      "minimum_ram_gb": 12,
+      "languages": [
+        "zh",
+        "en",
+        "ja",
+        "ko",
+        "de",
+        "fr",
+        "ru",
+        "pt",
+        "es",
+        "it"
+      ],
+      "tier": "quality",
+      "voice_modes": [
+        "preset"
+      ],
+      "sample_rate": 24000,
+      "license": "Apache-2.0",
+      "source": "https://github.com/QwenLM/Qwen3-TTS",
+      "tagline": "Voix prédéfinies · qualité · accélération Faster CUDA Graphs",
+      "description": "Modèle officiel Qwen 1.7B CustomVoice. Faster Qwen accélère l'inférence sans créer un modèle séparé.",
+      "capabilities": [
+        "faster-qwen-runtime",
+        "cuda-graphs",
+        "official-qwen-fallback",
+        "shared-model-weights"
+      ]
+    },
+    {
+      "id": "tts-qwen3-1.7b-design",
+      "model_name": "qwen3-tts-1.7b-design",
+      "display_name": "Qwen3-TTS 1.7B VoiceDesign",
+      "family": "qwen3",
+      "engine": "qwen_voice_design",
+      "hf_repo_id": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+      "package": "qwen-tts",
+      "python": "3.12",
+      "size_mb": 3900,
+      "recommended_vram_gb": 6,
+      "minimum_ram_gb": 12,
+      "languages": [
+        "zh",
+        "en",
+        "ja",
+        "ko",
+        "de",
+        "fr",
+        "ru",
+        "pt",
+        "es",
+        "it"
+      ],
+      "tier": "quality",
+      "voice_modes": [
+        "designed"
+      ],
+      "sample_rate": 24000,
+      "license": "Apache-2.0",
+      "source": "https://github.com/QwenLM/Qwen3-TTS",
+      "tagline": "Création de voix · qualité · accélération Faster CUDA Graphs",
+      "description": "Modèle officiel Qwen 1.7B VoiceDesign. Faster Qwen est son moteur d'exécution accéléré et partage exactement les mêmes poids locaux.",
+      "capabilities": [
+        "faster-qwen-runtime",
+        "cuda-graphs",
+        "official-qwen-fallback",
+        "shared-model-weights"
+      ]
+    },
+    {
+      "id": "tts-chatterbox-multilingual-v3",
+      "model_name": "chatterbox-multilingual-v3",
+      "display_name": "Chatterbox Multilingual V3 · Qualité",
+      "family": "chatterbox",
+      "engine": "chatterbox",
+      "hf_repo_id": "ResembleAI/chatterbox",
+      "package": "git+https://github.com/resemble-ai/chatterbox.git@5de7a54aa4e5e2baadb0182dde554908b48b85c2",
+      "python": "3.11",
+      "size_mb": 3220,
+      "recommended_vram_gb": 6,
+      "minimum_ram_gb": 12,
+      "languages": [
+        "ar",
+        "da",
+        "de",
+        "el",
+        "en",
+        "es",
+        "fi",
+        "fr",
+        "he",
+        "hi",
+        "it",
+        "ja",
+        "ko",
+        "ms",
+        "nl",
+        "no",
+        "pl",
+        "pt",
+        "ru",
+        "sv",
+        "sw",
+        "tr",
+        "zh"
+      ],
+      "tier": "quality",
+      "voice_modes": [
+        "cloned"
+      ],
+      "sample_rate": 24000,
+      "license": "MIT",
+      "source": "https://github.com/resemble-ai/chatterbox",
+      "recommended": true,
+      "parameters_m": 500,
+      "selection_priority": 1,
+      "capabilities": [
+        "batch-model-reuse",
+        "emotion-control",
+        "multilingual-v3",
+        "multilingual-voice-cloning",
+        "timed-pause-tags",
+        "voice-cloning",
+        "voice-conditioning-cache"
+      ],
+      "pause_tags": [
+        "[pause]",
+        "[pause:0.35]"
+      ],
+      "reference_audio_min_seconds": 5,
+      "recommended_max_chars_per_segment": 300,
+      "default_parameters": {
+        "exaggeration": 0.5,
+        "cfg_weight": 0.5,
+        "temperature": 0.8,
+        "top_p": 1.0,
+        "min_p": 0.05,
+        "repetition_penalty": 1.2,
+        "pause_seconds": 0.35
+      },
+      "description": "Dernier modèle multilingue officiel V3. Recommandé pour le français afin de préserver la qualité, la stabilité et le clonage vocal.",
+      "runtime_engine_id": "tts-chatterbox-turbo",
+      "format": "PyTorch",
+      "tagline": "Français + 22 langues · V3 officiel · meilleure qualité",
+      "installer_script": "install-chatterbox-multilingual.ps1",
+      "packages": [
+        "git+https://github.com/resemble-ai/chatterbox.git@5de7a54aa4e5e2baadb0182dde554908b48b85c2"
+      ],
+      "download_note": "Selective V3 download: only ve.pt, s3gen.pt, t3_mtl23ls_v3.safetensors and tokenizer assets; legacy/English checkpoints are excluded.",
+      "install_steps": [
+        "Create or reuse the shared Chatterbox Python 3.11 environment",
+        "Install or validate the official chatterbox-tts package",
+        "Download only the Multilingual V3 checkpoint and required shared assets",
+        "Exclude English, V2 and duplicate safetensors checkpoints",
+        "Validate CUDA, imports and local model artifacts"
+      ]
+    },
+    {
+      "id": "tts-tada-1b",
+      "model_name": "tada-1b",
+      "display_name": "TADA 1B",
+      "family": "tada",
+      "engine": "tada",
+      "hf_repo_id": "HumeAI/tada-1b",
+      "package": "hume-tada",
+      "python": "3.11",
+      "size_mb": 4300,
+      "recommended_vram_gb": 7,
+      "minimum_ram_gb": 16,
+      "languages": [
+        "en"
+      ],
+      "tier": "quality",
+      "voice_modes": [
+        "cloned"
+      ],
+      "sample_rate": 24000,
+      "license": "MIT code · Llama 3.2 Community License weights",
+      "source": "https://github.com/HumeAI/tada",
+      "gated": true
+    },
+    {
+      "id": "tts-tada-3b-ml",
+      "model_name": "tada-3b-ml",
+      "display_name": "TADA 3B Multilingual",
+      "family": "tada",
+      "engine": "tada",
+      "hf_repo_id": "HumeAI/tada-3b-ml",
+      "package": "hume-tada",
+      "python": "3.11",
+      "size_mb": 9000,
+      "recommended_vram_gb": 9,
+      "minimum_ram_gb": 24,
+      "languages": [
+        "en",
+        "ar",
+        "zh",
+        "de",
+        "es",
+        "fr",
+        "it",
+        "ja",
+        "pl",
+        "pt"
+      ],
+      "tier": "studio",
+      "voice_modes": [
+        "cloned"
+      ],
+      "sample_rate": 24000,
+      "license": "MIT code · Llama 3.2 Community License weights",
+      "source": "https://github.com/HumeAI/tada",
+      "gated": true,
+      "hardware_note": "9 GB VRAM in BF16: this exceeds the detected RTX 4060 Laptop 8 GB budget."
+    }
+  ],
+  "catalog_version": "2026.07-chatterbox-onnx"
+}

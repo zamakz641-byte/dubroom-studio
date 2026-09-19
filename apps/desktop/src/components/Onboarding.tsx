@@ -223,7 +223,7 @@ function ModelsStep(){
   return <Step icon={Boxes} title={t("onboarding.models.title")} body={t("onboarding.models.body")}>
     <div className="divide-y divide-line border-y border-line">
       <FeatureRow icon={Gauge} title={t("onboarding.models.whisper")} body="Tiny → Base → Small → Medium → Large → Turbo" tone="accent"/>
-      <FeatureRow icon={AudioLines} title={t("onboarding.models.voicebox")} body="OmniVoice · Qwen · Chatterbox · Kokoro · LuxTTS" tone="sync"/>
+      <FeatureRow icon={AudioLines} title={t("onboarding.models.tts")} body="Qwen3-TTS · Chatterbox · Kokoro · LuxTTS · Supertonic · TADA" tone="sync"/>
     </div>
     <div className="mt-4 flex items-center gap-3 rounded-xl border border-success/30 bg-success/10 p-4">
       <Check className="size-5 text-success"/>
@@ -237,7 +237,7 @@ function ReadyStep({onFinish}:{onFinish:(destination:"dashboard"|"engines"|"impo
   return <Step icon={ShieldCheck} title={t("onboarding.ready.title")} body={t("onboarding.ready.body")}>
     <div className="grid grid-cols-2 gap-3">
       <ReadyAction icon={Film} title={t("onboarding.ready.import")} body={t("onboarding.ready.importChoice")} onClick={()=>onFinish("import")}/>
-      <ReadyAction icon={Boxes} title={t("onboarding.ready.engines")} body="Whisper · OmniVoice · Pyannote · RVC" onClick={()=>onFinish("engines")}/>
+      <ReadyAction icon={Boxes} title={t("onboarding.ready.engines")} body="Whisper · TTS natifs · Pyannote · RVC" onClick={()=>onFinish("engines")}/>
     </div>
     <div className="mt-4 flex items-center gap-3 border-y border-line py-4">
       <ShieldCheck className="size-5 text-success"/>

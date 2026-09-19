@@ -128,6 +128,13 @@ export function DesktopTitleBar({
 
   const navigate = (target: AppSection) => {
     setOpenMenu(null);
+    if (target !== section) {
+      ignoreNextSection.current = true;
+      setSectionHistory((current) => {
+        const items = [...current.items.slice(0, current.index + 1), target];
+        return { items, index: items.length - 1 };
+      });
+    }
     onSection(target);
   };
   const dispatch = (name: "dubroom:undo" | "dubroom:redo") => {
@@ -319,6 +326,7 @@ export function DesktopTitleBar({
           <ChevronDown className="size-3 shrink-0 text-muted" />
         </button>
         <button
+          data-shell-panel-trigger
           className="flex h-7 items-center gap-1.5 rounded-md border border-line px-2 text-[10px] font-semibold transition hover:border-line-strong hover:bg-raised"
           title={t(backendOnline ? "shell.backendReady" : "shell.backendOffline")}
           onClick={() => setPanel(panel === "status" ? null : "status")}
@@ -335,6 +343,7 @@ export function DesktopTitleBar({
           <CircleGauge className="size-3.5 text-muted" />
         </button>
         <button
+          data-shell-panel-trigger
           className={cn(
             "ui-icon-button relative size-7 rounded-md",
             activityCount > 0 && "text-accent",
@@ -352,6 +361,7 @@ export function DesktopTitleBar({
           )}
         </button>
         <button
+          data-shell-panel-trigger
           className="ui-icon-button relative size-7 rounded-md"
           title={t("notifications.tooltip")}
           onClick={() => {
